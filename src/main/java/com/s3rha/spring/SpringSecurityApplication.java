@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class SpringSecurityApplication {
 
     public static void main(String[] args) {
+        System.out.println("this is for a commit test ");
         SpringApplication.run(SpringSecurityApplication.class, args);
     }
 
