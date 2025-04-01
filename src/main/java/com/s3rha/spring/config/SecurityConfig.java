@@ -1,5 +1,6 @@
 package com.s3rha.spring.config;
 
+import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.config.jwtAuth.JwtAccessTokenFilter;
 import com.s3rha.spring.config.jwtAuth.JwtRefreshTokenFilter;
 import com.s3rha.spring.config.jwtAuth.JwtTokenUtils;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -34,6 +36,7 @@ import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthen
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -51,15 +54,18 @@ public class SecurityConfig {
     private final JwtTokenUtils jwtTokenUtils;
     private final RefreshTokenRepo refreshTokenRepo;
     private final LogoutHandlerService logoutHandlerService;
+    private final ProductRepo productRepo ;
     @Order(1)
     @Bean
-    public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
-                .securityMatcher(new AntPathRequestMatcher("/sign-in/**"))
+                .securityMatcher(new AntPathRequestMatcher("/**"))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
                 .userDetailsService(userInfoManagerConfig)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterAfter(new ProductOwnershipFilter(productRepo),
+                        BasicAuthenticationFilter.class)
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint((request, response, authException) ->
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
@@ -67,6 +73,20 @@ public class SecurityConfig {
                 .httpBasic(withDefaults())
                 .build();
     }
+//    public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+//        return httpSecurity
+//                .securityMatcher(new AntPathRequestMatcher("/sign-in/**"))
+//                .csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+//                .userDetailsService(userInfoManagerConfig)
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .exceptionHandling(ex -> {
+//                    ex.authenticationEntryPoint((request, response, authException) ->
+//                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
+//                })
+//                .httpBasic(withDefaults())
+//                .build();
+//    }
 
 
     @Order(2)
@@ -81,8 +101,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> {
                     log.error("[SecurityConfig:apiSecurityFilterChain] Exception due to :{}",ex);
-                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());
-                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
+                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());//401
+                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());//403
                 })
                 .httpBasic(withDefaults())
                 .build();
