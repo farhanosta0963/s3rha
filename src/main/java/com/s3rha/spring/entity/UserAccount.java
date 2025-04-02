@@ -1,6 +1,7 @@
 package com.s3rha.spring.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -16,12 +17,13 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class UserAccount extends Account {
+    @NotEmpty
     private String fname;
+    @NotEmpty
     private String lname;
     private Integer scoreOfActivity;
     private Integer scoreOfIntegrity;
 
-    // Getters and setters
 
     @OneToMany(mappedBy = "userAccount",
             fetch = FetchType.LAZY,

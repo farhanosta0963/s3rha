@@ -1,0 +1,401 @@
+-- Optionally disable foreign key checks during table creation
+USE my_app_db;
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Drop tables if they exist 
+DROP TABLE IF EXISTS Address;
+DROP TABLE IF EXISTS Social_media;
+DROP TABLE IF EXISTS Report;
+DROP TABLE IF EXISTS Search_history;
+DROP TABLE IF EXISTS Prod_of_offer;
+DROP TABLE IF EXISTS Prod_of_cart;
+DROP TABLE IF EXISTS Rating;
+DROP TABLE IF EXISTS Rating_on_product;
+DROP TABLE IF EXISTS Rating_on_store;
+DROP TABLE IF EXISTS Report;
+DROP TABLE IF EXISTS Report_on_account;
+DROP TABLE IF EXISTS Report_on_product;
+DROP TABLE IF EXISTS User_price;
+DROP TABLE IF EXISTS special_offer;
+DROP TABLE IF EXISTS Store_price;
+DROP TABLE IF EXISTS price;
+DROP TABLE IF EXISTS Shopping_cart;
+DROP TABLE IF EXISTS Product;
+DROP TABLE IF EXISTS User_account;
+DROP TABLE IF EXISTS Store_account;
+DROP TABLE IF EXISTS Account;
+DROP TABLE IF EXISTS refresh_token;
+
+
+-- Create tables 
+
+-- 1. Account (referenced by Search_history and Report)
+CREATE TABLE Account (
+    account_id bigint AUTO_INCREMENT PRIMARY KEY,
+ user_name VARCHAR(255) unique,
+    email VARCHAR(255),
+    password VARCHAR(255),
+    status VARCHAR(50),
+    phone_number VARCHAR(20),
+    image VARCHAR(255),
+    roles varchar(100) ,
+datetime_of_insert DATETIME
+ 
+
+
+);
+
+-- 2. Store_account (referenced by User_prices, Rating, Social_media, Address and linked to Store_prices)
+CREATE TABLE Store_account (
+    account_id bigint  PRIMARY KEY,
+    name VARCHAR(255),
+    verified_flag BOOLEAN,
+    FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+
+);
+create table refresh_token(
+id bigint auto_increment primary key , 
+refresh_token varchar(10000),
+revoked boolean ,
+account_id bigint ,
+FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+-- 3. User_account (referenced by Shopping_cart, User_prices, Rating)
+CREATE TABLE User_account (
+    account_id bigint  PRIMARY KEY,
+    fname VARCHAR(255),
+    lname VARCHAR(255),
+    score_of_activity INT,
+    score_of_integrity INT,
+ FOREIGN KEY (account_id) REFERENCES Account ( account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+
+);
+
+-- 4. Product (referenced by User_prices, Rating, Prod_of_cart, and Prod_of_offer)
+CREATE TABLE Product (
+    Product_id bigint AUTO_INCREMENT PRIMARY KEY,
+    account_id bigint , 
+    name VARCHAR(255),
+    brand VARCHAR(255),
+    image VARCHAR(255),
+    category VARCHAR(255),
+    bar_code VARCHAR(255),
+    description TEXT,
+datetime_of_insert DATETIME,
+FOREIGN KEY (account_id) REFERENCES Account ( account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+
+);
+
+-- 5. Shopping_cart (references User_account)
+CREATE TABLE Shopping_cart (
+    Shopping_Cart_id bigint AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    datetime_of_insert DATETIME,
+    description TEXT,
+    image VARCHAR(255),
+    public_private_flag BOOLEAN,
+    user_account_id bigint,
+    FOREIGN KEY (user_account_id) REFERENCES User_account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+
+-- 6. Store_price (references Store_account and Product)
+CREATE TABLE Store_price (
+    price_id bigint  PRIMARY KEY,
+    quantity INT,
+   
+    
+ FOREIGN KEY (price_id) REFERENCES Price (price_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+);
+
+
+-- 7. special_offer (references Store_prices)
+CREATE TABLE special_offer (
+    offer_id bigint AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    description TEXT,
+    image VARCHAR(255),
+    datetime_of_start DATETIME,
+    datetime_of_end DATETIME,
+    datetime_of_insert DATETIME,
+    price DECIMAL(10, 2),
+    store_price_id bigint,
+    FOREIGN KEY (store_price_id) REFERENCES Store_price(price_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+CREATE TABLE price (
+    price_id bigint AUTO_INCREMENT PRIMARY KEY,
+    price DECIMAL(10, 2),
+    datetime_of_insert DATETIME,
+    currency VARCHAR(10),
+    unit_of_measure VARCHAR(50),
+    store_account_id bigint,
+    Product_id bigint,
+    FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+    FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+-- 8. User_price
+CREATE TABLE User_price (
+    price_id bigint  PRIMARY KEY,
+    up_vote_count INT,
+    down_vote_count INT,
+    user_account_id bigint,
+    FOREIGN KEY (user_account_id) REFERENCES User_account(account_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+    FOREIGN KEY (price_id) REFERENCES Price (price_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+-- 9. Rating (references User_account, Product and Store_account)
+CREATE TABLE Rating (
+    rate_id bigint AUTO_INCREMENT PRIMARY KEY,
+    stars_rate INT,
+    feedback TEXT,
+    datetime_of_insert DATETIME,
+    account_id bigint,
+    FOREIGN KEY (account_id) REFERENCES Account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+CREATE TABLE Rating_on_product(
+rate_id bigint PRIMARY KEY,
+Product_id bigint, 
+store_account_id bigint , 
+FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+FOREIGN KEY (rate_id) REFERENCES Rating(rate_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+CREATE TABLE Rating_on_store(
+rate_id bigint PRIMARY KEY ,
+store_account_id bigint , 
+FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+FOREIGN KEY (rate_id) REFERENCES Rating(rate_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+-- 10. Prod_of_cart (junction table between Product and Shopping_cart)
+CREATE TABLE Prod_of_cart (id bigint AUTO_INCREMENT PRIMARY KEY,
+    Product_id bigint,
+    Shopping_Cart_id bigint,
+    quantity INT,
+    FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+    FOREIGN KEY (Shopping_Cart_id) REFERENCES Shopping_cart(Shopping_Cart_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+-- 11. Prod_of_offer (junction table between Product and special_offers)
+CREATE TABLE Prod_of_offer (id bigint AUTO_INCREMENT PRIMARY KEY,
+    Product_id bigint,
+    offer_id bigint,
+    quantity INT,
+    FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+    FOREIGN KEY (offer_id) REFERENCES special_offer(offer_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+-- 12. Search_history (references Account)
+CREATE TABLE Search_history (
+    search_id bigint AUTO_INCREMENT PRIMARY KEY,
+    search_data TEXT,
+    datetime_of_insert DATETIME,
+    account_id bigint,
+    FOREIGN KEY (account_id) REFERENCES Account(account_id)
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+);
+
+-- 13. Report (references Account)
+CREATE TABLE Report (
+    report_id bigint AUTO_INCREMENT PRIMARY KEY,
+    datetime_of_insert DATETIME,
+    description TEXT,
+    account_id bigint,
+    FOREIGN KEY (account_id) REFERENCES Account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+CREATE TABLE Report_on_account(
+ report_id bigint  PRIMARY KEY ,
+ reported_account_id bigint , 
+FOREIGN KEY ( reported_account_id ) REFERENCES Account( account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+FOREIGN KEY ( report_id) REFERENCES Report( report_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+CREATE TABLE Report_on_product(
+ report_id bigint PRIMARY KEY,
+ Product_id bigint ,
+FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION,
+FOREIGN KEY ( report_id) REFERENCES Report( report_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+-- 14. Social_media (references Store_account)
+CREATE TABLE Social_media (    social_media_id bigint AUTO_INCREMENT PRIMARY KEY,
+
+    social_media_account VARCHAR(255),
+    store_account_id bigint,
+    account_type VARCHAR(50),
+datetime_of_insert DATETIME,
+    FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+
+-- 15. Address (references Store_account)
+CREATE TABLE Address (
+    address_id bigint AUTO_INCREMENT PRIMARY KEY,
+
+    address VARCHAR(255),
+    store_account_id bigint,
+datetime_of_insert DATETIME,
+    FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
+ON UPDATE NO ACTION
+    ON DELETE NO ACTION
+
+);
+SET FOREIGN_KEY_CHECKS = 1;
+-- Populate Account table (users and stores)
+INSERT INTO Account (user_name, email, password, status, phone_number, image, datetime_of_insert) VALUES
+('john_doe', 'john@example.com', 'userpass1', 'active', '555-1234', 'john.jpg', NOW()),
+('jane_smith', 'jane@example.com', 'userpass2', 'active', '555-5678', 'jane.jpg', NOW()),
+('tech_store', 'tech@store.com', 'storepass1', 'verified', '555-8765', 'techstore.jpg', NOW()),
+('farhan', 'fashion@shop.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'pending', '555-4321', 'fashion.jpg', NOW());
+
+-- Populate User_account
+INSERT INTO User_account (account_id, fname, lname, score_of_activity, score_of_integrity) VALUES
+(1, 'John', 'Doe', 85, 90),
+(2, 'Jane', 'Smith', 92, 88);
+
+-- Populate Store_account
+INSERT INTO Store_account (account_id, name, verified_flag) VALUES
+(3, 'Tech Haven', 1),
+(4, 'Fashion Plus', 0);
+update account set roles = 'ROLE_USER' where account_id >=0 ;
+-- Populate Product
+INSERT INTO Product (account_id, name, brand, image, category, bar_code, description, datetime_of_insert) VALUES
+(3, 'Gaming Laptop', 'TechMaster', 'laptop.jpg', 'Electronics', '123456', 'High-end gaming laptop', NOW()),
+(3, 'Wireless Mouse', 'ClickPro', 'mouse.jpg', 'Accessories', '789012', 'Ergonomic design', NOW()),
+(4, 'Designer Jeans', 'FashionStar', 'jeans.jpg', 'Clothing', '345678', 'Premium denim', NOW());
+
+-- Populate Price
+INSERT INTO Price (price, datetime_of_insert, currency, unit_of_measure, store_account_id, Product_id) VALUES
+(1499.99, NOW(), 'USD', 'Each', 3, 1),
+(49.99, NOW(), 'USD', 'Each', 3, 2),
+(89.99, NOW(), 'USD', 'Each', 4, 3);
+
+-- Populate Store_price
+INSERT INTO Store_price (price_id, quantity) VALUES
+(1, 15),
+(2, 50),
+(3, 30);
+
+-- Populate Shopping_cart
+INSERT INTO Shopping_cart (name, datetime_of_insert, description, image, public_private_flag, user_account_id) VALUES
+('My Tech Cart', NOW(), 'Tech items', 'cart1.jpg', 1, 1),
+('Clothing Picks', NOW(), 'Fashion items', 'cart2.jpg', 0, 2);
+
+-- Populate Prod_of_cart
+INSERT INTO Prod_of_cart (Product_id, Shopping_Cart_id, quantity) VALUES
+(1, 1, 2),
+(3, 2, 1);
+
+-- Populate special_offer
+INSERT INTO special_offer (name, description, image, datetime_of_start, datetime_of_end, datetime_of_insert, price, store_price_id) VALUES
+('Summer Sale', 'Big summer discounts', 'summer.jpg', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), NOW(), 1299.99, 1);
+
+-- Populate User_price
+INSERT INTO User_price (price_id, up_vote_count, down_vote_count, user_account_id) VALUES
+(1, 15, 2, 1),
+(3, 8, 1, 2);
+
+-- Populate Rating
+INSERT INTO Rating (stars_rate, feedback, datetime_of_insert, account_id) VALUES
+(5, 'Excellent product!', NOW(), 1),
+(4, 'Good quality', NOW(), 2);
+
+-- Populate Rating_on_product
+INSERT INTO Rating_on_product (rate_id, Product_id, store_account_id) VALUES
+(1, 1, 3),
+(2, 3, 4);
+
+-- Populate Social_media
+INSERT INTO Social_media (social_media_account, store_account_id, account_type, datetime_of_insert) VALUES
+('@techhaven', 3, 'Instagram', NOW()),
+('@fashionplus', 4, 'Facebook', NOW());
+
+-- Populate Address
+INSERT INTO Address (address, store_account_id, datetime_of_insert) VALUES
+('123 Tech Street', 3, NOW()),
+('456 Fashion Ave', 4, NOW());
+
+-- Populate Search_history
+INSERT INTO Search_history (search_data, datetime_of_insert, account_id) VALUES
+('gaming laptops', NOW(), 1),
+('designer jeans', NOW(), 2);
+
+-- Populate Report
+INSERT INTO Report (datetime_of_insert, description, account_id) VALUES
+(NOW(), 'Inappropriate content', 1),
+(NOW(), 'Fake product', 2);
+
+-- Populate Report_on_product
+INSERT INTO Report_on_product (report_id, Product_id) VALUES
+(2, 3);

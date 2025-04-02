@@ -1,21 +1,26 @@
 package com.s3rha.spring.service;
 
 import com.s3rha.spring.DAO.AccountRepo;
+import com.s3rha.spring.DAO.StoreAccountRepo;
 import com.s3rha.spring.config.jwtAuth.JwtTokenGenerator;
-import com.s3rha.spring.dto.AuthResponseDto;
-import com.s3rha.spring.dto.TokenType;
-import com.s3rha.spring.dto.UserRegistrationDto;
+import com.s3rha.spring.dto.*;
+
 import com.s3rha.spring.entity.Account;
 
 
 import com.s3rha.spring.entity.RefreshToken;
+import com.s3rha.spring.entity.StoreAccount;
+import com.s3rha.spring.mapper.StoreByUserInfoMapper;
+import com.s3rha.spring.mapper.StoreInfoMapper;
 import com.s3rha.spring.mapper.UserInfoMapper;
 import com.s3rha.spring.repo.RefreshTokenRepo;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.Store;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -34,9 +39,12 @@ import java.util.Optional;
 public class AuthService {
 
     private final AccountRepo userInfoRepo;
+    private final StoreAccountRepo storeInfoRepo;
     private final JwtTokenGenerator jwtTokenGenerator;
     private final RefreshTokenRepo refreshTokenRepo;
     private final UserInfoMapper userInfoMapper;
+    private final StoreInfoMapper storeInfoMapper;
+    private final StoreByUserInfoMapper storeByUserInfoMapper;
     public AuthResponseDto getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
         {
@@ -129,12 +137,12 @@ public class AuthService {
         return new UsernamePasswordAuthenticationToken(username, password, Arrays.asList(authorities));
     }
 
-    public AuthResponseDto registerUser(UserRegistrationDto userRegistrationDto,
+    public AuthResponseDto registerUser(UserAccountRegistrationDto userRegistrationDto,
                                         HttpServletResponse httpServletResponse) {
         try{
             log.info("[AuthService:registerUser]User Registration Started with :::{}",userRegistrationDto);
 
-            Optional<Account> user = userInfoRepo.findByUserName(userRegistrationDto.userEmail());
+            Optional<Account> user = userInfoRepo.findByUserName(userRegistrationDto.userName());
             if(user.isPresent()){
                 throw new Exception("User Already Exist");
             }
@@ -163,6 +171,63 @@ public class AuthService {
 
         }catch (Exception e){
             log.error("[AuthService:registerUser]Exception while registering the user due to :"+e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        }
+    }
+    public AuthResponseDto registerStore(StoreAccountRegistrationDto storeAccountRegistrationDto,
+                                         HttpServletResponse httpServletResponse) {
+        try{
+            log.info("[AuthService:registerUser]Store Registration Started with :::{}",storeAccountRegistrationDto);
+
+            Optional<Account> user = userInfoRepo.findByUserName(storeAccountRegistrationDto.userName());
+            if(user.isPresent()){
+                throw new Exception("User Already Exist");
+            }
+
+            StoreAccount userDetailsEntity = storeInfoMapper.convertToEntity(storeAccountRegistrationDto);
+            Authentication authentication = createAuthenticationObject(userDetailsEntity);
+
+
+            // Generate a JWT token
+            String accessToken = jwtTokenGenerator.generateAccessToken(authentication);
+            String refreshToken = jwtTokenGenerator.generateRefreshToken(authentication);
+
+            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
+            saveUserRefreshToken(userDetailsEntity,refreshToken);
+
+            creatRefreshTokenCookie(httpServletResponse,refreshToken);
+
+            log.info("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
+            return   AuthResponseDto.builder()
+                    .accessToken(accessToken)
+                    .accessTokenExpiry(5 * 60)
+                    .userName(savedUserDetails.getUserName())
+                    .tokenType(TokenType.Bearer)
+                    .build();
+
+
+        }catch (Exception e){
+            log.error("[AuthService:registerUser]Exception while registering the user due to :"+e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        }
+    }
+
+    public StoreAccount registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
+        try{
+            log.info("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
+
+
+            StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+
+            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
+
+            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
+
+            return userDetailsEntity  ;
+
+
+        }catch (Exception e){
+            log.error("[AuthService:registerStoreByUser]Exception while registering the store byyy user due to :"+e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
     }

@@ -5,10 +5,13 @@ package com.s3rha.spring.entity;
 ////        1. Base Account Entity (Inheritance Strategy)
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -27,17 +30,16 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
-    private String roles ;
+    private String roles="USER_ROLE" ;
+    @Email
     private String email;
+    @NotEmpty
     private String userName;
-
-
+    @NotEmpty
     private String password;
-    private String status;
+    private String status  ;
     private String phoneNumber;
     private String image;
-    // Lifecycle callback to encrypt password before saving
-    @PrePersist
     @PreUpdate
     private void encryptPassword() {
         if (password != null && !password.startsWith("$2a$")) { // Check if already encrypted

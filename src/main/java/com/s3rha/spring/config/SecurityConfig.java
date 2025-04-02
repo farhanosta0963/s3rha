@@ -61,7 +61,8 @@ public class SecurityConfig {
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/**"))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                //                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
                 .userDetailsService(userInfoManagerConfig)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterAfter(new ProductOwnershipFilter(productRepo),

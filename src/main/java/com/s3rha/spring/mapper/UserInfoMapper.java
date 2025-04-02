@@ -1,7 +1,9 @@
 package com.s3rha.spring.mapper;
 
-import com.s3rha.spring.dto.UserRegistrationDto;
+
+import com.s3rha.spring.dto.UserAccountRegistrationDto;
 import com.s3rha.spring.entity.Account;
+import com.s3rha.spring.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,13 +14,15 @@ import org.springframework.stereotype.Component;
 public class UserInfoMapper {
 
     private final PasswordEncoder passwordEncoder;
-    public Account convertToEntity(UserRegistrationDto userRegistrationDto) {
-        Account userInfoEntity = new Account();
+    public UserAccount convertToEntity(UserAccountRegistrationDto userRegistrationDto) {
+        UserAccount   userInfoEntity = new UserAccount();
         userInfoEntity.setUserName(userRegistrationDto.userName());
-        userInfoEntity.setEmail(userRegistrationDto.userEmail());
-        userInfoEntity.setPhoneNumber(userRegistrationDto.userMobileNo());
-        userInfoEntity.setRoles(userRegistrationDto.userRole());
-        userInfoEntity.setPassword(passwordEncoder.encode(userRegistrationDto.userPassword()));
+        userInfoEntity.setFname(userRegistrationDto.fname());
+        userInfoEntity.setLname(userRegistrationDto.lname());
+        userInfoEntity.setEmail(userRegistrationDto.email());
+        userInfoEntity.setImage(userRegistrationDto.image());
+        userInfoEntity.setPhoneNumber(userRegistrationDto.phoneNumber());
+        userInfoEntity.setPassword(passwordEncoder.encode(userRegistrationDto.password()));
         return userInfoEntity;
     }
 }

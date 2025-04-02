@@ -1,6 +1,9 @@
 package com.s3rha.spring.controller;
 
-import com.s3rha.spring.dto.UserRegistrationDto;
+import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
+import com.s3rha.spring.dto.StoreAccountRegistrationDto;
+import com.s3rha.spring.dto.UserAccountRegistrationDto;
+
 import com.s3rha.spring.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -39,18 +43,46 @@ public class AuthController {
         return ResponseEntity.ok(authService.getAccessTokenUsingRefreshToken(authorizationHeader));
     }
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto,
+    @PostMapping("/sign-up-user")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserAccountRegistrationDto userAccountRegistrationDto,
                                           BindingResult bindingResult, HttpServletResponse httpServletResponse){
 
-        log.info("[AuthController:registerUser]Signup Process Started for user:{}",userRegistrationDto.userName());
-        if (bindingResult.hasErrors()) {
-            List<String> errorMessage = bindingResult.getAllErrors().stream()
-                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                    .toList();
-            log.error("[AuthController:registerUser]Errors in user:{}",errorMessage);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-        }
-        return ResponseEntity.ok(authService.registerUser(userRegistrationDto,httpServletResponse));
+        log.info("[AuthController:registerUser]Signup Process Started for user:{}",userAccountRegistrationDto.userName());
+//        if (bindingResult.hasErrors()) {
+//            List<String> errorMessage = bindingResult.getAllErrors().stream()
+//                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                    .toList();
+//            log.error("[AuthController:registerUser]Errors in user account:{}",errorMessage);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+//        }
+        return ResponseEntity.ok(authService.registerUser(userAccountRegistrationDto,httpServletResponse));
+    }
+    @PostMapping("/sign-up-store")
+    public ResponseEntity<?> registerStore(@Valid @RequestBody StoreAccountRegistrationDto storeAccountRegistrationDto,
+                                       HttpServletResponse httpServletResponse){
+
+        log.info("[AuthController:registerUser]Signup Process Started for store account:{}",storeAccountRegistrationDto.userName());
+//        if (bindingResult.hasErrors()) {
+//            List<String> errorMessage = bindingResult.getAllErrors().stream()
+//                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                    .toList();
+//            log.error("[AuthController:registerUser]Errors in Store:{}",errorMessage);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+//        }
+        return ResponseEntity.ok(authService.registerStore(storeAccountRegistrationDto,httpServletResponse));
+    }
+    @PostMapping("/sign-up-storeByUser")
+    public ResponseEntity<?> registerStore(@Valid @RequestBody StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto,
+                                          BindingResult bindingResult, HttpServletResponse httpServletResponse){
+
+        log.info("[AuthController:registerUser]Signup Process Started for store account byyyyyyyyy User:{}",storeAccountByUserRegistrationDto.name());
+//        if (bindingResult.hasErrors()) {
+//            List<String> errorMessage = bindingResult.getAllErrors().stream()
+//                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+//                    .toList();
+//            log.error("[AuthController:registerUser]Errors in store byyyyy User:{}",errorMessage);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+//        }
+        return ResponseEntity.ok(authService.registerStoreByUser(storeAccountByUserRegistrationDto,httpServletResponse));
     }
 }
