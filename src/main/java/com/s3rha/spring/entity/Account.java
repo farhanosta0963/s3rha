@@ -30,7 +30,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
 
-    private String roles="USER_ROLE" ;
+    private String roles="ROLE_USER" ;
     @Email
     private String email;
     @NotEmpty
@@ -49,6 +49,11 @@ public class Account {
     @CreatedDate
     private LocalDateTime datetimeOfInsert;
 
+    @OneToOne(mappedBy = "account",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
+    private VerificationCode verificationCode;
 
     @OneToMany(mappedBy = "account",
             fetch = FetchType.LAZY,

@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -86,16 +87,35 @@ public class GlobalExceptionHandler {
                 ex.getMessage());
         return new ErrorResponse("Access denied");
     }
-
     @ExceptionHandler(ResponseStatusException.class)
-    public ErrorResponse handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
-        log.warn("Response status exception [{}]: {} | Request: {}",
-                ex.getStatusCode(),
-                ex.getReason(),
-                request.getDescription(false));
-        return new ErrorResponse(ex.getReason());
-    }
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(
+            ResponseStatusException ex,
+            WebRequest request) {
 
+        // Get HTTP status details
+        int statusCode = ex.getStatusCode().value();
+        HttpStatus httpStatus = HttpStatus.valueOf(statusCode);
+        String reasonPhrase = httpStatus.getReasonPhrase();
+
+        // Extract clean path
+        String path = request.getDescription(false).replace("uri=", "");
+
+        // Use ex.getReason() if available, else fallback to reason phrase
+        String message = ex.getReason() != null ? ex.getReason() : reasonPhrase;
+
+        // Logging
+        if (ex.getStatusCode().is5xxServerError()) {
+            log.error("Server error [{} {}] at {}: {}",
+                    statusCode, reasonPhrase, path, message, ex);
+        } else {
+            log.warn("Client error [{} {}] at {}: {}",
+                    statusCode, reasonPhrase, path, message);
+        }
+
+        // Build response
+        ErrorResponse errorResponse = new ErrorResponse(message);
+        return new ResponseEntity<>(errorResponse, ex.getStatusCode());
+    }
     // ===== 5xx Server Errors =====
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

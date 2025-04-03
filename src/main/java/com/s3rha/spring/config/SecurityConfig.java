@@ -71,6 +71,17 @@ public class SecurityConfig {
                     ex.authenticationEntryPoint((request, response, authException) ->
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
                 })
+//                .exceptionHandling(ex -> {
+//                    ex.authenticationEntryPoint((request, response, authException) -> {
+//                        log.error("Authentication error: {}", authException.getMessage());
+//                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+//                    });
+//                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+//                        log.error("Access denied: {}", accessDeniedException.getMessage());
+//                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+//                    });
+//                })
+
                 .httpBasic(withDefaults())
                 .build();
     }
@@ -101,10 +112,33 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> {
-                    log.error("[SecurityConfig:apiSecurityFilterChain] Exception due to :{}",ex);
-                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());//401
-                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());//403
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        log.warn("Authentication failed: {} - Path: {}",
+                                authException.getMessage(),
+                                request.getRequestURI());
+
+                        // Delegate to the standard BearerToken handler
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.warn("Access denied for {}: {} - Path: {}",
+                                SecurityContextHolder.getContext().getAuthentication().getName(),
+                                accessDeniedException.getMessage(),
+                                request.getRequestURI());
+
+                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
+                    });
                 })
+
+
+
+
+//                .exceptionHandling(ex -> {
+//                    log.error("[SecurityConfig:apiSecurityFilterChain] Exception due to :{}",ex);
+//                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());//401
+//                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());//403
+//                })
                 .httpBasic(withDefaults())
                 .build();
     }
@@ -120,10 +154,31 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtRefreshTokenFilter(rsaKeyRecord,jwtTokenUtils,refreshTokenRepo), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> {
-                    log.error("[SecurityConfig:refreshTokenSecurityFilterChain] Exception due to :{}",ex);
-                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());
-                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        log.warn("Authentication failed: {} - Path: {}",
+                                authException.getMessage(),
+                                request.getRequestURI());
+
+                        // Delegate to the standard BearerToken handler
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.warn("Access denied for {}: {} - Path: {}",
+                                SecurityContextHolder.getContext().getAuthentication().getName(),
+                                accessDeniedException.getMessage(),
+                                request.getRequestURI());
+
+                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
+                    });
                 })
+
+
+//                .exceptionHandling(ex -> {
+//                    log.error("[SecurityConfig:refreshTokenSecurityFilterChain] Exception due to :{}");
+//                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());
+//                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
+//                })
                 .httpBasic(withDefaults())
                 .build();
     }
@@ -142,12 +197,30 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .addLogoutHandler(logoutHandlerService)
                         .logoutSuccessHandler(((request, response, authentication) -> SecurityContextHolder.clearContext()))
-                )
-                .exceptionHandling(ex -> {
-                    log.error("[SecurityConfig:logoutSecurityFilterChain] Exception due to :{}",ex);
-                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());
-                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
+                ).exceptionHandling(ex -> {
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        log.warn("Authentication failed: {} - Path: {}",
+                                authException.getMessage(),
+                                request.getRequestURI());
+
+                        // Delegate to the standard BearerToken handler
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.warn("Access denied for {}: {} - Path: {}",
+                                SecurityContextHolder.getContext().getAuthentication().getName(),
+                                accessDeniedException.getMessage(),
+                                request.getRequestURI());
+
+                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
+                    });
                 })
+//                .exceptionHandling(ex -> {
+//                    log.error("[SecurityConfig:logoutSecurityFilterChain] Exception due to :{}",ex);
+//                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());
+//                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());
+//                })
                 .build();
     }
 

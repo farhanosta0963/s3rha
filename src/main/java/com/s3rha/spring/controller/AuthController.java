@@ -3,8 +3,10 @@ package com.s3rha.spring.controller;
 import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
 import com.s3rha.spring.dto.StoreAccountRegistrationDto;
 import com.s3rha.spring.dto.UserAccountRegistrationDto;
+import com.s3rha.spring.dto.VerifyUserDto;
 
 import com.s3rha.spring.service.AuthService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -59,7 +58,7 @@ public class AuthController {
     }
     @PostMapping("/sign-up-store")
     public ResponseEntity<?> registerStore(@Valid @RequestBody StoreAccountRegistrationDto storeAccountRegistrationDto,
-                                       HttpServletResponse httpServletResponse){
+                                       HttpServletResponse httpServletResponse) throws Exception {
 
         log.info("[AuthController:registerUser]Signup Process Started for store account:{}",storeAccountRegistrationDto.userName());
 //        if (bindingResult.hasErrors()) {
@@ -84,5 +83,17 @@ public class AuthController {
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 //        }
         return ResponseEntity.ok(authService.registerStoreByUser(storeAccountByUserRegistrationDto,httpServletResponse));
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser( @Valid @RequestBody VerifyUserDto verifyUserDto) {
+        authService.verifyUser(verifyUserDto);
+        return ResponseEntity.ok("Account verified successfully");
+    }
+
+    @PostMapping("/resend")
+    public ResponseEntity<?> resendVerificationCode( @RequestParam String email) throws MessagingException {
+        authService.resendVerificationCode(email);
+        return ResponseEntity.ok("Verification code sent");
     }
 }
