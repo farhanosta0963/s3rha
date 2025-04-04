@@ -1,5 +1,6 @@
 package com.s3rha.spring.entity;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,6 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "account_id")
 @Setter
 @Getter
-@NoArgsConstructor
 
 public class StoreAccount extends Account {
     private String name;
@@ -28,6 +29,10 @@ public class StoreAccount extends Account {
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     private List<Address> addresses;
+
+    public StoreAccount() {
+        setAccountType("STORE");
+    }
 
     public void add(Address address) {
         if (addresses == null) {

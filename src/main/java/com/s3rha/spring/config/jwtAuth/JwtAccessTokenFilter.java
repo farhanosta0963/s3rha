@@ -41,12 +41,12 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
 //            filterChain.doFilter(request, response); // Skip JWT processing for /api/ccc
 //            return;
 //        }
-            log.info("[JwtAccessTokenFilter:doFilterInternal] :: Started ");
+            log.warn("[JwtAccessTokenFilter:doFilterInternal] :: Started ");
 
-            log.info("[JwtAccessTokenFilter:doFilterInternal]Filtering the Http Request:{}",request.getRequestURI());
+            log.warn("[JwtAccessTokenFilter:doFilterInternal]Filtering the Http Request:{}",request.getRequestURI());
 
             final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-            log.info(authHeader);
+            log.warn(authHeader);
             JwtDecoder jwtDecoder =  NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
             if (authHeader == null) {
                 filterChain.doFilter(request,response);
@@ -79,7 +79,7 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.setContext(securityContext);
                 }
             }
-            log.info("[JwtAccessTokenFilter:doFilterInternal] Completed");
+            log.warn("[JwtAccessTokenFilter:doFilterInternal] Completed");
 
             filterChain.doFilter(request,response);
         }catch (JwtValidationException jwtValidationException){

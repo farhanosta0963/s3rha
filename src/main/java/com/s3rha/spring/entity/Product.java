@@ -27,7 +27,7 @@ public class Product {
     private String category;
     private String barCode;
     private String description;
-    private LocalDateTime datetimeOfInsert ;
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now() ;
 
 @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST, CascadeType.MERGE,
         CascadeType.DETACH, CascadeType.REFRESH})
@@ -48,11 +48,7 @@ public class Product {
                     CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "account_id")
     private Account account ;
-    @PrePersist // Automatically set before saving
-    protected void onCreate() {
-        this.datetimeOfInsert = LocalDateTime.now();
 
-    }
     public Long getProductId() {
         return productId;
     }

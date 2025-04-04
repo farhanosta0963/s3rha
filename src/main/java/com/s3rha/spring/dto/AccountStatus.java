@@ -4,5 +4,7 @@ public enum AccountStatus {
     ACTIVATED,      // Verified and active
     DEACTIVATED,    // Manually disabled
     SUSPENDED,      // Temporarily locked
-    BANNED          // Permanently blocked
+    BANNED  ,// Permanently blocked
+    ACTIVATED_WITH_GOOGLE,
+    ACTIVATED_WITH_FACEBOOK
 }

@@ -40,6 +40,7 @@ CREATE TABLE Account (
     phone_number VARCHAR(20),
     image VARCHAR(255),
     roles varchar(100) ,
+    oauth_id decimal(38,0) ,
 datetime_of_insert DATETIME
  
 

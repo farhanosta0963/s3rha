@@ -4,6 +4,7 @@ package com.s3rha.spring.entity;
 //
 ////        1. Base Account Entity (Inheritance Strategy)
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,6 +16,8 @@ import net.minidev.json.annotate.JsonIgnore;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.math.BigInteger;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,29 +28,35 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class Account {
-    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
-
+    private BigInteger oauthId;
     private String roles="ROLE_USER" ;
     @Email
     private String email;
     @NotEmpty
     private String userName;
-    @NotEmpty
     private String password;
     private String status  ;
     private String phoneNumber;
     private String image;
+    private String accountType = "ACCOUNT" ;
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now();
+    @PostConstruct
+    private void datetime (){  ;
+        this.datetimeOfInsert = LocalDateTime.now() ;
+    }
+
+
     @PreUpdate
     private void encryptPassword() {
         if (password != null && !password.startsWith("$2a$")) { // Check if already encrypted
             password = passwordEncoder.encode(password);
         }
     }
-    @CreatedDate
-    private LocalDateTime datetimeOfInsert;
+
 
     @OneToOne(mappedBy = "account",
             fetch = FetchType.EAGER,

@@ -24,7 +24,7 @@ public class ProductOwnershipFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
-
+        // TODO add a pass for admin
         // Skip for non-modifying methods or public endpoints
         if (!requiresOwnershipCheck(request)) {
             chain.doFilter(request, response);
@@ -48,6 +48,7 @@ public class ProductOwnershipFilter extends OncePerRequestFilter {
     }
 
     private boolean requiresOwnershipCheck(HttpServletRequest request) {
+
         String method = request.getMethod();
         return ("PUT".equals(method)  || "DELETE".equals(method)||"PATCH".equals(method));
     }

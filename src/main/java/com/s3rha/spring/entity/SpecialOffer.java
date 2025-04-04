@@ -26,12 +26,9 @@ public class SpecialOffer {
     private String image;
     private LocalDateTime datetimeOfStart;
     private LocalDateTime datetimeOfEnd;
-    private LocalDateTime datetimeOfInsert;
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     private BigDecimal price;
-    @PrePersist // Automatically set before saving
-    protected void onCreate() {
-        this.datetimeOfInsert = LocalDateTime.now();
-    }
+
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})

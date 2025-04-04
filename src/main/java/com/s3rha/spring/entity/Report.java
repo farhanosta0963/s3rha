@@ -19,12 +19,9 @@ public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
-    private LocalDateTime datetimeOfInsert;
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     private String description;
-    @PrePersist // Automatically set before saving
-    protected void onCreate() {
-        this.datetimeOfInsert = LocalDateTime.now();
-    }
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "account_id")

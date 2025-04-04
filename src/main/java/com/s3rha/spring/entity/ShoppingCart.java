@@ -24,11 +24,8 @@ public class ShoppingCart {
     private String description;
     private String image;
     private Boolean publicPrivateFlag;
-    private LocalDateTime datetimeOfInsert;
-    @PrePersist // Automatically set before saving
-    protected void onCreate() {
-        this.datetimeOfInsert = LocalDateTime.now();
-    }
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now();
+
     @ManyToOne(
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})

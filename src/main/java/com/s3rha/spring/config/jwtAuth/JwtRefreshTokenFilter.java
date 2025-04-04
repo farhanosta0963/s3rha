@@ -40,9 +40,9 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         try {
-            log.info("[JwtRefreshTokenFilter:doFilterInternal] :: Started ");
+            log.warn("[JwtRefreshTokenFilter:doFilterInternal] :: Started ");
 
-            log.info("[JwtRefreshTokenFilter:doFilterInternal]Filtering the Http Request:{}", request.getRequestURI());
+            log.warn("[JwtRefreshTokenFilter:doFilterInternal]Filtering the Http Request:{}", request.getRequestURI());
 
 
             final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
@@ -85,7 +85,7 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
                     SecurityContextHolder.setContext(securityContext);
                 }
             }
-            log.info("[JwtRefreshTokenFilter:doFilterInternal] Completed");
+            log.warn("[JwtRefreshTokenFilter:doFilterInternal] Completed");
             filterChain.doFilter(request, response);
         }catch (JwtValidationException jwtValidationException){
             log.error("[JwtRefreshTokenFilter:doFilterInternal] Exception due to :{}",jwtValidationException.getMessage());

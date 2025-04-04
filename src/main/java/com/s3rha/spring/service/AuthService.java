@@ -1,10 +1,11 @@
 package com.s3rha.spring.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.s3rha.spring.DAO.AccountRepo;
+import com.s3rha.spring.DAO.UserAccountRepo;
 import com.s3rha.spring.DAO.VerificationCodeRepo;
 import com.s3rha.spring.DAO.StoreAccountRepo;
 import com.s3rha.spring.config.jwtAuth.JwtTokenGenerator;
-import com.s3rha.spring.config.user.UserInfoConfig;
 import com.s3rha.spring.dto.*;
 
 import com.s3rha.spring.entity.*;
@@ -19,44 +20,46 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.Store;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthService {
 
-    private final AccountRepo userInfoRepo;
+public class AuthService {
+private  final JwtEncoder jwtEncoder ;
+    private final AccountRepo accountRepo;
+    private final UserAccountRepo userAccountRepo;
     private final StoreAccountRepo storeInfoRepo;
-    private final JwtTokenGenerator jwtTokenGenerator;
-    private final RefreshTokenRepo refreshTokenRepo;
+private final JwtTokenGenerator jwtTokenGenerator;
+private final RefreshTokenRepo refreshTokenRepo;
     private final UserInfoMapper userInfoMapper;
     private final StoreInfoMapper storeInfoMapper;
     private final StoreByUserInfoMapper storeByUserInfoMapper;
     private final EmailService emailService;
     private final VerificationCodeRepo verificationCodeRepo ;
+    private final Random random ;
+
 
     public AuthResponseDto getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
         {
-            var userInfoEntity = userInfoRepo.findByUserName(authentication.getName())
+            var userInfoEntity = accountRepo.findByUserName(authentication.getName())
                     .orElseThrow(()->{
                         log.error("[AuthService:userSignInAuth] User :{} not found",authentication.getName());
                         return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
@@ -68,7 +71,7 @@ public class AuthService {
             saveUserRefreshToken(userInfoEntity,refreshToken);
             //Creating the cookie
             creatRefreshTokenCookie(response,refreshToken);
-            log.info("[AuthService:userSignInAuth] Access token for user:{}, has been generated",userInfoEntity.getUserName());
+            log.warn("[AuthService:userSignInAuth] Access token for user:{}, has been generated",userInfoEntity.getUserName());
             return  AuthResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(15 * 60)
@@ -129,7 +132,6 @@ public class AuthService {
                 .tokenType(TokenType.Bearer)
                 .build();
     }
-
     private static Authentication createAuthenticationObject(Account userInfoEntity) {
         // Extract user details from UserDetailsEntity
         String username = userInfoEntity.getUserName();
@@ -147,13 +149,13 @@ public class AuthService {
     public AuthResponseDto registerUser(UserAccountRegistrationDto userRegistrationDto,
                                         HttpServletResponse httpServletResponse) {
         try{
-            log.info("[AuthService:registerUser]User Registration Started with :::{}",userRegistrationDto);
+            log.warn("[AuthService:registerUser]User Registration Started with :::{}",userRegistrationDto);
 
-            Optional<Account> user = userInfoRepo.findByUserName(userRegistrationDto.userName());
+            Optional<Account> user = accountRepo.findByUserName(userRegistrationDto.userName());
             if(user.isPresent()){
                 throw new Exception("User Already Exist");
             }
-            List<Account> user2 = userInfoRepo.findByEmail(userRegistrationDto.email());
+            List<Account> user2 = accountRepo.findByEmail(userRegistrationDto.email());
             if(user2.size()>0){
                 throw new Exception("User with this Email  Already Exist");
             }
@@ -168,7 +170,7 @@ public class AuthService {
             String refreshToken = jwtTokenGenerator.generateRefreshToken(authentication);
 
             userDetailsEntity.setStatus(AccountStatus.PENDING.name());
-            Account savedUserDetails = userInfoRepo.save(userDetailsEntity);
+            Account savedUserDetails = accountRepo.save(userDetailsEntity);
             saveUserRefreshToken(savedUserDetails,refreshToken);
 
             savedUserDetails.setVerificationCode(saveUserVerificationCode(savedUserDetails
@@ -178,7 +180,7 @@ public class AuthService {
 
             creatRefreshTokenCookie(httpServletResponse,refreshToken);
 
-            log.info("[AuthService:registerUser] User:{} Successfully registered",savedUserDetails.getUserName());
+            log.warn("[AuthService:registerUser] User:{} Successfully registered",savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(5 * 60)
@@ -195,7 +197,7 @@ public class AuthService {
 
 
     public void verifyUser(VerifyUserDto input) {
-        List<Account> optionalUser = userInfoRepo.findByEmail(input.getEmail());
+        List<Account> optionalUser = accountRepo.findByEmail(input.getEmail());
         if (optionalUser.size()>0) {
             Account user = optionalUser.get(0);
 
@@ -206,7 +208,7 @@ public class AuthService {
                 user.setStatus(AccountStatus.ACTIVATED.name());
                 verificationCodeRepo.delete(user.getVerificationCode());
                 user.setVerificationCode(null);
-                userInfoRepo.save(user);
+                accountRepo.save(user);
             } else {
                 throw new RuntimeException("Invalid verification code");
             }
@@ -216,7 +218,7 @@ public class AuthService {
     }
 
     public void resendVerificationCode(String email) throws MessagingException {
-        List<Account> optionalUser = userInfoRepo.findByEmail(email);
+        List<Account> optionalUser = accountRepo.findByEmail(email);
         if (optionalUser.size()>0) {
             Account user = optionalUser.get(0);
             if (user.getStatus().equals(AccountStatus.ACTIVATED.name())) {
@@ -256,7 +258,6 @@ public class AuthService {
     }
 
     private String generateVerificationCode() {
-        Random random = new Random();
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
@@ -265,16 +266,16 @@ public class AuthService {
                                          HttpServletResponse httpServletResponse) throws Exception {
 
 
-            log.info("[AuthService:registerUser]Store Registration Started with :::{}",storeAccountRegistrationDto);
+            log.warn("[AuthService:registerUser]Store Registration Started with :::{}",storeAccountRegistrationDto);
 
 
-            Optional<Account> user = userInfoRepo.findByUserName(storeAccountRegistrationDto.userName());
+            Optional<Account> user = accountRepo.findByUserName(storeAccountRegistrationDto.userName());
             if(user.isPresent()){
                 throw new Exception("user name  Already Exist");
             }
 
 
-            List<Account> user2 = userInfoRepo.findByEmail(storeAccountRegistrationDto.email());
+            List<Account> user2 = accountRepo.findByEmail(storeAccountRegistrationDto.email());
             if(user2.size()>0){
                 throw new Exception("Account with this Email  Already Exist");
             }
@@ -307,7 +308,7 @@ public class AuthService {
             creatRefreshTokenCookie(httpServletResponse,refreshToken);
 
 
-            log.info("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
+            log.warn("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(5 * 60)
@@ -321,7 +322,7 @@ public class AuthService {
 
     public StoreAccount registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
         try{
-            log.info("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
+            log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
 
 
             StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
@@ -347,6 +348,159 @@ public class AuthService {
                 .build();
        return verificationCodeRepo.save(verificationCodeEntity);
     }
+    public void registerorloginOauthUser(OAuth2User principal, HttpServletResponse httpServletResponse) {
+
+
+        try{
+            log.warn("[AuthService:registerorloginOauthUser] Started with :::{}",principal.getName());
+
+            StringBuilder exist = new StringBuilder("NO"); // this for return with response to know if this oauth account
+            //existed before or not and sign up a new one : >
+            Account user = fromOAuth2User(principal,exist);
+            Authentication authentication = createAuthenticationObject( user);
+
+
+
+            // Generate a JWT token
+            String accessToken = jwtTokenGenerator.generateAccessToken(authentication);
+            String refreshToken = jwtTokenGenerator.generateRefreshToken(authentication);
+
+            saveUserRefreshToken(user,refreshToken);
+
+            creatRefreshTokenCookie(httpServletResponse,refreshToken);
+
+
+            log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());
+            AuthResponseOauthDto authResponse = AuthResponseOauthDto.builder()
+                    .accessToken(accessToken)
+                    .accessTokenExpiry(5 * 60)
+                    .userName(user.getUserName())
+                    .tokenType(TokenType.Bearer)
+                    .existAlready(exist.toString())
+                    .build();
+
+            httpServletResponse.setContentType("application/json");
+            httpServletResponse.setStatus(HttpStatus.OK.value());
+            new ObjectMapper().writeValue(httpServletResponse.getWriter(), authResponse);
+
+
+        }catch (Exception e){
+            log.error("[AuthService:registerorloginOauthUser]Exception while registering the OauthUser  due to :"+e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        }
+    }
+    public Account fromOAuth2User(OAuth2User oauth2User,StringBuilder exist) throws Exception {
+        Map<String, Object> attributes = oauth2User.getAttributes();
+
+        // Determine the provider from the attributes
+        String registrationId = determineProvider(attributes);
+
+        String userName = "";
+        String fname = "";
+        String lname = "";
+        String picture = "";
+        String email = "" ;
+        BigInteger providerId = null;
+        String status = "" ;
+        if ("google".equals(registrationId)) {
+            providerId =  new BigInteger(((String) attributes.get("sub")));
+            List<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
+            log.warn("this is the user list with OauthId "+ providerId);
+            log.warn(user.toString());
+
+            if(user.size()>0) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
+                log.warn("this user"+user.get(0).getUserName()+ " already exists just returning it without creating new account ");
+                exist.setLength(0);       // Clear existing content
+                exist.append("YES");   // Set new value
+                return user.get(0) ;
+            }
+            fname = (String) attributes.get("given_name");
+            lname = (String) attributes.get("family_name");
+            picture = (String) attributes.get("picture");
+            userName = generateUsername(fname,lname);
+            email = (String) attributes.get("email") ;
+            List<Account> user2 = accountRepo.findByEmail(email);
+            if(user2.size()>0){
+                throw new Exception("Account with this Email  Already Exist");
+            }
+            status = AccountStatus.ACTIVATED_WITH_GOOGLE.name();
+        }
+        else if ("facebook".equals(registrationId)) {
+            providerId =  new BigInteger(((String) attributes.get("id")));
+            List<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
+            if(user.size()>0) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
+                log.warn("this user"+user.get(0).getUserName()+ " already exists just returning it without creating new account ");
+                exist.setLength(0);       // Clear existing content
+                exist.append("YES");   // Set new value
+                return user.get(0) ;
+            }
+            fname = (String) attributes.get("first_name");
+            lname = (String) attributes.get("last_name");
+            userName = generateUsername(fname,lname);
+            email = (String) attributes.get("email") ;
+            List<Account> user2 = accountRepo.findByEmail(email);
+            if(user2.size()>0){
+                throw new Exception("Account with this Email  Already Exist");
+            }
+            status = AccountStatus.ACTIVATED_WITH_FACEBOOK.name();
+            if (attributes.get("picture") != null) {
+                Map<String, Object> pictureData = (Map<String, Object>)
+                        ((Map<String, Object>) attributes.get("picture")).get("data");
+                picture = (String) pictureData.get("url");
+            }
+        }
+        Account account = new Account() ;//BeanUtils.copyProperties(parent, child); // Copies matching fields
+//        account.setFname(fname);
+//        account.setLname(lname);
+        account.setUserName(userName);
+        account.setEmail(email);
+        account.setStatus(status);
+        account.setOauthId(providerId);
+        account.setImage(picture);
+        return accountRepo.save(account) ;
+
+    }
+
+    private String determineProvider(Map<String, Object> attributes) {
+        // Google has 'sub' field
+        if (attributes.containsKey("sub")) {
+            return "google";
+        }
+        // Facebook has 'id' field (numeric string)
+        else if (attributes.containsKey("id") && attributes.get("id") instanceof String) {
+            try {
+                Long.parseLong((String) attributes.get("id"));
+                return "facebook";
+            } catch (NumberFormatException e) {
+                // Not a Facebook ID
+            }
+        }
+        // Add more providers as needed
+
+        throw new IllegalArgumentException("Unknown OAuth2 provider");
+    }
+    public String generateUsername(String firstName, String lastName) {
+        try {
+
+            String z =  firstName.toLowerCase() +
+                    lastName.toLowerCase().charAt(0) +
+                    (random.nextInt(900) + 100); // 100-999
+            Optional<Account> user = accountRepo.findByUserName(z);
+            while (user.isPresent()){
+
+                z =  firstName.toLowerCase() +
+                        lastName.toLowerCase().charAt(0) +
+                        (random.nextInt(900) + 100);
+                user = accountRepo.findByUserName(z);
+            }
+
+            return  z  ;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+//
 }
 
 

@@ -18,14 +18,11 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long PriceId;
     private BigDecimal price;
-    private LocalDateTime datetimeOfInsert;
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     private String currency;
     private String unitOfMeasure;
 
-    @PrePersist // Automatically set before saving
-    protected void onCreate() {
-        this.datetimeOfInsert = LocalDateTime.now();
-    }
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "store_account_id")

@@ -1,11 +1,13 @@
 package com.s3rha.spring.entity;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 //3. User Account Entity
@@ -15,16 +17,16 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "account_id")
 @Setter
 @Getter
-@NoArgsConstructor
+
 public class UserAccount extends Account {
-    @NotEmpty
+
     private String fname;
-    @NotEmpty
     private String lname;
     private Integer scoreOfActivity;
     private Integer scoreOfIntegrity;
-
-
+    public UserAccount() {
+        setAccountType("USER");
+    }
     @OneToMany(mappedBy = "userAccount",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,

@@ -1,10 +1,14 @@
 package com.s3rha.spring.config.jwtAuth;
 
 
+import com.s3rha.spring.DAO.AccountRepo;
+import com.s3rha.spring.entity.Account;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -22,13 +26,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtTokenGenerator {
 
-
+//    private final UserDetailsService userDetailsService;  // Directly inject
+    private final AccountRepo accountRepo ;
     private final JwtEncoder jwtEncoder;
 
     public String generateAccessToken(Authentication authentication) {
 
-        log.info("[JwtTokenGenerator:generateAccessToken] Token Creation Started for:{}", authentication.getName());
-
+        log.warn("[JwtTokenGenerator:generateAccessToken] Token Creation Started for:{}", authentication.getName());
+        Account account = accountRepo.findByUserName(authentication.getName())
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("Account not found for: " + authentication.getName())
+                );        log.warn(account.toString());
+        System.out.println(String.valueOf(account.getAccountType()));
+        System.out.println(String.valueOf(account.getUserName()));
         String roles = getRolesOfUser(authentication);
 
         String permissions = getPermissionsFromRoles(roles);
@@ -39,6 +49,7 @@ public class JwtTokenGenerator {
                 .expiresAt(Instant.now().plus(15 , ChronoUnit.MINUTES))
                 .subject(authentication.getName())
                 .claim("scope", permissions)
+                .claim("accountType",String.valueOf(account.getAccountType()))
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -47,7 +58,7 @@ public class JwtTokenGenerator {
 
     public String generateRefreshToken(Authentication authentication) {
 
-        log.info("[JwtTokenGenerator:generateRefreshToken] Token Creation Started for:{}", authentication.getName());
+        log.warn("[JwtTokenGenerator:generateRefreshToken] Token Creation Started for:{}", authentication.getName());
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("atquil")

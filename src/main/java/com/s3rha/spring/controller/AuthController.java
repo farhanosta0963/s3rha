@@ -11,17 +11,18 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.security.Principal;
+import java.util.Collections;
+import java.util.Map;
 
 
 @RestController
@@ -30,6 +31,14 @@ import java.util.List;
 public class AuthController {
 
     private final AuthService authService;
+
+
+
+//    @GetMapping("/user")
+//    public Map<String, Object> user(Principal principal) {
+//        return Collections.singletonMap("name", principal.getName());
+//    }
+
     @PostMapping("/sign-in")
     public ResponseEntity<?> authenticateUser(Authentication authentication,HttpServletResponse response){
 
@@ -46,7 +55,7 @@ public class AuthController {
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserAccountRegistrationDto userAccountRegistrationDto,
                                           BindingResult bindingResult, HttpServletResponse httpServletResponse){
 
-        log.info("[AuthController:registerUser]Signup Process Started for user:{}",userAccountRegistrationDto.userName());
+        log.warn("[AuthController:registerUser]Signup Process Started for user:{}",userAccountRegistrationDto.userName());
 //        if (bindingResult.hasErrors()) {
 //            List<String> errorMessage = bindingResult.getAllErrors().stream()
 //                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -56,11 +65,18 @@ public class AuthController {
 //        }
         return ResponseEntity.ok(authService.registerUser(userAccountRegistrationDto,httpServletResponse));
     }
+//
+//    @GetMapping("/sign-up-oauth2")
+//    public ResponseEntity<?> registerOauth2(@AuthenticationPrincipal OAuth2User principal ,  HttpServletResponse httpServletResponse){
+//        log.warn("[AuthController:registerUser]Signup Process Started for user:{}",principal.getName());
+////
+//        return ResponseEntity.ok(authService.registerorloginOauthUser(principal,httpServletResponse));
+//    }
     @PostMapping("/sign-up-store")
     public ResponseEntity<?> registerStore(@Valid @RequestBody StoreAccountRegistrationDto storeAccountRegistrationDto,
                                        HttpServletResponse httpServletResponse) throws Exception {
 
-        log.info("[AuthController:registerUser]Signup Process Started for store account:{}",storeAccountRegistrationDto.userName());
+        log.warn("[AuthController:registerUser]Signup Process Started for store account:{}",storeAccountRegistrationDto.userName());
 //        if (bindingResult.hasErrors()) {
 //            List<String> errorMessage = bindingResult.getAllErrors().stream()
 //                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -74,7 +90,7 @@ public class AuthController {
     public ResponseEntity<?> registerStore(@Valid @RequestBody StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto,
                                           BindingResult bindingResult, HttpServletResponse httpServletResponse){
 
-        log.info("[AuthController:registerUser]Signup Process Started for store account byyyyyyyyy User:{}",storeAccountByUserRegistrationDto.name());
+        log.warn("[AuthController:registerUser]Signup Process Started for store account byyyyyyyyy User:{}",storeAccountByUserRegistrationDto.name());
 //        if (bindingResult.hasErrors()) {
 //            List<String> errorMessage = bindingResult.getAllErrors().stream()
 //                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
