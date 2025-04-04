@@ -41,6 +41,7 @@ CREATE TABLE Account (
     image VARCHAR(255),
     roles varchar(100) ,
     oauth_id decimal(38,0) ,
+    account_type varchar(10) ,
 datetime_of_insert DATETIME
  
 
