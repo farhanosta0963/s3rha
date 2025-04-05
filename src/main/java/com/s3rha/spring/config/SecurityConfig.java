@@ -53,6 +53,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -84,98 +85,55 @@ public class SecurityConfig {
     private final ProductRepo productRepo ;
       // Defer initialization
     private final   AuthService authService ;
-
-
-    @Order(1)
-    @Bean
-        public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
-        return httpSecurity
-                .securityMatcher(new AntPathRequestMatcher("/**"))
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/oauth2/authorization").authenticated().anyRequest().permitAll())
-                //.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
-
-//                    .oauth2Login(oauth -> oauth
-//                            .authorizationEndpoint(auth -> auth
-//                                    .baseUri("/oauth2/authorization") // Starting endpoint
-//                                    .authorizationRequestRepository(authRequestRepository())
-//                            )
-//                            .redirectionEndpoint(redir -> redir
-//                                    .baseUri("/login/oauth2/code/google")
-//                            )  .build();
-                               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                .oauth2Login(oauth -> oauth
-                .authorizationEndpoint(auth -> auth
-                        .baseUri("/oauth2/authorization")
-//                        .authorizationRequestRepository(authRequestRepository())
-                )
-                .redirectionEndpoint(redir -> redir
-                        .baseUri("/login/oauth2/code/google")
-             ).successHandler((request, response, authentication) -> {
-                                    OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-                                    authService.registerorloginOauthUser(oauthUser, response);
-                                })
-                ).build() ;
-//                .tokenEndpoint(token -> {
-//                                // Don't specify client - Spring will provide default
-//                            })
-//                .userInfoEndpoint(user -> user
-//                        .oidcUserService(oidcUserService())
-//                )
-
-
-
-//                .oauth2Login(Customizer.withDefaults())
-//               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .exceptionHandling(ex -> {
-//                    ex.authenticationEntryPoint((request, response, authException) ->
-//                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
-//                })
-//                .exceptionHandling(ex -> {
-//                    ex.authenticationEntryPoint((request, response, authException) -> {
-//                        log.error("Authentication error: {}", authException.getMessage());
-//                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-//                    });
-//                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
-//                        log.error("Access denied: {}", accessDeniedException.getMessage());
-//                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
-//                    });
-//                })
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+//
 //    @Order(1)
 //    @Bean
 //        public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
 //        return httpSecurity
 //                .securityMatcher(new AntPathRequestMatcher("/**"))
 //                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth. anyRequest().permitAll())
-//                //                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
-//                .userDetailsService(userInfoManagerConfig)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .addFilterAfter(new ProductOwnershipFilter(productRepo),
-//                        BasicAuthenticationFilter.class)
-//                .exceptionHandling(ex -> {
-//                    ex.authenticationEntryPoint((request, response, authException) ->
-//                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
-//                })
+//                .authorizeHttpRequests(auth -> auth.requestMatchers("/oauth2/authorization").authenticated().anyRequest().permitAll())
+//                //.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
+//
+////                    .oauth2Login(oauth -> oauth
+////                            .authorizationEndpoint(auth -> auth
+////                                    .baseUri("/oauth2/authorization") // Starting endpoint
+////                                    .authorizationRequestRepository(authRequestRepository())
+////                            )
+////                            .redirectionEndpoint(redir -> redir
+////                                    .baseUri("/login/oauth2/code/google")
+////                            )  .build();
+//                               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//
+////                .oauth2Login(oauth -> oauth
+////                .authorizationEndpoint(auth -> auth
+////                        .baseUri("/oauth2/authorization")
+//////                        .authorizationRequestRepository(authRequestRepository())
+////                )
+////                .redirectionEndpoint(redir -> redir
+////                        .baseUri("/login/oauth2/code/google")
+////             ).successHandler((request, response, authentication) -> {
+////                                    OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+////                                    authService.registerorloginOauthUser(oauthUser, response);
+////                                })
+////                )
+//                .build() ;
+////                .tokenEndpoint(token -> {
+////                                // Don't specify client - Spring will provide default
+////                            })
+////                .userInfoEndpoint(user -> user
+////                        .oidcUserService(oidcUserService())
+////                )
+//
+//
+//
+////                .oauth2Login(Customizer.withDefaults())
+////               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+////                .exceptionHandling(ex -> {
+////                    ex.authenticationEntryPoint((request, response, authException) ->
+////                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
+////                })
 ////                .exceptionHandling(ex -> {
 ////                    ex.authenticationEntryPoint((request, response, authException) -> {
 ////                        log.error("Authentication error: {}", authException.getMessage());
@@ -187,9 +145,54 @@ public class SecurityConfig {
 ////                    });
 ////                })
 //
-//                .httpBasic(withDefaults())
-//                .build();
+//
 //    }
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+
+    @Order(1)
+    @Bean
+        public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        return httpSecurity
+                .securityMatcher(new AntPathRequestMatcher("/sign-in"))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth. anyRequest().permitAll())
+                //                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
+                .userDetailsService(userInfoManagerConfig)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterAfter(new ProductOwnershipFilter(productRepo),
+                        BasicAuthenticationFilter.class)
+                .exceptionHandling(ex -> {
+                    ex.authenticationEntryPoint((request, response, authException) ->
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
+                })
+//                .exceptionHandling(ex -> {
+//                    ex.authenticationEntryPoint((request, response, authException) -> {
+//                        log.error("Authentication error: {}", authException.getMessage());
+//                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+//                    });
+//                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+//                        log.error("Access denied: {}", accessDeniedException.getMessage());
+//                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+//                    });
+//                })
+
+                .httpBasic(withDefaults())
+                .build();
+    }
+//
 //    public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
 //        return httpSecurity
 //                .securityMatcher(new AntPathRequestMatcher("/sign-in/**"))
@@ -213,9 +216,10 @@ public class SecurityConfig {
                 .securityMatcher(new AntPathRequestMatcher("/api/**"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new ProductOwnershipFilter(productRepo),
+                        BasicAuthenticationFilter.class)
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint((request, response, authException) -> {
                         log.warn("Authentication failed: {} - Path: {}",

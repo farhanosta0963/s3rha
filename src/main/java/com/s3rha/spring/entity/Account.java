@@ -68,11 +68,14 @@ public class Account {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
+
     private List<Report> reports;
     @OneToMany(mappedBy = "account",
             fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
+
+
     private List<Product> products;
 
     public void add(Report report) {

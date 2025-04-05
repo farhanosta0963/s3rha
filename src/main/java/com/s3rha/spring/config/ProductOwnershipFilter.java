@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.io.IOException;
+
 @RequiredArgsConstructor
 public class ProductOwnershipFilter extends OncePerRequestFilter {
 
@@ -24,15 +25,18 @@ public class ProductOwnershipFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
+
         // TODO add a pass for admin
         // Skip for non-modifying methods or public endpoints
-        if (!requiresOwnershipCheck(request)) {
+        logger.warn("starting the product owndership filter ");
+        if ( !requiresOwnershipCheck(request)||isAdmin() ) {
             chain.doFilter(request, response);
             return;
         }
-
+        logger.warn("require and not an admin :<<");
         // Extract product ID from path (e.g., /products/123)
         Long productId = Long.parseLong( extractProductId(request));
+        logger.warn("trying to modify product with id {}");
         String currentUsername = getCurrentUsername();
 
         Product product = productRepository.findById(productId)
@@ -46,7 +50,14 @@ public class ProductOwnershipFilter extends OncePerRequestFilter {
 
         chain.doFilter(request, response);
     }
-
+    private boolean isAdmin() {
+        logger.warn(SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().toString());
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream()
+                .anyMatch(grantedAuthority ->
+                        grantedAuthority.getAuthority().equals("SCOPE_WRITE")||grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+    }
     private boolean requiresOwnershipCheck(HttpServletRequest request) {
 
         String method = request.getMethod();
