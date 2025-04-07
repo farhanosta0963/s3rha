@@ -1,12 +1,15 @@
 package com.s3rha.spring.controller;
 
+import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
 import com.s3rha.spring.dto.StoreAccountRegistrationDto;
 import com.s3rha.spring.dto.UserAccountRegistrationDto;
 import com.s3rha.spring.dto.VerifyUserDto;
 
+import com.s3rha.spring.entity.Product;
 import com.s3rha.spring.service.AuthService;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,14 +35,27 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-
+    private final EntityManager entityManager;
+    private final ProductRepo productRepo ;
 
 
 //    @GetMapping("/user")
 //    public Map<String, Object> user(Principal principal) {
 //        return Collections.singletonMap("name", principal.getName());
 //    }
-
+    @Transactional
+@DeleteMapping("/zx")
+public void zxcv(Authentication authentication,HttpServletResponse response){
+        try {
+            Product product = entityManager.find(Product.class, 1L);
+            if (product != null) {
+                entityManager.remove(product);
+                entityManager.flush();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+}
     @PostMapping("/sign-in")
     public ResponseEntity<?> authenticateUser(Authentication authentication,HttpServletResponse response){
 

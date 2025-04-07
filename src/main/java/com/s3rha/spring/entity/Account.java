@@ -65,13 +65,13 @@ public class Account {
     private VerificationCode verificationCode;
 
     @OneToMany(mappedBy = "account",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
 
     private List<Report> reports;
     @OneToMany(mappedBy = "account",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
 

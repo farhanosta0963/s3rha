@@ -172,8 +172,7 @@ public class SecurityConfig {
                 //                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
                 .userDetailsService(userInfoManagerConfig)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterAfter(new ProductOwnershipFilter(productRepo),
-                        BasicAuthenticationFilter.class)
+//
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint((request, response, authException) ->
                             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
@@ -217,9 +216,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new ProductOwnershipFilter(productRepo),
-                        BasicAuthenticationFilter.class)
+//                .addFilterAfter(new ProductOwnershipFilter(productRepo),
+//                        BasicAuthenticationFilter.class)
+
+                .httpBasic(withDefaults())
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint((request, response, authException) -> {
                         log.warn("Authentication failed: {} - Path: {}",
@@ -239,7 +241,8 @@ public class SecurityConfig {
                         new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
                     });
                 })
-
+                .build();
+    }
 
 
 
@@ -248,9 +251,7 @@ public class SecurityConfig {
 //                    ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint());//401
 //                    ex.accessDeniedHandler(new BearerTokenAccessDeniedHandler());//403
 //                })
-                .httpBasic(withDefaults())
-                .build();
-    }
+
 
     @Order(3)
     @Bean

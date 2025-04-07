@@ -1,5 +1,6 @@
 package com.s3rha.spring.entity;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class ShoppingCart {
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(
@@ -50,6 +51,15 @@ public class ShoppingCart {
 
         products.add(product);
     }
+//
+//    @PostPersist
+//    public void onCreate() {
+//        System.out.println("Cart persisted in DB");
+//    }
+////    @PostConstruct
+////    public void onConstruct () {
+////        System.out.println("Cart construct ");
+////    }
     // Getters and setters
 
 }

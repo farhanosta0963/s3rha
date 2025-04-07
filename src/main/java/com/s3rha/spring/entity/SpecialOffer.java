@@ -35,7 +35,7 @@ public class SpecialOffer {
     @JoinColumn(name = "store_price_id")
     private StorePrice storePrice;
 
-    @ManyToMany(fetch = FetchType.LAZY,
+    @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     @JoinTable(

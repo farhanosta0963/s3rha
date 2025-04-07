@@ -25,7 +25,7 @@ public class StoreAccount extends Account {
     private Boolean verifiedFlag;
 
     @OneToMany(mappedBy = "storeAccount",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     private List<Address> addresses;

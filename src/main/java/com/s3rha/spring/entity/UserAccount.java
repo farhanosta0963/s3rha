@@ -28,13 +28,13 @@ public class UserAccount extends Account {
         setAccountType("USER");
     }
     @OneToMany(mappedBy = "userAccount",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
     private List<UserPrice> userPrice;
 
     @OneToMany(mappedBy = "userAccount",
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
 
