@@ -1,5 +1,6 @@
 package com.s3rha.spring.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,11 +23,14 @@ public class UserAccount extends Account {
 
     private String fname;
     private String lname;
+    @JsonIgnore
     private Integer scoreOfActivity;
+    @JsonIgnore
     private Integer scoreOfIntegrity;
     public UserAccount() {
         setAccountType("USER");
     }
+
     @OneToMany(mappedBy = "userAccount",
             fetch = FetchType.EAGER,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,

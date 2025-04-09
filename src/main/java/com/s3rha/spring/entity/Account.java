@@ -13,6 +13,8 @@ import lombok.Setter;
 
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -29,6 +31,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Account {
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private static final Logger log = LoggerFactory.getLogger(Account.class);
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
@@ -46,6 +49,7 @@ public class Account {
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     @PostConstruct
     private void datetime (){  ;
+        log.warn("hello from PostConstruct of Account");
         this.datetimeOfInsert = LocalDateTime.now() ;
     }
 

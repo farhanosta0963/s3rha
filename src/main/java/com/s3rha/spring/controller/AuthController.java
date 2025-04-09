@@ -1,10 +1,7 @@
 package com.s3rha.spring.controller;
 
 import com.s3rha.spring.DAO.ProductRepo;
-import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
-import com.s3rha.spring.dto.StoreAccountRegistrationDto;
-import com.s3rha.spring.dto.UserAccountRegistrationDto;
-import com.s3rha.spring.dto.VerifyUserDto;
+import com.s3rha.spring.dto.*;
 
 import com.s3rha.spring.entity.Product;
 import com.s3rha.spring.service.AuthService;
@@ -31,6 +28,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 @Slf4j
 public class AuthController {
 
@@ -105,7 +103,7 @@ public class AuthController {
 //        }
         return ResponseEntity.ok(authService.registerStoreByUser(storeAccountByUserRegistrationDto,httpServletResponse));
     }
-
+    // email verify
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser( @Valid @RequestBody VerifyUserDto verifyUserDto) {
         authService.verifyUser(verifyUserDto);
@@ -116,5 +114,29 @@ public class AuthController {
     public ResponseEntity<?> resendVerificationCode( @RequestParam String email) throws MessagingException {
         authService.resendVerificationCode(email);
         return ResponseEntity.ok("Verification code sent");
+    }
+
+
+    //pass reset
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) throws MessagingException {
+        authService.requestPasswordReset(email);
+        return ResponseEntity.ok("Password reset link sent to email if account exists");
+    }
+
+    @PostMapping("/validate-reset-token")
+    public ResponseEntity<?> validateResetToken(@RequestParam String token) {
+        authService.validateResetToken(token);
+        return ResponseEntity.ok("Token is valid");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+          @Valid  @RequestBody ResetPasswordRequestDto resetPasswordRequest) {
+        authService.resetPassword(
+                resetPasswordRequest.token(),
+                resetPasswordRequest.newPassword()
+        );
+        return ResponseEntity.ok("Password has been reset successfully");
     }
 }

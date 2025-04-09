@@ -1,10 +1,7 @@
 package com.s3rha.spring.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.s3rha.spring.DAO.AccountRepo;
-import com.s3rha.spring.DAO.UserAccountRepo;
-import com.s3rha.spring.DAO.VerificationCodeRepo;
-import com.s3rha.spring.DAO.StoreAccountRepo;
+import com.s3rha.spring.DAO.*;
 import com.s3rha.spring.config.jwtAuth.JwtTokenGenerator;
 import com.s3rha.spring.dto.*;
 
@@ -20,21 +17,24 @@ import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+
 
 
 @Service
@@ -48,11 +48,13 @@ private  final JwtEncoder jwtEncoder ;
     private final StoreAccountRepo storeInfoRepo;
 private final JwtTokenGenerator jwtTokenGenerator;
 private final RefreshTokenRepo refreshTokenRepo;
+private final PasswordResetTokenRepo passwordResetTokenRepo;
     private final UserInfoMapper userInfoMapper;
     private final StoreInfoMapper storeInfoMapper;
     private final StoreByUserInfoMapper storeByUserInfoMapper;
     private final EmailService emailService;
     private final VerificationCodeRepo verificationCodeRepo ;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Random random ;
 
 
@@ -206,9 +208,9 @@ private final RefreshTokenRepo refreshTokenRepo;
             }
             if (user.getVerificationCode().getVerificationCode().equals(input.getVerificationCode())) {
                 user.setStatus(AccountStatus.ACTIVATED.name());
-                verificationCodeRepo.delete(user.getVerificationCode());
                 user.setVerificationCode(null);
-                accountRepo.save(user);
+                verificationCodeRepo.saveAndFlush(user.getVerificationCode()) ;
+                verificationCodeRepo.delete(user.getVerificationCode());
             } else {
                 throw new RuntimeException("Invalid verification code");
             }
@@ -217,6 +219,7 @@ private final RefreshTokenRepo refreshTokenRepo;
         }
     }
 
+
     public void resendVerificationCode(String email) throws MessagingException {
         List<Account> optionalUser = accountRepo.findByEmail(email);
         if (optionalUser.size()>0) {
@@ -224,6 +227,9 @@ private final RefreshTokenRepo refreshTokenRepo;
             if (user.getStatus().equals(AccountStatus.ACTIVATED.name())) {
                 throw new RuntimeException("Account is already verified");
             }
+            user.setVerificationCode(null);
+            verificationCodeRepo.saveAndFlush(user.getVerificationCode()) ;
+            verificationCodeRepo.delete(user.getVerificationCode());
             saveUserVerificationCode(user,
                                     generateVerificationCode(),
                                     LocalDateTime.now().plusMinutes(15));
@@ -243,7 +249,7 @@ private final RefreshTokenRepo refreshTokenRepo;
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our app S3rha !</h2>"
+                + "<h2 style=\"color: #333;\">Welcome to our website S3rha !</h2>"
                 + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
                 + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
                 + "<h3 style=\"color: #333;\">Verification Code:</h3>"
@@ -256,12 +262,88 @@ private final RefreshTokenRepo refreshTokenRepo;
 
 
     }
+    private void sendPasswordResetEmail(String email, String resetToken) throws MessagingException {
+        String subject = "Password Reset Request";
+        String resetLink = "https://yourapp.com/reset-password?token=" + resetToken;
+
+        String htmlMessage = "<html>" +
+                "<body style=\"font-family: Arial, sans-serif;\">" +
+                "<div style=\"background-color: #f5f5f5; padding: 20px;\">" +
+                "<h2 style=\"color: #333;\">Password Reset Request for account on S3rha website </h2>" +
+                "<p style=\"font-size: 16px;\">Click the link below to reset your password:</p>" +
+                "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">" +
+                "<a href=\"" + resetLink + "\" style=\"display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;\">Reset Password</a>" +
+                "</div>" +
+                "<p style=\"font-size: 14px; color: #666;\">This link will expire in 4 hours.</p>" +
+                "</div>" +
+                "</body>" +
+                "</html>";
+
+        emailService.sendVerificationEmail(email, subject, htmlMessage);
+    }
 
     private String generateVerificationCode() {
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
+    private String generatePasswordResetToken() {
+        int code = random.nextInt(900000) + 100000;
+        return String.valueOf(code);
+    }
+    @Transactional // TODO add this annotation to all sevice methods that needs it cause without it it wiil cause troubles
+    public void requestPasswordReset(String email) throws MessagingException {
+        Account account = accountRepo.findByEmail(email)
+                .stream()
+                .findFirst()
+                .orElse(null);
 
+        if (account  != null) {  // Proper null check
+
+            log.warn("in request password reset 0");
+
+
+            String resetToken = generatePasswordResetToken();
+            LocalDateTime expiryDate = LocalDateTime.now().plusHours(4);
+            log.warn("in request password reset 1");
+            PasswordResetToken resetTokenEntity = PasswordResetToken.builder()
+                    .account(account)
+                    .token(resetToken)
+                    .expiryDate(expiryDate)
+                    .build();
+            log.warn("in request password reset 2");
+
+            passwordResetTokenRepo.save(resetTokenEntity);
+            log.warn("in request password reset 3");
+
+            sendPasswordResetEmail(account.getEmail(), resetToken);
+        }
+    }
+
+    public void validateResetToken(String token) {
+        PasswordResetToken resetToken = passwordResetTokenRepo.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token"));
+
+        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token expired");
+        }
+    }
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepo.findByToken(token)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token"));
+
+        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token expired");
+        }
+
+        Account account = resetToken.getAccount();
+        account.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        accountRepo.save(account);
+
+        // Invalidate all tokens for this user
+        passwordResetTokenRepo.deleteByAccount(account);
+    }
+    @Transactional
     public AuthResponseDto registerStore(StoreAccountRegistrationDto storeAccountRegistrationDto,
                                          HttpServletResponse httpServletResponse) throws Exception {
 
@@ -319,7 +401,7 @@ private final RefreshTokenRepo refreshTokenRepo;
 
 
     }
-
+    @Transactional
     public StoreAccount registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
         try{
             log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
@@ -340,6 +422,7 @@ private final RefreshTokenRepo refreshTokenRepo;
         }
 
     }
+    @Transactional
     private VerificationCode saveUserVerificationCode(Account userInfoEntity, String verificationCode, LocalDateTime dateTime) {
         VerificationCode verificationCodeEntity = VerificationCode.builder()
                 .account(userInfoEntity)
@@ -389,6 +472,7 @@ private final RefreshTokenRepo refreshTokenRepo;
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
     }
+    @Transactional
     public Account fromOAuth2User(OAuth2User oauth2User,StringBuilder exist) throws Exception {
         Map<String, Object> attributes = oauth2User.getAttributes();
 

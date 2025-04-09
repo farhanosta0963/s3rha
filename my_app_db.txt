@@ -26,9 +26,12 @@ DROP TABLE IF EXISTS User_account;
 DROP TABLE IF EXISTS Store_account;
 DROP TABLE IF EXISTS Account;
 DROP TABLE IF EXISTS refresh_token;
+DROP TABLE IF EXISTS verification_code;
+DROP TABLE IF EXISTS password_reset_token;
 
 
--- Create tables 
+
+-- Create tables
 
 -- 1. Account (referenced by Search_history and Report)
 CREATE TABLE Account (
@@ -43,7 +46,7 @@ CREATE TABLE Account (
     oauth_id decimal(38,0) ,
     account_type varchar(10) ,
 datetime_of_insert DATETIME
- 
+
 
 
 );
@@ -69,6 +72,16 @@ CREATE TABLE Store_account (
 ON UPDATE cascade
     ON DELETE cascade
 
+
+);
+create table password_reset_token(
+id bigint auto_increment primary key ,
+token varchar(10000),
+expiry_date datetime ,
+account_id bigint ,
+FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
+ON UPDATE cascade
+    ON DELETE cascade
 
 );
 create table refresh_token(

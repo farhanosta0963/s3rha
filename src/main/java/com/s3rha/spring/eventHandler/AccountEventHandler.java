@@ -27,7 +27,7 @@ public class AccountEventHandler {
 
 //  TODO disable in security the ability to modify on parent account or parent report and so on ....
     @HandleBeforeDelete
-    public void checkCartOwner(Account account) {
+    public void beforeDelete(Account account) {
         log.warn("HandleBeforeDelete for {} started ", Account.class.getSimpleName());
         if (account.getVerificationCode() != null) {
             account.getVerificationCode().setAccount(null) ;
