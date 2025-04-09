@@ -3,7 +3,7 @@ USE my_app_db;
 
 SET FOREIGN_KEY_CHECKS = 0;
 
--- Drop tables if they exist 
+-- Drop tables if they exist
 DROP TABLE IF EXISTS Address;
 DROP TABLE IF EXISTS Social_media;
 DROP TABLE IF EXISTS Report;
@@ -165,6 +165,10 @@ CREATE TABLE special_offer (
     datetime_of_insert DATETIME,
     price DECIMAL(10, 2),
     store_price_id bigint,
+    account_id bigint ,
+    FOREIGN KEY (account_id) REFERENCES Account(account_id)
+	ON UPDATE cascade
+    ON DELETE cascade,
     FOREIGN KEY (store_price_id) REFERENCES Store_price(price_id)
 ON UPDATE cascade
     ON DELETE cascade

@@ -35,6 +35,10 @@ public class SpecialOffer {
     @JoinColumn(name = "store_price_id")
     private StorePrice storePrice;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "account_id")
+    private StoreAccount storeAccount;
 
     @OneToMany(fetch = FetchType.EAGER,
             mappedBy = "offer",

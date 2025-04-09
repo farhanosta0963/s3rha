@@ -1,6 +1,7 @@
 package com.s3rha.spring.eventHandler;
 
 
+
 import com.s3rha.spring.DAO.AccountRepo;
 import com.s3rha.spring.entity.*;
 import com.s3rha.spring.service.OwnershipChecker;
@@ -9,39 +10,45 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.core.annotation.*;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
+
+
 @Transactional
+@Slf4j
 @Component
 @RepositoryEventHandler
-@Slf4j
 @RequiredArgsConstructor
-public class ProductEventHandler {
+public class SearchHistoryEventHandler {
+
+
+
+    private final AccountRepo accountRepo ;
     private final OwnershipChecker checker;
-    private final AccountRepo accountRepo;
 
-    @HandleBeforeLinkDelete
+
     @HandleBeforeLinkSave
+    @HandleBeforeLinkDelete
     @HandleBeforeSave
-    public void handleProductUpdate(Product product) {
-        log.warn("HandleBeforeSave for {} started ",Product.class.getSimpleName());
-        checker.assertOwnership(product.getAccount().getUserName());
+    public void beforeSave(SearchHistory searchHistory) {
 
+        log.warn("HandleBeforeSave  for {} started ",SearchHistory.class.getSimpleName());
+        checker.assertOwnership(searchHistory.getAccount().getUserName());
     }
 
+
+
     @HandleBeforeCreate
-    public void handleProductCreate(Product product) {
-        // Get current authenticated user
-        log.warn("HandleBeforeCreate for {} started ",Product.class.getSimpleName());
-
-        String username = checker.getCurrentUser() ;
-
+    public void beforeCreate(SearchHistory searchHistory) {
+        log.warn("HandleBeforeCreate for {} started ",SearchHistory.class.getSimpleName());
+        //  Get current authenticated user
+        String username = checker.getCurrentUser();
         // Find or create user
-        Account user = accountRepo.findByUserName(username)
+        Account account = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        product.setAccount(user);
-
+        searchHistory.setAccount(account);
     }
 
 }
+

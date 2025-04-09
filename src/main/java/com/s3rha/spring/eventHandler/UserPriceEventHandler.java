@@ -1,5 +1,7 @@
 package com.s3rha.spring.eventHandler;
 
+
+
 import com.s3rha.spring.DAO.AccountRepo;
 import com.s3rha.spring.DAO.ShoppingCartRepo;
 import com.s3rha.spring.DAO.UserAccountRepo;
@@ -22,7 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 @RepositoryEventHandler
 @RequiredArgsConstructor
-public class ShoppingCartEventHandler {
+public class UserPriceEventHandler {
 
     private final UserAccountRepo userRepository;
     private final OwnershipChecker checker;
@@ -31,26 +33,25 @@ public class ShoppingCartEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
-    public void beforeSave(ShoppingCart cart) {
+    public void beforeSave(UserPrice userPrice) {
 
-        log.warn("HandleBeforeSave  for {} started ",ShoppingCart.class.getSimpleName());
-        checker.assertOwnership(cart.getUserAccount().getUserName());
+        log.warn("HandleBeforeSave  for {} started ",UserPrice.class.getSimpleName());
+        checker.assertOwnership(userPrice.getUserAccount().getUserName());
     }
 
 
 
-        @HandleBeforeCreate
-        public void beforeCreate(ShoppingCart shoppingCart) {
-            log.warn("HandleBeforeCreate for {} started ",ShoppingCart.class.getSimpleName());
-
+    @HandleBeforeCreate
+    public void beforeCreate(UserPrice userPrice) {
+        log.warn("HandleBeforeCreate for {} started ",UserPrice.class.getSimpleName());
 //             Get current authenticated user
-            String username = checker.getCurrentUser();
-            // Find or create user
-            UserAccount user = userRepository.findByUserName(username)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            // Associate product with user
-            shoppingCart.setUserAccount(user);
-        }
+        String username = checker.getCurrentUser();
+        // Find or create user
+        UserAccount user = userRepository.findByUserName(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // Associate product with user
+        userPrice.setUserAccount(user);
+    }
 //
 //    @HandleBeforeDelete
 //    public void beforeDelete(ShoppingCart cart) {
@@ -74,5 +75,5 @@ public class ShoppingCartEventHandler {
 //        cartRepo.saveAndFlush(cart);
 //
 //    }
-    }
+}
 

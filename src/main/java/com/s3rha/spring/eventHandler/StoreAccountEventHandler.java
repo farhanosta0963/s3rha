@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RepositoryEventHandler
 @RequiredArgsConstructor
-public class AccountEventHandler {
+public class StoreAccountEventHandler {
     private final UserAccountRepo userRepository;
     private final OwnershipChecker checker;
     private final ShoppingCartRepo cartRepo;
@@ -28,10 +28,10 @@ public class AccountEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
-    public void beforeSave(Account account) {
+    public void beforeSave(StoreAccount storeAccount) {
 
-        log.warn("HandleBeforeSave  for {} started ",Account.class.getSimpleName());
-        checker.assertOwnership(account.getUserName());
+        log.warn("HandleBeforeSave  for {} started ",StoreAccount.class.getSimpleName());
+        checker.assertOwnership(storeAccount.getUserName());
     }
 
 

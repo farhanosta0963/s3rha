@@ -1,9 +1,6 @@
 package com.s3rha.spring.eventHandler;
-
-import com.s3rha.spring.DAO.AccountRepo;
 import com.s3rha.spring.DAO.ShoppingCartRepo;
-import com.s3rha.spring.DAO.UserAccountRepo;
-import com.s3rha.spring.entity.*;
+import com.s3rha.spring.entity.UserAccount;
 import com.s3rha.spring.service.OwnershipChecker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RepositoryEventHandler
 @RequiredArgsConstructor
-public class AccountEventHandler {
-    private final UserAccountRepo userRepository;
+public class UserAccountEventHandler {
     private final OwnershipChecker checker;
     private final ShoppingCartRepo cartRepo;
-    private final AccountRepo accountRepo;
 
 
     //  TODO disable in security the ability to modify on parent account or parent report and so on ....
@@ -28,10 +23,10 @@ public class AccountEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
-    public void beforeSave(Account account) {
+    public void beforeSave(UserAccount userAccount) {
 
-        log.warn("HandleBeforeSave  for {} started ",Account.class.getSimpleName());
-        checker.assertOwnership(account.getUserName());
+        log.warn("HandleBeforeSave  for {} started ",UserAccount.class.getSimpleName());
+        checker.assertOwnership(userAccount.getUserName());
     }
 
 
