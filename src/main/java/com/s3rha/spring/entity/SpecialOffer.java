@@ -38,8 +38,7 @@ public class SpecialOffer {
 
     @OneToMany(fetch = FetchType.EAGER,
             mappedBy = "offer",
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
+            cascade = CascadeType.ALL)
     private List<ProdOfOffer> prodOfOfferList ;
 //
 //    @ManyToMany(fetch = FetchType.EAGER,
