@@ -5,9 +5,7 @@ import com.s3rha.spring.DAO.AccountRepo;
 import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.DAO.ShoppingCartRepo;
 import com.s3rha.spring.DAO.UserAccountRepo;
-import com.s3rha.spring.entity.Account;
-import com.s3rha.spring.entity.Product;
-import com.s3rha.spring.entity.ShoppingCart;
+import com.s3rha.spring.entity.*;
 import com.s3rha.spring.service.OwnershipChecker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,30 +29,39 @@ public class ProductEventHandler {
     private final ShoppingCartRepo cartRepo;
     private final ProductRepo productRepo ;
     private final AccountRepo accountRepo;
+
+
+
     @HandleBeforeLinkDelete
     @HandleBeforeLinkSave
     @HandleBeforeSave
-    public void handleProductUpdate(Product cart) {
-        Product existing = productRepo.findById(cart.getProductId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        checker.assertOwnership(existing.getAccount().getUserName());
+    public void handleProductUpdate(Product product) {
+        log.warn("HandleBeforeSave for {} started ",Product.class.getSimpleName());
+        checker.assertOwnership(product.getAccount().getUserName());
 
     }
+
+
     @HandleBeforeDelete
     public void handleProductDelete(Product product) {
-        log.info("Delete handler triggered for product {}", product.getProductId());
+        log.warn("HandleBeforeDelete for {} started ",Product.class.getSimpleName());
+        checker.assertOwnership(product.getAccount().getUserName());
+        if (product.getAccount() != null) {
+            product.setAccount(null);
+        }
 
-        Product existing = productRepo.findById(product.getProductId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        checker.assertOwnership(existing.getAccount().getUserName());
-        productRepo.delete(existing);
-        productRepo.flush();
-        log.info("Product {} successfully deleted", existing.getProductId());
+        if (product.getPrices() != null) {
+            for (Price price : product.getPrices()) {
+                price.setProduct(null);
+            }
+        }
+        productRepo.saveAndFlush(product) ;
 
     }
     @HandleBeforeCreate
     public void handleProductCreate(Product product) {
         // Get current authenticated user
+        log.warn("HandleBeforeCreate for {} started ",Product.class.getSimpleName());
 
         String username = checker.getCurrentUser() ;
 

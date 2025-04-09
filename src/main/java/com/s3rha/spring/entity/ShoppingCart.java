@@ -33,24 +33,44 @@ public class ShoppingCart {
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
-    @ManyToMany(fetch = FetchType.EAGER,
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "shoppingCart",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinTable(
-            name = "prod_of_cart",
-            joinColumns = @JoinColumn(name = "Shopping_Cart_id"),
-            inverseJoinColumns = @JoinColumn(name = "Product_id")
-    )
-    private List<Product> products ;
+            CascadeType.DETACH, CascadeType.REFRESH})
+    private List<ProdOfCart> prodOfCartList ;
 
-    public void addProduct(Product product) {
+}
 
-        if (product == null) {
-            products = new ArrayList<>();
-        }
+//
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinTable(
+//            name = "prod_of_cart",
+//            joinColumns = @JoinColumn(name = "Shopping_Cart_id"),
+//            inverseJoinColumns = @JoinColumn(name = "Product_id")
+//    )
+//    private List<Product> products ;
 
-        products.add(product);
-    }
+//    @PreRemove
+//    public void preremo (){
+//        System.out.println("trying to delete this from a preRemove ");
+////        this.setUserAccount(null);
+////        this.setProducts(null);
+//////        shoppingCartRepo.saveAndFlush(this);
+//        if (this.getUserAccount() != null) {
+//            this.getUserAccount().getShoppingCarts().remove(this);
+////        }
+//    }
+//    }
+//    public void addProduct (Product product) {
+//
+//        if (this.products == null) {
+//            products = new ArrayList<>();
+//        }
+//
+//        products.add(product);
+//    } }
 //
 //    @PostPersist
 //    public void onCreate() {
@@ -62,4 +82,4 @@ public class ShoppingCart {
 ////    }
     // Getters and setters
 
-}
+

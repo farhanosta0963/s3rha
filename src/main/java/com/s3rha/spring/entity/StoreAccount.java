@@ -21,25 +21,25 @@ import java.util.List;
 @Getter
 
 public class StoreAccount extends Account {
-    private String name;
-    private Boolean verifiedFlag;
-
-    @OneToMany(mappedBy = "storeAccount",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    private List<Address> addresses;
 
     public StoreAccount() {
         setAccountType("STORE");
     }
+    private String name;
+    private Boolean verifiedFlag;
 
-    public void add(Address address) {
-        if (addresses == null) {
-            addresses = new ArrayList<>();
-        }
-        addresses.add(address);
-         }
+//    @OneToMany(mappedBy = "storeAccount",
+//            fetch = FetchType.EAGER,
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//    private List<Address> addresses;
+
+//    public void add(Address address) {
+//        if (addresses == null) {
+//            addresses = new ArrayList<>();
+//        }
+//        addresses.add(address);
+//         }
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
             CascadeType.DETACH, CascadeType.REFRESH},mappedBy = "storeAccount")
 

@@ -64,34 +64,38 @@ public class Account {
                     CascadeType.DETACH, CascadeType.REFRESH})
     private VerificationCode verificationCode;
 
-    @OneToMany(mappedBy = "account",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
+//    @PreRemove
+//    public void zxc (){
+//        this.accountId
+//    }
+//    @OneToMany(mappedBy = "account",
+//            fetch = FetchType.EAGER,
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//
+//    private List<Report> reports;
+//    @OneToMany(mappedBy = "account",
+//            fetch = FetchType.EAGER,
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//
+//
+//    private List<Product> products;
 
-    private List<Report> reports;
-    @OneToMany(mappedBy = "account",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-
-
-    private List<Product> products;
-
-    public void add(Report report) {
-        if (reports == null) {
-            reports = new ArrayList<>();
-        }
-        reports.add(report);
-       }
-
-    public void add(Product product) {
-        if (products == null) {
-            products =  new ArrayList<>() ;
-        }
-        products.add(product);
-       }
-
+//    public void add(Report report) {
+//        if (reports == null) {
+//            reports = new ArrayList<>();
+//        }
+//        reports.add(report);
+//       }
+//
+//    public void add(Product product) {
+//        if (products == null) {
+//            products =  new ArrayList<>() ;
+//        }
+//        products.add(product);
+//       }
+//
 
 
     // Getters and setters

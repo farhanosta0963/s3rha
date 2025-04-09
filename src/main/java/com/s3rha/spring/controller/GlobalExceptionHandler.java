@@ -117,15 +117,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, ex.getStatusCode());
     }
     // ===== 5xx Server Errors =====
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleAllExceptions(Exception ex, WebRequest request) {
-        log.error("Unexpected error during {} | Error: {} | Trace: ",
-                request.getDescription(false),
-                ex.getMessage(),
-                ex);
-        return new ErrorResponse("An unexpected error occurred");
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+//    public ErrorResponse handleAllExceptions(Exception ex, WebRequest request) {
+//        log.error("Unexpected error during {} | Error: {} | Trace: ",
+//                request.getDescription(false),
+//                ex.getMessage(),
+//                ex);
+//        return new ErrorResponse("An unexpected error occurred");
+//    }
 
     private String getFieldName(String propertyPath) {
         String[] parts = propertyPath.split("\\.");

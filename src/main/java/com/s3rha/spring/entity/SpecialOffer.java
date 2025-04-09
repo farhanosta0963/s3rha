@@ -35,23 +35,29 @@ public class SpecialOffer {
     @JoinColumn(name = "store_price_id")
     private StorePrice storePrice;
 
-    @ManyToMany(fetch = FetchType.EAGER,
+
+    @OneToMany(fetch = FetchType.EAGER,
+            mappedBy = "offer",
             cascade = {CascadeType.PERSIST, CascadeType.MERGE,
                     CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinTable(
-            name = "prod_of_offer",
-            joinColumns = @JoinColumn(name = "offer_id"),
-            inverseJoinColumns = @JoinColumn(name = "Product_id")
-    )
-    private List<Product> products ;
-
-    public void addProduct(Product product) {
-
-        if (product == null) {
-            products = new ArrayList<>();
-        }
-
-        products.add(product);
-    }
+    private List<ProdOfOffer> prodOfOfferList ;
+//
+//    @ManyToMany(fetch = FetchType.EAGER,
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinTable(
+//            name = "prod_of_offer",
+//            joinColumns = @JoinColumn(name = "offer_id"),
+//            inverseJoinColumns = @JoinColumn(name = "Product_id")
+//    )
+//    private List<Product> products ;
+//    public void addProduct(Product product) {
+//
+//        if (product == null) {
+//            products = new ArrayList<>();
+//        }
+//
+//        products.add(product);
+//    }
     // Getters and setters
 }

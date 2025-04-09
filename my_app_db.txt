@@ -47,6 +47,18 @@ datetime_of_insert DATETIME
 
 
 );
+create Table verification_code (
+id bigint auto_increment primary key ,
+verification_code text ,
+verification_code_expire_time datetime ,
+account_id bigint ,
+FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
+ON UPDATE cascade
+    ON DELETE cascade
+
+
+
+) ;
 
 -- 2. Store_account (referenced by User_prices, Rating, Social_media, Address and linked to Store_prices)
 CREATE TABLE Store_account (

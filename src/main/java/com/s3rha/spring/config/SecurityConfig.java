@@ -85,15 +85,14 @@ public class SecurityConfig {
     private final ProductRepo productRepo ;
       // Defer initialization
     private final   AuthService authService ;
-//
-//
+
 //    @Order(1)
 //    @Bean
 //        public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
 //        return httpSecurity
 //                .securityMatcher(new AntPathRequestMatcher("/**"))
 //                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth.requestMatchers("/oauth2/authorization").authenticated().anyRequest().permitAll())
+//                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
 //                //.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
 //
 ////                    .oauth2Login(oauth -> oauth
@@ -148,13 +147,6 @@ public class SecurityConfig {
 //
 //    }
 //
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -162,6 +154,13 @@ public class SecurityConfig {
 
 
 
+
+
+
+
+
+
+//
     @Order(1)
     @Bean
         public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
@@ -191,22 +190,22 @@ public class SecurityConfig {
                 .httpBasic(withDefaults())
                 .build();
     }
+////
+////    public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+////        return httpSecurity
+////                .securityMatcher(new AntPathRequestMatcher("/sign-in/**"))
+////                .csrf(AbstractHttpConfigurer::disable)
+////                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+////                .userDetailsService(userInfoManagerConfig)
+////                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+////                .exceptionHandling(ex -> {
+////                    ex.authenticationEntryPoint((request, response, authException) ->
+////                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
+////                })
+////                .httpBasic(withDefaults())
+////                .build();
+////    }
 //
-//    public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
-//        return httpSecurity
-//                .securityMatcher(new AntPathRequestMatcher("/sign-in/**"))
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
-//                .userDetailsService(userInfoManagerConfig)
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .exceptionHandling(ex -> {
-//                    ex.authenticationEntryPoint((request, response, authException) ->
-//                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
-//                })
-//                .httpBasic(withDefaults())
-//                .build();
-//    }
-
 
     @Order(2)
     @Bean
@@ -214,7 +213,7 @@ public class SecurityConfig {
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/api/**"))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)

@@ -31,5 +31,9 @@ public class VerificationCode {
     @OneToOne
     @JoinColumn(name = "account_id")
     private Account account;
-
+//@PreRemove
+//    public void asdfzx (){
+//    this.setAccount(null);
+//
+//}
 }

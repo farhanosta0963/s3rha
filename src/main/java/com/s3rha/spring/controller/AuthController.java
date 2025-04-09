@@ -43,19 +43,7 @@ public class AuthController {
 //    public Map<String, Object> user(Principal principal) {
 //        return Collections.singletonMap("name", principal.getName());
 //    }
-    @Transactional
-@DeleteMapping("/zx")
-public void zxcv(Authentication authentication,HttpServletResponse response){
-        try {
-            Product product = entityManager.find(Product.class, 1L);
-            if (product != null) {
-                entityManager.remove(product);
-                entityManager.flush();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-}
+
     @PostMapping("/sign-in")
     public ResponseEntity<?> authenticateUser(Authentication authentication,HttpServletResponse response){
 
