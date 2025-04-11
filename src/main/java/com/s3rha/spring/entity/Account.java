@@ -4,6 +4,7 @@ package com.s3rha.spring.entity;
 //
 ////        1. Base Account Entity (Inheritance Strategy)
 
+//import com.s3rha.spring.entityListener.AccountEntityListener;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -12,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +30,10 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Setter
 @Getter
-@NoArgsConstructor
-public class Account {
+@Slf4j
+//@EntityListeners(AccountEntityListener.class)
+public  class   Account {
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private static final Logger log = LoggerFactory.getLogger(Account.class);
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
@@ -47,11 +49,31 @@ public class Account {
     private String image;
     private String accountType = "ACCOUNT" ;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
-    @PostConstruct
-    private void datetime (){  ;
-        log.warn("hello from PostConstruct of Account");
-        this.datetimeOfInsert = LocalDateTime.now() ;
-    }
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private VerificationCode verificationCode;
+
+    @OneToMany(
+            cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private List<Product> productList ;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private List<Rating> Account;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private List<Report> reportList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "reported_account_id")
+    private List<ReportOnAccount> reportOnAccountList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private List<SearchHistory>  searchHistoryList;
 
 
     @PreUpdate
@@ -62,11 +84,6 @@ public class Account {
     }
 
 
-    @OneToOne(mappedBy = "account",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    private VerificationCode verificationCode;
 
 //    @PreRemove
 //    public void zxc (){

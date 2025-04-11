@@ -2,7 +2,6 @@ package com.s3rha.spring.mapper;
 
 
 import com.s3rha.spring.dto.UserAccountRegistrationDto;
-import com.s3rha.spring.entity.Account;
 import com.s3rha.spring.entity.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

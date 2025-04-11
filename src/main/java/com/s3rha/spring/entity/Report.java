@@ -22,10 +22,10 @@ public class Report {
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     private String description;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "account_id")
-    private Account account;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "account_id")
+//    private Account account;
 
     // Getters and setters
 }

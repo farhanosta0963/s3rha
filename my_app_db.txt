@@ -56,8 +56,7 @@ verification_code text ,
 verification_code_expire_time datetime ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 
 
@@ -69,8 +68,7 @@ CREATE TABLE Store_account (
     name VARCHAR(255),
     verified_flag BOOLEAN,
     FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 
 );
@@ -80,8 +78,7 @@ token varchar(10000),
 expiry_date datetime ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 create table refresh_token(
@@ -90,8 +87,7 @@ refresh_token varchar(10000),
 revoked boolean ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 -- 3. User_account (referenced by Shopping_cart, User_prices, Rating)
@@ -102,8 +98,7 @@ CREATE TABLE User_account (
     score_of_activity INT,
     score_of_integrity INT,
  FOREIGN KEY (account_id) REFERENCES Account ( account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 
 );
@@ -120,8 +115,7 @@ CREATE TABLE Product (
     description TEXT,
 datetime_of_insert DATETIME,
 FOREIGN KEY (account_id) REFERENCES Account ( account_id)
-ON UPDATE cascade
-    ON DELETE set null
+ON UPDATE no action ON DELETE no action
 
 
 );
@@ -136,8 +130,7 @@ CREATE TABLE Shopping_cart (
     public_private_flag BOOLEAN,
     user_account_id bigint,
     FOREIGN KEY (user_account_id) REFERENCES User_account(account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 
@@ -149,8 +142,7 @@ CREATE TABLE Store_price (
 
 
  FOREIGN KEY (price_id) REFERENCES Price (price_id)
-    ON UPDATE cascade
-    ON DELETE cascade
+    ON UPDATE no action ON DELETE no action
 );
 
 
@@ -164,14 +156,9 @@ CREATE TABLE special_offer (
     datetime_of_end DATETIME,
     datetime_of_insert DATETIME,
     price DECIMAL(10, 2),
-    store_price_id bigint,
     account_id bigint ,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-	ON UPDATE cascade
-    ON DELETE cascade,
-    FOREIGN KEY (store_price_id) REFERENCES Store_price(price_id)
-ON UPDATE cascade
-    ON DELETE cascade
+	ON UPDATE no action ON DELETE no action
 
 );
 CREATE TABLE price (
@@ -183,11 +170,9 @@ CREATE TABLE price (
     store_account_id bigint,
     Product_id bigint,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-    ON UPDATE cascade
-    ON DELETE set null,
+    ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-    ON UPDATE cascade
-    ON DELETE cascade
+    ON UPDATE no action ON DELETE no action
 
 );
 
@@ -198,11 +183,9 @@ CREATE TABLE User_price (
     down_vote_count INT,
     user_account_id bigint,
     FOREIGN KEY (user_account_id) REFERENCES User_account(account_id)
-    ON UPDATE cascade
-    ON DELETE set null,
+    ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (price_id) REFERENCES Price (price_id)
-    ON UPDATE cascade
-    ON DELETE cascade
+    ON UPDATE no action ON DELETE no action
 
 );
 
@@ -214,8 +197,7 @@ CREATE TABLE Rating (
     datetime_of_insert DATETIME,
     account_id bigint,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-	ON UPDATE cascade
-    ON DELETE set null
+	ON UPDATE no action ON DELETE no action
 
 );
 CREATE TABLE Rating_on_product(
@@ -223,25 +205,20 @@ rate_id bigint PRIMARY KEY,
 Product_id bigint,
 store_account_id bigint ,
 FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE cascade
-    ON DELETE set null,
+ON UPDATE no action ON DELETE no action,
 FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-ON UPDATE cascade
-    ON DELETE cascade,
+ON UPDATE no action ON DELETE no action,
 FOREIGN KEY (rate_id) REFERENCES Rating(rate_id)
-	ON UPDATE cascade
-    ON DELETE cascade
+	ON UPDATE no action ON DELETE no action
 
 );
 CREATE TABLE Rating_on_store(
 rate_id bigint PRIMARY KEY ,
 store_account_id bigint ,
 FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE cascade
-    ON DELETE cascade,
+ON UPDATE no action ON DELETE no action,
 FOREIGN KEY (rate_id) REFERENCES Rating(rate_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 
@@ -251,11 +228,9 @@ CREATE TABLE Prod_of_cart (id bigint AUTO_INCREMENT PRIMARY KEY,
     Shopping_Cart_id bigint,
     quantity INT,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-    ON UPDATE cascade
-    ON DELETE cascade,
+    ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (Shopping_Cart_id) REFERENCES Shopping_cart(Shopping_Cart_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 
@@ -265,11 +240,9 @@ CREATE TABLE Prod_of_offer (id bigint AUTO_INCREMENT PRIMARY KEY,
     offer_id bigint,
     quantity INT,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-    ON UPDATE cascade
-    ON DELETE cascade,
+    ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (offer_id) REFERENCES special_offer(offer_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 
@@ -280,8 +253,7 @@ CREATE TABLE Search_history (
     datetime_of_insert DATETIME,
     account_id bigint,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-    ON UPDATE cascade
-    ON DELETE set null
+    ON UPDATE no action ON DELETE no action
 );
 
 -- 13. Report (references Account)
@@ -291,30 +263,25 @@ CREATE TABLE Report (
     description TEXT,
     account_id bigint,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-ON UPDATE cascade
-    ON DELETE set null
+ON UPDATE no action ON DELETE no action
 
 );
 CREATE TABLE Report_on_account(
  report_id bigint  PRIMARY KEY ,
  reported_account_id bigint ,
 FOREIGN KEY ( reported_account_id ) REFERENCES Account( account_id)
-ON UPDATE cascade
-    ON DELETE cascade,
+ON UPDATE no action ON DELETE no action,
 FOREIGN KEY ( report_id) REFERENCES Report( report_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 CREATE TABLE Report_on_product(
  report_id bigint PRIMARY KEY,
  Product_id bigint ,
 FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-ON UPDATE cascade
-    ON DELETE cascade,
+ON UPDATE no action ON DELETE no action,
 FOREIGN KEY ( report_id) REFERENCES Report( report_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 -- 14. Social_media (references Store_account)
@@ -325,8 +292,7 @@ CREATE TABLE Social_media (    social_media_id bigint AUTO_INCREMENT PRIMARY KEY
     account_type VARCHAR(50),
 datetime_of_insert DATETIME,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 
@@ -338,8 +304,7 @@ CREATE TABLE Address (
     store_account_id bigint,
 datetime_of_insert DATETIME,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE cascade
-    ON DELETE cascade
+ON UPDATE no action ON DELETE no action
 
 );
 SET FOREIGN_KEY_CHECKS = 1;
@@ -387,10 +352,6 @@ INSERT INTO Shopping_cart (name, datetime_of_insert, description, image, public_
 INSERT INTO Prod_of_cart (Product_id, Shopping_Cart_id, quantity) VALUES
 (1, 1, 2),
 (3, 2, 1);
-
--- Populate special_offer
-INSERT INTO special_offer (name, description, image, datetime_of_start, datetime_of_end, datetime_of_insert, price, store_price_id) VALUES
-('Summer Sale', 'Big summer discounts', 'summer.jpg', NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), NOW(), 1299.99, 1);
 
 -- Populate User_price
 INSERT INTO User_price (price_id, up_vote_count, down_vote_count, user_account_id) VALUES

@@ -2,7 +2,6 @@ package com.s3rha.spring.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 
 public record StoreAccountRegistrationDto(
         @NotBlank(message = "User Name must not be empty")

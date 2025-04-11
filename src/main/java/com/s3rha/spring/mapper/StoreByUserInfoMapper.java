@@ -1,7 +1,6 @@
 package com.s3rha.spring.mapper;
 
 import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
-import com.s3rha.spring.dto.StoreAccountRegistrationDto;
 import com.s3rha.spring.entity.StoreAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

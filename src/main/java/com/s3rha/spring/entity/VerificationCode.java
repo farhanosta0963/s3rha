@@ -28,10 +28,7 @@ public class VerificationCode {
 
     private LocalDateTime VerificationCodeExpireTime;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH} )
-    @JoinColumn(name = "account_id")
-    private Account account;
+
 //@PreRemove
 //    public void asdfzx (){
 //    this.setAccount(null);

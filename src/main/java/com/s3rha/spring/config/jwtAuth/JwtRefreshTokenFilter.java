@@ -2,7 +2,7 @@ package com.s3rha.spring.config.jwtAuth;
 
 import com.s3rha.spring.config.RSAKeyRecord;
 import com.s3rha.spring.dto.TokenType;
-import com.s3rha.spring.repo.RefreshTokenRepo;
+import com.s3rha.spring.DAO.RefreshTokenRepo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

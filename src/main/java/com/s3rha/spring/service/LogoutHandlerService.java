@@ -1,7 +1,7 @@
 package com.s3rha.spring.service;
 
 import com.s3rha.spring.dto.TokenType;
-import com.s3rha.spring.repo.RefreshTokenRepo;
+import com.s3rha.spring.DAO.RefreshTokenRepo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

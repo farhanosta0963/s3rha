@@ -11,7 +11,7 @@ import com.s3rha.spring.entity.*;
 import com.s3rha.spring.mapper.StoreByUserInfoMapper;
 import com.s3rha.spring.mapper.StoreInfoMapper;
 import com.s3rha.spring.mapper.UserInfoMapper;
-import com.s3rha.spring.repo.RefreshTokenRepo;
+import com.s3rha.spring.DAO.RefreshTokenRepo;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
@@ -20,7 +20,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -105,6 +104,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
         response.addCookie(refreshTokenCookie);
         return refreshTokenCookie;
     }
+    @Transactional
 
     public Object getAccessTokenUsingRefreshToken(String authorizationHeader) {
 
@@ -134,6 +134,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
                 .tokenType(TokenType.Bearer)
                 .build();
     }
+    @Transactional
     private static Authentication createAuthenticationObject(Account userInfoEntity) {
         // Extract user details from UserDetailsEntity
         String username = userInfoEntity.getUserName();
@@ -148,6 +149,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
 
         return new UsernamePasswordAuthenticationToken(username, password, Arrays.asList(authorities));
     }
+    @Transactional
     public AuthResponseDto registerUser(UserAccountRegistrationDto userRegistrationDto,
                                         HttpServletResponse httpServletResponse) {
         try{
@@ -425,11 +427,14 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
     @Transactional
     private VerificationCode saveUserVerificationCode(Account userInfoEntity, String verificationCode, LocalDateTime dateTime) {
         VerificationCode verificationCodeEntity = VerificationCode.builder()
-                .account(userInfoEntity)
                 .VerificationCode(verificationCode)
                 .VerificationCodeExpireTime(dateTime)
                 .build();
-       return verificationCodeRepo.save(verificationCodeEntity);
+            VerificationCode v = verificationCodeRepo.save(verificationCodeEntity) ;
+            userInfoEntity.setVerificationCode(v);
+            accountRepo.save(userInfoEntity);
+
+       return v;
     }
     public void registerorloginOauthUser(OAuth2User principal, HttpServletResponse httpServletResponse) {
 

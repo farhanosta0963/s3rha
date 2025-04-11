@@ -1,5 +1,7 @@
 package com.s3rha.spring.entity;
 
+//import com.s3rha.spring.entityListener.PriceEntityListener;
+//import com.s3rha.spring.entityListener.ShoppingCartEntityListener;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
+//@EntityListeners(PriceEntityListener.class)
 public class Price {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,15 +26,9 @@ public class Price {
     private String unitOfMeasure;
 
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "store_account_id")
-    private StoreAccount storeAccount;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "product_id")
-    private Product product;
+
+
 
     // Getters and setters
 }

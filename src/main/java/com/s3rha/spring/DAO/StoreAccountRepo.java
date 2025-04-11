@@ -10,12 +10,12 @@ import java.util.Optional;
 
 public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
     Optional<StoreAccount> findByUserName(@Param("userName" )String userName) ;
-    @Override
-    @RestResource(exported = false)
-    void delete(StoreAccount entity);
-
-    @Override
-    @RestResource(exported = false)
-    void deleteById(Long id);
+//    @Override
+//    @RestResource(exported = false)
+//    void delete(StoreAccount entity);
+//
+//    @Override
+//    @RestResource(exported = false)
+//    void deleteById(Long id);
 
 }

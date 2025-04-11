@@ -1,7 +1,7 @@
 package com.s3rha.spring.entity;
 
 //import com.s3rha.spring.entityListener.ShoppingCartEntityListener;
-import com.s3rha.spring.entityListener.ShoppingCartEntityListener;
+//import com.s3rha.spring.entityListener.ShoppingCartEntityListener;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-@EntityListeners(ShoppingCartEntityListener.class)
+//@EntityListeners(ShoppingCartEntityListener.class)
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,17 +30,17 @@ public class ShoppingCart {
     private Boolean publicPrivateFlag;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
-    @ManyToOne(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "user_account_id")
-    private UserAccount userAccount;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shopping_cart_id")
+    private List<ProdOfCart> prodOfCartList;
 
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            mappedBy = "shoppingCart",
-            cascade = CascadeType.ALL)
-    private List<ProdOfCart> prodOfCartList ;
+
+//    @ManyToOne(
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "user_account_id")
+//    private UserAccount userAccount;
+
 
 }
 

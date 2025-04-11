@@ -13,11 +13,11 @@ public interface UserAccountRepo extends JpaRepository <UserAccount,Long>{
     List<UserAccount> findByFname(String fname );
     Optional<UserAccount> findByUserName( String userName) ;
 
-    @Override
-    @RestResource(exported = false)
-    void delete(UserAccount entity);
-
-    @Override
-    @RestResource(exported = false)
-    void deleteById(Long id);
+//    @Override
+//    @RestResource(exported = false)
+//    void delete(UserAccount entity);
+//
+//    @Override
+//    @RestResource(exported = false)
+//    void deleteById(Long id);
 }

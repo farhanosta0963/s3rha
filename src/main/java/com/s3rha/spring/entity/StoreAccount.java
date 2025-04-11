@@ -40,10 +40,29 @@ public class StoreAccount extends Account {
 //        }
 //        addresses.add(address);
 //         }
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH},mappedBy = "storeAccount")
+    @OneToMany(cascade =CascadeType.ALL)
+    @JoinColumn(name = "store_account_id")
+    private List<RatingOnStore> ratingOnStoreList;
 
-    private List<RatingOnStore> ratingOnStores;
+    @OneToMany(cascade =CascadeType.ALL)
+    @JoinColumn(name = "store_account_id")
+    private List<Address> addressList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "store_account_id")
+    private List<Price> priceList;
+
+    @OneToMany(cascade =CascadeType.ALL)
+    @JoinColumn(name = "store_account_id")
+    private List<SocialMedia> socialMedia;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private List<SpecialOffer> specialOfferList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "store_account_id")
+    private List<RatingOnProduct> ratingOnProductList;
 
     // Getters and setters
 }

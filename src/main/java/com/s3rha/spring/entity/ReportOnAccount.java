@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class ReportOnAccount extends Report {
 
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "reported_account_id")
-    private Account reportedAccountId;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "reported_account_id")
+//    private Account reportedAccountId;
 
     // Getters and setters
 }

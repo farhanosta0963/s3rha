@@ -15,10 +15,10 @@ public class ReportOnProduct extends Report {
 
 
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "account_id")
-    private Account account;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "product_id")
+//    private Product product;
 
     // Getters and setters
 }

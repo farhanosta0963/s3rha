@@ -18,16 +18,16 @@ public class ProdOfOffer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id ;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "product_id")
-    private Product product;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "product_id")
+//    private Product product;
 
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "offer_id")
-    private SpecialOffer offer;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "offer_id")
+//    private SpecialOffer offer;
 
     private Integer quantity;
 

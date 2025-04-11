@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 @PrimaryKeyJoinColumn(name = "price_id")
 public class UserPrice extends Price{
 
-   private  int upVoteCount ;
-   private  int downVoteCount ;
+   private  Integer upVoteCount ;
+   private  Integer downVoteCount ;
 
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "user_account_id")
-    private UserAccount userAccount;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "user_account_id")
+//    private UserAccount userAccount;
 
 
 }

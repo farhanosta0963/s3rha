@@ -29,16 +29,31 @@ public class Product {
     private String description;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now() ;
 
-    @OneToMany(mappedBy = "product",cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-        CascadeType.DETACH, CascadeType.REFRESH})
-    private List<Price> prices ;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<ProdOfCart> prodOfCartList;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<ProdOfOffer> prodOfOfferList;
 
-    @ManyToOne(
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "account_id")
-    private Account account ;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<Price> priceList;
+
+    @OneToMany(cascade = CascadeType.ALL )
+    @JoinColumn(name = "product_id")
+    private List<RatingOnProduct> ratingOnProductList;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "product_id")
+    private List<ReportOnProduct> reportOnProductList;
+
+//    @ManyToOne(
+//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//                    CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "account_id")
+//    private Account account ;
 
     // Getters and setters
 }

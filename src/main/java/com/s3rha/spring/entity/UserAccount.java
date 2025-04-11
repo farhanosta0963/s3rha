@@ -1,6 +1,7 @@
 package com.s3rha.spring.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+//import com.s3rha.spring.entityListener.UserAccountEntityListener;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
@@ -18,7 +19,7 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "account_id")
 @Setter
 @Getter
-
+//@EntityListeners(UserAccountEntityListener.class)
 public class UserAccount extends Account {
 
     private String fname;
@@ -31,16 +32,12 @@ public class UserAccount extends Account {
         setAccountType("USER");
     }
 
-    @OneToMany(mappedBy = "userAccount",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    private List<UserPrice> userPrice;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_account_id")
+    private List<UserPrice> userPriceList;
 
-    @OneToMany(mappedBy = "userAccount",
-            fetch = FetchType.EAGER,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-                    CascadeType.DETACH, CascadeType.REFRESH})
-    private List<ShoppingCart> shoppingCarts;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_account_id")
+    private List<ShoppingCart> shoppingCartList;
 
 }

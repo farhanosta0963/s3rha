@@ -3,7 +3,6 @@ package com.s3rha.spring.controller;
 import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.dto.*;
 
-import com.s3rha.spring.entity.Product;
 import com.s3rha.spring.service.AuthService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
@@ -15,15 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.Collections;
-import java.util.Map;
 
 
 @RestController
