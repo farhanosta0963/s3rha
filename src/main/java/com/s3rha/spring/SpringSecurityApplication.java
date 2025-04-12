@@ -1,5 +1,6 @@
 package com.s3rha.spring;
 
+import com.s3rha.spring.DAO.ProdOfCartRepo;
 import com.s3rha.spring.DAO.ShoppingCartRepo;
 import com.s3rha.spring.config.RSAKeyRecord;
 
@@ -31,13 +32,13 @@ public class SpringSecurityApplication {
     }
    @Transactional
     @Bean
-    CommandLineRunner checkEnv(Environment env, EntityManager entityManager, ShoppingCartRepo shoppingCartRepo) {
+    CommandLineRunner checkEnv(Environment env, EntityManager entityManager, ShoppingCartRepo shoppingCartRepo, ProdOfCartRepo prodOfCartRepo) {
         return args -> {
             System.out.println("SMTP User: " + env.getProperty("SMTP_USERNAME"));
-//            ShoppingCart s = entityManager.find(ShoppingCart.class,4) ;
-////            entityManager.remove(s);
-//            shoppingCartRepo.delete(shoppingCartRepo.findById(Long.valueOf(4)).get());
 
+//        ShoppingCart x =     shoppingCartRepo.
+//                findByProdOfCartListContaining(prodOfCartRepo.findById(5L).get()).get();
+//            System.out.println(x.getName());
         };
     }
 

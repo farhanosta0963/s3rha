@@ -64,5 +64,83 @@ public class StoreAccount extends Account {
     @JoinColumn(name = "store_account_id")
     private List<RatingOnProduct> ratingOnProductList;
 
+    public void addRatingOnStore(RatingOnStore ratingOnStore) {
+        if (ratingOnStoreList == null) {
+            ratingOnStoreList = new ArrayList<>();
+        }
+        ratingOnStoreList.add(ratingOnStore);
+    }
+
+    public void removeRatingOnStore(RatingOnStore ratingOnStore) {
+        if (ratingOnStoreList != null) {
+            ratingOnStoreList.remove(ratingOnStore);
+        }
+    }
+
+    public void addAddress(Address address) {
+        if (addressList == null) {
+            addressList = new ArrayList<>();
+        }
+        addressList.add(address);
+    }
+
+    public void removeAddress(Address address) {
+        if (addressList != null) {
+            addressList.remove(address);
+        }
+    }
+
+    public void addPrice(Price price) {
+        if (priceList == null) {
+            priceList = new ArrayList<>();
+        }
+        priceList.add(price);
+    }
+
+    public void removePrice(Price price) {
+        if (priceList != null) {
+            priceList.remove(price);
+        }
+    }
+
+    public void addSocialMedia(SocialMedia socialMediaItem) {
+        if (socialMedia == null) {
+            socialMedia = new ArrayList<>();
+        }
+        socialMedia.add(socialMediaItem);
+    }
+
+    public void removeSocialMedia(SocialMedia socialMediaItem) {
+        if (socialMedia != null) {
+            socialMedia.remove(socialMediaItem);
+        }
+    }
+
+    public void addSpecialOffer(SpecialOffer specialOffer) {
+        if (specialOfferList == null) {
+            specialOfferList = new ArrayList<>();
+        }
+        specialOfferList.add(specialOffer);
+    }
+
+    public void removeSpecialOffer(SpecialOffer specialOffer) {
+        if (specialOfferList != null) {
+            specialOfferList.remove(specialOffer);
+        }
+    }
+
+    public void addRatingOnProduct(RatingOnProduct ratingOnProduct) {
+        if (ratingOnProductList == null) {
+            ratingOnProductList = new ArrayList<>();
+        }
+        ratingOnProductList.add(ratingOnProduct);
+    }
+
+    public void removeRatingOnProduct(RatingOnProduct ratingOnProduct) {
+        if (ratingOnProductList != null) {
+            ratingOnProductList.remove(ratingOnProduct);
+        }
+    }
+
     // Getters and setters
 }

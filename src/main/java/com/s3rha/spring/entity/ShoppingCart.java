@@ -34,6 +34,19 @@ public class ShoppingCart {
     @JoinColumn(name = "shopping_cart_id")
     private List<ProdOfCart> prodOfCartList;
 
+    public void addProdOfCart(ProdOfCart prodOfCart) {
+        if (prodOfCartList == null) {
+            prodOfCartList = new ArrayList<>();
+        }
+        prodOfCartList.add(prodOfCart);
+    }
+
+    public void removeProdOfCart(ProdOfCart prodOfCart) {
+        if (prodOfCartList != null) {
+            prodOfCartList.remove(prodOfCart);
+        }
+    }
+
 
 //    @ManyToOne(
 //            cascade = {CascadeType.PERSIST, CascadeType.MERGE,

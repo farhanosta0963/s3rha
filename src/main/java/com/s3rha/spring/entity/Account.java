@@ -38,16 +38,16 @@ public  class   Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
     private BigInteger oauthId;
-    private String roles="ROLE_USER" ;
+    private String roles = "ROLE_USER";
     @Email
     private String email;
     @NotEmpty
     private String userName;
     private String password;
-    private String status  ;
+    private String status;
     private String phoneNumber;
     private String image;
-    private String accountType = "ACCOUNT" ;
+    private String accountType = "ACCOUNT";
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -57,11 +57,11 @@ public  class   Account {
     @OneToMany(
             cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
-    private List<Product> productList ;
+    private List<Product> productList;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
-    private List<Rating> Account;
+    private List<Rating> ratingList;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
@@ -73,7 +73,7 @@ public  class   Account {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
-    private List<SearchHistory>  searchHistoryList;
+    private List<SearchHistory> searchHistoryList;
 
 
     @PreUpdate
@@ -83,8 +83,73 @@ public  class   Account {
         }
     }
 
+    public void addProduct(Product product) {
+        if (productList == null) {
+            productList = new ArrayList<>();
+        }
+        productList.add(product);
+    }
+
+    public void removeProduct(Product product) {
+        if (productList != null) {
+            productList.remove(product);
+        }
+    }
+
+    public void addRating(Rating rating) {
+        if (ratingList == null) {
+            ratingList = new ArrayList<>();
+        }
+        ratingList.add(rating);
+    }
+
+    public void removeRating(Rating rating) {
+        if (ratingList != null) {
+            ratingList.remove(rating);
+        }
+    }
+
+    public void addReport(Report report) {
+        if (reportList == null) {
+            reportList = new ArrayList<>();
+        }
+        reportList.add(report);
+    }
+
+    public void removeReport(Report report) {
+        if (reportList != null) {
+            reportList.remove(report);
+        }
+    }
+
+    public void addReportOnAccount(ReportOnAccount reportOnAccount) {
+        if (reportOnAccountList == null) {
+            reportOnAccountList = new ArrayList<>();
+        }
+        reportOnAccountList.add(reportOnAccount);
+    }
+
+    public void removeReportOnAccount(ReportOnAccount reportOnAccount) {
+        if (reportOnAccountList != null) {
+            reportOnAccountList.remove(reportOnAccount);
+        }
+    }
+
+    public void addSearchHistory(SearchHistory searchHistory) {
+        if (searchHistoryList == null) {
+            searchHistoryList = new ArrayList<>();
+        }
+        searchHistoryList.add(searchHistory);
+    }
+
+    public void removeSearchHistory(SearchHistory searchHistory) {
+        if (searchHistoryList != null) {
+            searchHistoryList.remove(searchHistory);
+        }
+    }
 
 
+}
 //    @PreRemove
 //    public void zxc (){
 //        this.accountId
@@ -120,7 +185,7 @@ public  class   Account {
 
 
     // Getters and setters
-}
+
 
 
 //Key Implementation Notes:

@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 //3. User Account Entity
@@ -39,5 +40,32 @@ public class UserAccount extends Account {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
     private List<ShoppingCart> shoppingCartList;
+
+    public void addUserPrice(UserPrice userPrice) {
+        if (userPriceList == null) {
+            userPriceList = new ArrayList<>();
+        }
+        userPriceList.add(userPrice);
+    }
+
+    public void removeUserPrice(UserPrice userPrice) {
+        if (userPriceList != null) {
+            userPriceList.remove(userPrice);
+        }
+    }
+
+    public void addShoppingCart(ShoppingCart shoppingCart) {
+        if (shoppingCartList == null) {
+            shoppingCartList = new ArrayList<>();
+        }
+        shoppingCartList.add(shoppingCart);
+    }
+
+    public void removeShoppingCart(ShoppingCart shoppingCart) {
+        if (shoppingCartList != null) {
+            shoppingCartList.remove(shoppingCart);
+        }
+    }
+
 
 }

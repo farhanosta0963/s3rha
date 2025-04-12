@@ -33,6 +33,18 @@ public class SpecialOffer {
     @JoinColumn(name = "offer_id")
     private List<ProdOfOffer> prodOfOfferList;
 
+    public void addProdOfOffer(ProdOfOffer prodOfOffer) {
+        if (prodOfOfferList == null) {
+            prodOfOfferList = new ArrayList<>();
+        }
+        prodOfOfferList.add(prodOfOffer);
+    }
+
+    public void removeProdOfOffer(ProdOfOffer prodOfOffer) {
+        if (prodOfOfferList != null) {
+            prodOfOfferList.remove(prodOfOffer);
+        }
+    }
 
 
 //    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
