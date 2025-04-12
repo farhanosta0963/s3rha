@@ -57,7 +57,6 @@ public class SpecialOfferEventHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
         storeAccount.addSpecialOffer(specialOffer);
-        storeAccountRepo.save(storeAccount);
     }
 
 }

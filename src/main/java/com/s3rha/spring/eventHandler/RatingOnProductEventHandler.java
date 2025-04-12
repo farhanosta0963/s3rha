@@ -57,7 +57,6 @@ public class RatingOnProductEventHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
         account.addRating(rating);
-        accountRepo.save(account);
     }
 
 }

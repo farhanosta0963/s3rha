@@ -43,7 +43,6 @@ public class ProductEventHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         user.addProduct(product);
-        accountRepo.save(user);
     }
 
 }

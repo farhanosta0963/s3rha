@@ -53,7 +53,6 @@ public class SearchHistoryEventHandler {
         Account account = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         account.addSearchHistory(searchHistory);
-        accountRepo.save(account);
     }
 
 }

@@ -55,7 +55,6 @@ public class UserPriceEventHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
         user.addUserPrice(userPrice);
-        userRepository.save(user);
     }
 //
 //    @HandleBeforeDelete

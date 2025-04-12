@@ -59,7 +59,6 @@ public class ReportOnAccountEventHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
         account.addReport(report);
-        accountRepo.save(account) ;
     }
 
 }

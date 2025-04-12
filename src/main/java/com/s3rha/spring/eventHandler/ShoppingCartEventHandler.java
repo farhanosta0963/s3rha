@@ -55,7 +55,6 @@ public class ShoppingCartEventHandler {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             // Associate product with user
             user.addShoppingCart(shoppingCart);
-            userRepository.save(user);
         }
 //
 //    @HandleBeforeDelete

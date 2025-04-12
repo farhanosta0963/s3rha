@@ -58,7 +58,6 @@ public class StorePriceEventHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
         storeAccount.addPrice(storePrice);
-        storeAccountRepo.save(storeAccount);
             }
 
 }
