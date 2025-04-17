@@ -38,7 +38,7 @@ public class StorePriceEventHandler {
 
         log.warn("HandleBeforeSave  for {} started ",StorePrice.class.getSimpleName());
 //        checker.assertOwnership(storePrice.getStoreAccount().getUserName());
-        checker.assertOwnership(
+            checker.assertOwnership(
                 storeAccountRepo.findByPriceListContaining(storePrice)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
                         .getUserName()

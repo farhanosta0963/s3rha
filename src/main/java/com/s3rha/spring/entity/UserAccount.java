@@ -37,7 +37,7 @@ public class UserAccount extends Account {
     @JoinColumn(name = "user_account_id")
     private List<UserPrice> userPriceList;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "user_account_id")
     private List<ShoppingCart> shoppingCartList;
 

@@ -1,9 +1,9 @@
 package com.s3rha.spring.eventHandler;
 
 
-
 import com.s3rha.spring.DAO.AccountRepo;
 import com.s3rha.spring.DAO.ShoppingCartRepo;
+import com.s3rha.spring.DAO.StoreAccountRepo;
 import com.s3rha.spring.DAO.UserAccountRepo;
 import com.s3rha.spring.entity.*;
 import com.s3rha.spring.service.OwnershipChecker;
@@ -26,7 +26,8 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class UserPriceEventHandler {
 
-    private final UserAccountRepo userRepository;
+
+    private final UserAccountRepo userAccountRepo;
     private final OwnershipChecker checker;
 
 
@@ -35,12 +36,14 @@ public class UserPriceEventHandler {
     @HandleBeforeSave
     public void beforeSave(UserPrice userPrice) {
 
-        log.warn("HandleBeforeSave  for {} started ",UserPrice.class.getSimpleName());
-//        checker.assertOwnership(userPrice.getUserAccount().getUserName());
+        log.warn("HandleBeforeSave  for {} started ",StorePrice.class.getSimpleName());
+//        checker.assertOwnership(storePrice.getStoreAccount().getUserName());
+        checker.assertOwnership(
+                userAccountRepo.findByUserPriceListContaining(userPrice)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                        .getUserName()
+        );
 
-        checker.assertOwnership(userRepository.findByUserPriceListContaining(userPrice)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getUserName());
     }
 
 
@@ -51,33 +54,11 @@ public class UserPriceEventHandler {
 //             Get current authenticated user
         String username = checker.getCurrentUser();
         // Find or create user
-        UserAccount user = userRepository.findByUserName(username)
+        UserAccount userAccount = userAccountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        // Associate product with user
-        user.addUserPrice(userPrice);
+
+        userAccount.addUserPrice(userPrice);
     }
-//
-//    @HandleBeforeDelete
-//    public void beforeDelete(ShoppingCart cart) {
-//
-//        log.warn("HandleBeforeDelete for {} started ",ShoppingCart.class.getSimpleName());
-//        checker.assertOwnership(cart.getUserAccount().getUserName());
-//
-//        // Remove cart from user's collection
-//        if (cart.getUserAccount() != null) {
-//            cart.getUserAccount().getShoppingCarts().remove(cart);
-//        }
-//
-////        if (cart.getProdOfCartList() != null) {
-////            for (ProdOfCart prodOfCart : cart.getProdOfCartList()) {
-////                prodOfCart.setShoppingCart(null);
-////            }
-////        }
-//
-//
-//
-//        cartRepo.saveAndFlush(cart);
-//
-//    }
+
 }
 

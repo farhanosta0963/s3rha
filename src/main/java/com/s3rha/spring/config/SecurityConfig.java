@@ -47,6 +47,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Slf4j
 public class SecurityConfig {
 
+
     private final UserInfoManagerConfig userInfoManagerConfig;
     private final RSAKeyRecord rsaKeyRecord;
     private final JwtTokenUtils jwtTokenUtils;
@@ -363,7 +364,7 @@ public class SecurityConfig {
 //            log.warn("[AuthService:registerorloginOauthUser] OauthUser:{} Successfully registered",user.getUserName());
 //            return   AuthResponseDto.builder()
 //                    .accessToken(accessToken)
-//                    .accessTokenExpiry(5 * 60)
+//                    .accessTokenExpiry(15 * 60)
 //                    .userName(user.getUserName())
 //                    .tokenType(TokenType.Bearer)
 //                    .build();

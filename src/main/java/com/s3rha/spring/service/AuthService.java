@@ -45,9 +45,9 @@ private  final JwtEncoder jwtEncoder ;
     private final AccountRepo accountRepo;
     private final UserAccountRepo userAccountRepo;
     private final StoreAccountRepo storeInfoRepo;
-private final JwtTokenGenerator jwtTokenGenerator;
-private final RefreshTokenRepo refreshTokenRepo;
-private final PasswordResetTokenRepo passwordResetTokenRepo;
+    private final JwtTokenGenerator jwtTokenGenerator;
+    private final RefreshTokenRepo refreshTokenRepo;
+    private final PasswordResetTokenRepo passwordResetTokenRepo;
     private final UserInfoMapper userInfoMapper;
     private final StoreInfoMapper storeInfoMapper;
     private final StoreByUserInfoMapper storeByUserInfoMapper;
@@ -55,8 +55,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
     private final VerificationCodeRepo verificationCodeRepo ;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Random random ;
-
-
+    @Transactional
     public AuthResponseDto getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
         {
@@ -86,14 +85,15 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Please Try Again");
         }
     }
-
+    @Transactional
     private void saveUserRefreshToken(Account userInfoEntity, String refreshToken) {
         var refreshTokenEntity = RefreshToken.builder()
-                .account(userInfoEntity)
                 .refreshToken(refreshToken)
                 .revoked(false)
                 .build();
-        refreshTokenRepo.save(refreshTokenEntity);
+        userInfoEntity.addRefreshToken(refreshTokenEntity);
+        accountRepo.save(userInfoEntity) ;
+
     }
 
     private Cookie creatRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
@@ -104,8 +104,8 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
         response.addCookie(refreshTokenCookie);
         return refreshTokenCookie;
     }
-    @Transactional
 
+    @Transactional
     public Object getAccessTokenUsingRefreshToken(String authorizationHeader) {
 
         if(!authorizationHeader.startsWith(TokenType.Bearer.name())){
@@ -115,11 +115,16 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
         final String refreshToken = authorizationHeader.substring(7);
 
         //Find refreshToken from database and should not be revoked : Same thing can be done through filter.
-        var refreshTokenEntity = refreshTokenRepo.findByRefreshToken(refreshToken)
+        RefreshToken refreshTokenEntity = refreshTokenRepo.findByRefreshToken(refreshToken)
                 .filter(tokens-> !tokens.isRevoked())
-                .orElseThrow(()-> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Refresh token revoked"));
+                .orElseThrow(()->
+                        new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Refresh token revoked"));
 
-        Account userInfoEntity = refreshTokenEntity.getAccount();
+        Account userInfoEntity = accountRepo.findByRefreshTokenListContaining(refreshTokenEntity)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Account doesn't exist"));
+
+//        Account userInfoEntity = refreshTokenEntity.getAccount();
 
         //Now create the Authentication object
         Authentication authentication =  createAuthenticationObject(userInfoEntity);
@@ -129,11 +134,12 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
 
         return  AuthResponseDto.builder()
                 .accessToken(accessToken)
-                .accessTokenExpiry(5 * 60)
+                .accessTokenExpiry(15 * 60)
                 .userName(userInfoEntity.getUserName())
                 .tokenType(TokenType.Bearer)
                 .build();
     }
+
     @Transactional
     private static Authentication createAuthenticationObject(Account userInfoEntity) {
         // Extract user details from UserDetailsEntity
@@ -149,6 +155,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
 
         return new UsernamePasswordAuthenticationToken(username, password, Arrays.asList(authorities));
     }
+
     @Transactional
     public AuthResponseDto registerUser(UserAccountRegistrationDto userRegistrationDto,
                                         HttpServletResponse httpServletResponse) {
@@ -159,8 +166,8 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             if(user.isPresent()){
                 throw new Exception("User Already Exist");
             }
-            List<Account> user2 = accountRepo.findByEmail(userRegistrationDto.email());
-            if(user2.size()>0){
+            Optional<Account> user2 = accountRepo.findByEmail(userRegistrationDto.email());
+            if(user2.isPresent()){
                 throw new Exception("User with this Email  Already Exist");
             }
 
@@ -169,25 +176,28 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             Authentication authentication = createAuthenticationObject(userDetailsEntity);
 
 
+            userDetailsEntity.setStatus(AccountStatus.PENDING.name());
+
+            Account savedUserDetails = accountRepo.save(userDetailsEntity);
             // Generate a JWT token
             String accessToken = jwtTokenGenerator.generateAccessToken(authentication);
             String refreshToken = jwtTokenGenerator.generateRefreshToken(authentication);
 
-            userDetailsEntity.setStatus(AccountStatus.PENDING.name());
-            Account savedUserDetails = accountRepo.save(userDetailsEntity);
+
             saveUserRefreshToken(savedUserDetails,refreshToken);
 
-            savedUserDetails.setVerificationCode(saveUserVerificationCode(savedUserDetails
+            saveUserVerificationCode(
+                    savedUserDetails
                     ,generateVerificationCode()
-                    ,LocalDateTime.now().plusMinutes(15)));
+                    ,LocalDateTime.now().plusMinutes(15));
             sendVerificationEmail(savedUserDetails);
 
             creatRefreshTokenCookie(httpServletResponse,refreshToken);
 
-            log.warn("[AuthService:registerUser] User:{} Successfully registered",savedUserDetails.getUserName());
+            log.warn("[AuthService:registerUser] User:{} Successfully registered"+savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
                     .accessToken(accessToken)
-                    .accessTokenExpiry(5 * 60)
+                    .accessTokenExpiry(15 * 60)
                     .userName(savedUserDetails.getUserName())
                     .tokenType(TokenType.Bearer)
                     .build();
@@ -201,37 +211,60 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
 
 
     public void verifyUser(VerifyUserDto input) {
-        List<Account> optionalUser = accountRepo.findByEmail(input.getEmail());
-        if (optionalUser.size()>0) {
-            Account user = optionalUser.get(0);
 
-            if (user.getVerificationCode().getVerificationCodeExpireTime().isBefore(LocalDateTime.now())) {
+        Optional<Account> optionalUser = accountRepo.findByEmail(input.getEmail());
+        if (optionalUser.isPresent()) {
+            Account user = optionalUser.get();
+            VerificationCode verificationCode = verificationCodeRepo.findByVerificationCode(input.getVerificationCode())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+            if (verificationCode.getVerificationCodeExpireTime().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("Verification code has expired");
             }
-            if (user.getVerificationCode().getVerificationCode().equals(input.getVerificationCode())) {
+            if (verificationCode.getVerificationCode().equals(input.getVerificationCode())) {
                 user.setStatus(AccountStatus.ACTIVATED.name());
-                user.setVerificationCode(null);
-                verificationCodeRepo.saveAndFlush(user.getVerificationCode()) ;
-                verificationCodeRepo.delete(user.getVerificationCode());
+                verificationCodeRepo.delete(verificationCode);
+                accountRepo.save(user) ;
             } else {
                 throw new RuntimeException("Invalid verification code");
             }
         } else {
             throw new RuntimeException("User not found");
         }
+
+//
+//            List<Account> optionalUser = accountRepo.findByEmail(input.getEmail());
+//            if (optionalUser.size()>0) {
+//                Account user = optionalUser.get(0);
+//
+//                if (user.getVerificationCode().getVerificationCodeExpireTime().isBefore(LocalDateTime.now())) {
+//                    throw new RuntimeException("Verification code has expired");
+//                }
+//                if (user.getVerificationCode().getVerificationCode().equals(input.getVerificationCode())) {
+//                    user.setStatus(AccountStatus.ACTIVATED.name());
+//                    user.setVerificationCode(null);
+//                    verificationCodeRepo.saveAndFlush(user.getVerificationCode()) ;
+//                    verificationCodeRepo.delete(user.getVerificationCode());
+//                } else {
+//                    throw new RuntimeException("Invalid verification code");
+//                }
+//            } else {
+//                throw new RuntimeException("User not found");
+//            }
+
+
     }
 
 
     public void resendVerificationCode(String email) throws MessagingException {
-        List<Account> optionalUser = accountRepo.findByEmail(email);
-        if (optionalUser.size()>0) {
-            Account user = optionalUser.get(0);
+        Optional<Account> accountOptional = accountRepo.findByEmail(email);
+        if (accountOptional.isPresent()) {
+            Account user = accountOptional
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
             if (user.getStatus().equals(AccountStatus.ACTIVATED.name())) {
                 throw new RuntimeException("Account is already verified");
             }
-            user.setVerificationCode(null);
-            verificationCodeRepo.saveAndFlush(user.getVerificationCode()) ;
-            verificationCodeRepo.delete(user.getVerificationCode());
+
             saveUserVerificationCode(user,
                                     generateVerificationCode(),
                                     LocalDateTime.now().plusMinutes(15));
@@ -247,7 +280,10 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
     private void sendVerificationEmail(Account user) throws MessagingException {
         String subject = "Account Verification";
 
-        String verificationCode = "VERIFICATION CODE " + user.getVerificationCode().getVerificationCode();
+        String verificationCode = "VERIFICATION CODE " +verificationCodeRepo
+                .findByAccount(user)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+                .getVerificationCode();
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
@@ -357,12 +393,11 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             if(user.isPresent()){
                 throw new Exception("user name  Already Exist");
             }
-
-
-            List<Account> user2 = accountRepo.findByEmail(storeAccountRegistrationDto.email());
-            if(user2.size()>0){
-                throw new Exception("Account with this Email  Already Exist");
+            Optional<Account> user2 = accountRepo.findByEmail(storeAccountRegistrationDto.email());
+            if(user2.isPresent()){
+                throw new Exception("User with this Email  Already Exist");
             }
+
 
 
             StoreAccount userDetailsEntity = storeInfoMapper.convertToEntity(storeAccountRegistrationDto);
@@ -370,22 +405,22 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             Authentication authentication = createAuthenticationObject( userDetailsEntity);
 
 
+        userDetailsEntity.setStatus(AccountStatus.PENDING.name());
 
+
+        StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
             // Generate a JWT token
             String accessToken = jwtTokenGenerator.generateAccessToken(authentication);
             String refreshToken = jwtTokenGenerator.generateRefreshToken(authentication);
 
 
-            userDetailsEntity.setStatus(AccountStatus.PENDING.name());
 
-
-            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
             saveUserRefreshToken(savedUserDetails,refreshToken);
 
 
-            savedUserDetails.setVerificationCode(saveUserVerificationCode(savedUserDetails
+            saveUserVerificationCode(savedUserDetails
                     ,generateVerificationCode()
-                    ,LocalDateTime.now().plusMinutes(15)));
+                    ,LocalDateTime.now().plusMinutes(15));
             sendVerificationEmail(savedUserDetails);
 
 
@@ -395,7 +430,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             log.warn("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
                     .accessToken(accessToken)
-                    .accessTokenExpiry(5 * 60)
+                    .accessTokenExpiry(15 * 60)
                     .userName(savedUserDetails.getUserName())
                     .tokenType(TokenType.Bearer)
                     .build();
@@ -425,16 +460,17 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
 
     }
     @Transactional
-    private VerificationCode saveUserVerificationCode(Account userInfoEntity, String verificationCode, LocalDateTime dateTime) {
+    private void saveUserVerificationCode(Account userInfoEntity, String verificationCode, LocalDateTime dateTime) {
         VerificationCode verificationCodeEntity = VerificationCode.builder()
-                .VerificationCode(verificationCode)
-                .VerificationCodeExpireTime(dateTime)
+                .verificationCode(verificationCode)
+                .verificationCodeExpireTime(dateTime)
                 .build();
-            VerificationCode v = verificationCodeRepo.save(verificationCodeEntity) ;
-            userInfoEntity.setVerificationCode(v);
-            accountRepo.save(userInfoEntity);
+//            VerificationCode v = verificationCodeRepo.save(verificationCodeEntity) ;
+            verificationCodeEntity.setAccount(userInfoEntity);
+//          userInfoEntity.setVerificationCode(verificationCodeEntity);
+            VerificationCode V =  verificationCodeRepo.save(verificationCodeEntity);
+            log.warn("just created this verification code "+ V.getVerificationCode());
 
-       return v;
     }
     public void registerorloginOauthUser(OAuth2User principal, HttpServletResponse httpServletResponse) {
 
@@ -461,7 +497,7 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
             log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());
             AuthResponseOauthDto authResponse = AuthResponseOauthDto.builder()
                     .accessToken(accessToken)
-                    .accessTokenExpiry(5 * 60)
+                    .accessTokenExpiry(15 * 60)
                     .userName(user.getUserName())
                     .tokenType(TokenType.Bearer)
                     .existAlready(exist.toString())
@@ -493,43 +529,44 @@ private final PasswordResetTokenRepo passwordResetTokenRepo;
         String status = "" ;
         if ("google".equals(registrationId)) {
             providerId =  new BigInteger(((String) attributes.get("sub")));
-            List<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
+            Optional<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
             log.warn("this is the user list with OauthId "+ providerId);
             log.warn(user.toString());
 
-            if(user.size()>0) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
-                log.warn("this user"+user.get(0).getUserName()+ " already exists just returning it without creating new account ");
+            if(user.isPresent()) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
+                log.warn("this user"+user.get().getUserName()+ " already exists just returning it without creating new account ");
                 exist.setLength(0);       // Clear existing content
                 exist.append("YES");   // Set new value
-                return user.get(0) ;
+                return user.get() ;
             }
             fname = (String) attributes.get("given_name");
             lname = (String) attributes.get("family_name");
             picture = (String) attributes.get("picture");
             userName = generateUsername(fname,lname);
             email = (String) attributes.get("email") ;
-            List<Account> user2 = accountRepo.findByEmail(email);
-            if(user2.size()>0){
-                throw new Exception("Account with this Email  Already Exist");
+            Optional<Account> user2 = accountRepo.findByEmail(email);
+            if(user2.isPresent()){
+                throw new Exception("User with this Email  Already Exist");
             }
+
             status = AccountStatus.ACTIVATED_WITH_GOOGLE.name();
         }
         else if ("facebook".equals(registrationId)) {
             providerId =  new BigInteger(((String) attributes.get("id")));
-            List<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
-            if(user.size()>0) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
-                log.warn("this user"+user.get(0).getUserName()+ " already exists just returning it without creating new account ");
+            Optional<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
+            if(user.isPresent()) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
+                log.warn("this user"+user.get().getUserName()+ " already exists just returning it without creating new account ");
                 exist.setLength(0);       // Clear existing content
                 exist.append("YES");   // Set new value
-                return user.get(0) ;
+                return user.get() ;
             }
             fname = (String) attributes.get("first_name");
             lname = (String) attributes.get("last_name");
             userName = generateUsername(fname,lname);
             email = (String) attributes.get("email") ;
-            List<Account> user2 = accountRepo.findByEmail(email);
-            if(user2.size()>0){
-                throw new Exception("Account with this Email  Already Exist");
+            Optional<Account> user2 = accountRepo.findByEmail(email);
+            if(user2.isPresent()){
+                throw new Exception("User with this Email  Already Exist");
             }
             status = AccountStatus.ACTIVATED_WITH_FACEBOOK.name();
             if (attributes.get("picture") != null) {

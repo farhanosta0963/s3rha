@@ -1,10 +1,11 @@
 package com.s3rha.spring;
 
-import com.s3rha.spring.DAO.ProdOfCartRepo;
-import com.s3rha.spring.DAO.ShoppingCartRepo;
+import com.s3rha.spring.DAO.*;
 import com.s3rha.spring.config.RSAKeyRecord;
 
 import com.s3rha.spring.entity.ShoppingCart;
+import com.s3rha.spring.entity.UserAccount;
+import com.s3rha.spring.entity.VerificationCode;
 import com.s3rha.spring.service.CustomOidcUserService;
 import jakarta.persistence.EntityManager;
 import org.springframework.boot.CommandLineRunner;
@@ -32,9 +33,27 @@ public class SpringSecurityApplication {
     }
    @Transactional
     @Bean
-    CommandLineRunner checkEnv(Environment env, EntityManager entityManager, ShoppingCartRepo shoppingCartRepo, ProdOfCartRepo prodOfCartRepo) {
+    CommandLineRunner checkEnv(Environment env, EntityManager entityManager,
+                               ShoppingCartRepo shoppingCartRepo,
+                               ProdOfCartRepo prodOfCartRepo,
+                               UserAccountRepo userAccountRepo,
+                               VerificationCodeRepo verificationCodeRepo) {
         return args -> {
             System.out.println("SMTP User: " + env.getProperty("SMTP_USERNAME"));
+//            ShoppingCart s =new ShoppingCart();
+//            s.setDescription("hello ") ;
+////            shoppingCartRepo.saveAndFlush(s) ;
+//            UserAccount d =   userAccountRepo.findById(1L).get();
+//            d.addShoppingCart(s) ;
+//            userAccountRepo.save(d);
+//            VerificationCode v = new VerificationCode() ;
+//            v.setVerificationCode("cccccc");
+//
+//            UserAccount d =   userAccountRepo.findById(1L).get();
+//            d.setVerificationCode(verificationCodeRepo.saveAndFlush(v)); ;
+//            userAccountRepo.save(d);
+
+
 
 //        ShoppingCart x =     shoppingCartRepo.
 //                findByProdOfCartListContaining(prodOfCartRepo.findById(5L).get()).get();

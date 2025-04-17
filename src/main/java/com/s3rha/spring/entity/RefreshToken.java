@@ -26,8 +26,8 @@ public class RefreshToken {
 
     private boolean revoked;
 
-    @ManyToOne
-    @JoinColumn(name = "account_id")
-    private Account account;
+//    @ManyToOne
+//    @JoinColumn(name = "account_id")
+//    private Account account;
 
 }

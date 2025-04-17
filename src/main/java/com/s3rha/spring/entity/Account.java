@@ -50,12 +50,15 @@ public  class   Account {
     private String accountType = "ACCOUNT";
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id")
-    private VerificationCode verificationCode;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "account_id")
+//    private VerificationCode verificationCode;
 
-    @OneToMany(
-            cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "account_id")
+    private List<RefreshToken> refreshTokenList;
+
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id")
     private List<Product> productList;
 
@@ -82,6 +85,31 @@ public  class   Account {
             password = passwordEncoder.encode(password);
         }
     }
+    public void addRefreshToken(RefreshToken refreshToken) {
+        if (refreshTokenList == null) {
+            refreshTokenList = new ArrayList<>();
+        }
+        refreshTokenList.add(refreshToken);
+    }
+
+    public void removeRefreshToken(RefreshToken refreshToken) {
+        if (refreshTokenList != null) {
+            refreshTokenList.remove(refreshToken);
+        }
+    }
+
+//    public void addVerificationCode(VerificationCode verificationCode) {
+//        if (verificationCodeList == null) {
+//            verificationCodeList = new ArrayList<>();
+//        }
+//        verificationCodeList.add(verificationCode);
+//    }
+//
+//    public void removeVerificationCode(VerificationCode verificationCode) {
+//        if (verificationCodeList != null) {
+//            verificationCodeList.remove(verificationCode);
+//        }
+//    }
 
     public void addProduct(Product product) {
         if (productList == null) {
