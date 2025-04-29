@@ -2,10 +2,12 @@ package com.s3rha.spring.controller;
 
 import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.dto.*;
+import jakarta.servlet.http.Cookie;
 
 import com.s3rha.spring.service.AuthService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 
 
 @RestController
@@ -40,10 +44,17 @@ public class AuthController {
         return ResponseEntity.ok(authService.getJwtTokensAfterAuthentication(authentication,response));
     }
 
-    @PreAuthorize("hasAuthority('SCOPE_REFRESH_TOKEN')")
+//    @PreAuthorize("hasAuthority('SCOPE_REFRESH_TOKEN')")
     @PostMapping ("/refresh-token")
-    public ResponseEntity<?> getAccessToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader){
-        return ResponseEntity.ok(authService.getAccessTokenUsingRefreshToken(authorizationHeader));
+    public ResponseEntity<?> getAccessToken(HttpServletRequest httpServletRequest){
+
+
+
+
+
+
+        return ResponseEntity.ok(authService.getAccessTokenUsingRefreshToken(httpServletRequest));
+        //TODO add refresh token in the httponly
     }
 
     @PostMapping("/sign-up-user")
@@ -79,6 +90,15 @@ public class AuthController {
 //            log.error("[AuthController:registerUser]Errors in Store:{}",errorMessage);
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 //        }
+//        User savedUser = userService.save(user); //TODO better return 201 istead of 200
+//
+//        URI location = ServletUriComponentsBuilder
+//                .fromCurrentRequest()
+//                .path("/{id}")
+//                .buildAndExpand(savedUser.getId())
+//                .toUri();
+//
+//        return ResponseEntity.created(location).body(savedUser);
         return ResponseEntity.ok(authService.registerStore(storeAccountRegistrationDto,httpServletResponse));
     }
     @PostMapping("/sign-up-storeByUser")

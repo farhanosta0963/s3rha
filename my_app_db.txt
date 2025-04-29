@@ -111,6 +111,7 @@ CREATE TABLE Product (
     brand VARCHAR(255),
     image VARCHAR(255),
     category VARCHAR(255),
+    general_type VARCHAR(255),
     bar_code VARCHAR(255),
     description TEXT,
 datetime_of_insert DATETIME,
@@ -299,6 +300,11 @@ ON UPDATE no action ON DELETE no action
 -- 15. Address (references Store_account)
 CREATE TABLE Address (
     address_id bigint AUTO_INCREMENT PRIMARY KEY,
+
+     -- 		formatted_address TEXT,
+     --         latitude DECIMAL(10, 8),
+     --         longitude DECIMAL(11, 8),
+     --         place_id VARCHAR(255),  // Google's unique place identifier TODO add this for the googlemaps api and delete the below adreess var
 
     address VARCHAR(255),
     store_account_id bigint,

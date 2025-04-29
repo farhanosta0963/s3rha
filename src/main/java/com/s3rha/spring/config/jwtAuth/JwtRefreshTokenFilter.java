@@ -5,6 +5,7 @@ import com.s3rha.spring.dto.TokenType;
 import com.s3rha.spring.DAO.RefreshTokenRepo;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 
 @RequiredArgsConstructor
@@ -45,20 +47,33 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
             log.warn("[JwtRefreshTokenFilter:doFilterInternal]Filtering the Http Request:{}", request.getRequestURI());
 
 
-            final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            // 1. Extract refresh token from HttpOnly cookie (not headers!)
+            String refreshToken = Arrays.stream(request.getCookies())
+                    .filter(c -> c.getName().equals("refresh_token"))
+                    .findFirst()
+                    .map(Cookie::getValue)
+                    .orElseThrow(() -> new RuntimeException("Refresh token missing"));
+
+
+
+
+
+
+
+//            final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
             JwtDecoder jwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey()).build();
 
-            if (authHeader == null) {
-                filterChain.doFilter(request,response);
-                return;
-            }else if (!authHeader.startsWith(TokenType.Bearer.name())){
-                filterChain.doFilter(request,response);
-                return;
-            }
+//            if (authHeader == null) {
+//                filterChain.doFilter(request,response);
+//                return;
+//            }else if (!authHeader.startsWith(TokenType.Bearer.name())){
+//                filterChain.doFilter(request,response);
+//                return;
+//            }
 
-            final String token = authHeader.substring(7);
-            final Jwt jwtRefreshToken = jwtDecoder.decode(token);
+//            final String token = authHeader.substring(7);
+            final Jwt jwtRefreshToken = jwtDecoder.decode(refreshToken);
 
 
             final String userName = jwtTokenUtils.getUserName(jwtRefreshToken);

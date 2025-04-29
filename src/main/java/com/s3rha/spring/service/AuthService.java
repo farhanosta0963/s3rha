@@ -15,11 +15,13 @@ import com.s3rha.spring.DAO.RefreshTokenRepo;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -56,7 +58,7 @@ private  final JwtEncoder jwtEncoder ;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Random random ;
     @Transactional
-    public AuthResponseDto getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
+    public AuthResponseDto  getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
         {
             var userInfoEntity = accountRepo.findByUserName(authentication.getName())
@@ -70,7 +72,7 @@ private  final JwtEncoder jwtEncoder ;
             //Let's save the refreshToken as well
             saveUserRefreshToken(userInfoEntity,refreshToken);
             //Creating the cookie
-            creatRefreshTokenCookie(response,refreshToken);
+            createRefreshTokenCookie(response,refreshToken);
             log.warn("[AuthService:userSignInAuth] Access token for user:{}, has been generated",userInfoEntity.getUserName());
             return  AuthResponseDto.builder()
                     .accessToken(accessToken)
@@ -96,23 +98,47 @@ private  final JwtEncoder jwtEncoder ;
 
     }
 
-    private Cookie creatRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
-        Cookie refreshTokenCookie = new Cookie("refresh_token",refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60 ); // in seconds
-        response.addCookie(refreshTokenCookie);
-        return refreshTokenCookie;
+
+    private void createRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(true) // Enable in production
+                .maxAge(15 * 24 * 60 * 60) // 15 days
+                .path("/api/refresh-token")
+                .build();
+        response.addHeader("Set-Cookie", refreshTokenCookie.toString());
     }
 
+//    private void createRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+//        Cookie refreshTokenCookie = new Cookie("refresh_token",refreshToken);
+//        refreshTokenCookie.setHttpOnly(true);
+////        refreshTokenCookie.setSecure(true); TODO uncomment this for production
+//        refreshTokenCookie.setMaxAge(15 * 24 * 60 * 60 ); // in seconds
+//          refreshTokenCookie .setPath("/api/refresh-token"); ;
+//        response.addCookie(refreshTokenCookie);
+////        return refreshTokenCookie;
+//    }
+
     @Transactional
-    public Object getAccessTokenUsingRefreshToken(String authorizationHeader) {
+    public Object getAccessTokenUsingRefreshToken(HttpServletRequest httpServletRequest) {
 
-        if(!authorizationHeader.startsWith(TokenType.Bearer.name())){
-            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Please verify your token type");
-        }
+        // 1. Extract refresh token from HttpOnly cookie (not headers!)
+        String refreshToken = Arrays.stream(httpServletRequest.getCookies())
+                .filter(c -> c.getName().equals("refresh_token"))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElseThrow(() -> new RuntimeException("Refresh token missing"));
 
-        final String refreshToken = authorizationHeader.substring(7);
+
+
+
+
+
+//        if(!authorizationHeader.startsWith(TokenType.Bearer.name())){
+//            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Please verify your token type");
+//        }
+//
+//        final String refreshToken = authorizationHeader.substring(7);
 
         //Find refreshToken from database and should not be revoked : Same thing can be done through filter.
         RefreshToken refreshTokenEntity = refreshTokenRepo.findByRefreshToken(refreshToken)
@@ -192,7 +218,7 @@ private  final JwtEncoder jwtEncoder ;
                     ,LocalDateTime.now().plusMinutes(15));
             sendVerificationEmail(savedUserDetails);
 
-            creatRefreshTokenCookie(httpServletResponse,refreshToken);
+            createRefreshTokenCookie(httpServletResponse,refreshToken);
 
             log.warn("[AuthService:registerUser] User:{} Successfully registered"+savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
@@ -424,7 +450,7 @@ private  final JwtEncoder jwtEncoder ;
             sendVerificationEmail(savedUserDetails);
 
 
-            creatRefreshTokenCookie(httpServletResponse,refreshToken);
+            createRefreshTokenCookie(httpServletResponse,refreshToken);
 
 
             log.warn("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
@@ -491,7 +517,7 @@ private  final JwtEncoder jwtEncoder ;
 
             saveUserRefreshToken(user,refreshToken);
 
-            creatRefreshTokenCookie(httpServletResponse,refreshToken);
+            createRefreshTokenCookie(httpServletResponse,refreshToken);
 
 
             log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());

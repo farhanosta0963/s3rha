@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.aspectj.SpringConfiguredConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -37,9 +38,11 @@ public class SpringSecurityApplication {
                                ShoppingCartRepo shoppingCartRepo,
                                ProdOfCartRepo prodOfCartRepo,
                                UserAccountRepo userAccountRepo,
-                               VerificationCodeRepo verificationCodeRepo) {
+                               VerificationCodeRepo verificationCodeRepo,
+                               BCryptPasswordEncoder bCryptPasswordEncoder) {
         return args -> {
             System.out.println("SMTP User: " + env.getProperty("SMTP_USERNAME"));
+            System.out.println(bCryptPasswordEncoder.encode("123"));
 //            ShoppingCart s =new ShoppingCart();
 //            s.setDescription("hello ") ;
 ////            shoppingCartRepo.saveAndFlush(s) ;

@@ -48,6 +48,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
 
+
     private final UserInfoManagerConfig userInfoManagerConfig;
     private final RSAKeyRecord rsaKeyRecord;
     private final JwtTokenUtils jwtTokenUtils;
@@ -65,7 +66,7 @@ public class SecurityConfig {
 //                .csrf(AbstractHttpConfigurer::disable)
 //                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
 //                //.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
-//
+// 
 ////                    .oauth2Login(oauth -> oauth
 ////                            .authorizationEndpoint(auth -> auth
 ////                                    .baseUri("/oauth2/authorization") // Starting endpoint

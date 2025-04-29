@@ -1,6 +1,8 @@
 package com.s3rha.spring.controller;
 
+import com.s3rha.spring.DAO.AccountRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -13,11 +15,15 @@ import java.security.Principal;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class DashboardController {
-    @PostMapping("/ccc")
-    public ResponseEntity<String> cccx(){
-        return ResponseEntity.ok("Manager:)");
 
-    }
+//    @Autowired
+//    AccountRepo accountRepo ;
+//    @PostMapping("/ccc")
+//    public ResponseEntity<?> cccx(){
+//        return ResponseEntity.ok(accountRepo.findByUserName("farhan"));
+//
+//    }
+
 //    @PreAuthorize("hasAnyRole('ROLE_MANAGER','ROLE_ADMIN','ROLE_USER')")
     @PreAuthorize("hasAuthority('SCOPE_READ')")
     @GetMapping("/welcome-message")
