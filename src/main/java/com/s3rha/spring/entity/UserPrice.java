@@ -8,18 +8,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @Setter
 @Getter
-@NoArgsConstructor
 @PrimaryKeyJoinColumn(name = "price_id")
 public class UserPrice extends Price{
+
+    public UserPrice () {
+       setIsStorePrice(false);
+    }
 
    private  Integer upVoteCount ;
    private  Integer downVoteCount ;
 
 
-//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-//            CascadeType.DETACH, CascadeType.REFRESH})
-//    @JoinColumn(name = "user_account_id")
-//    private UserAccount userAccount;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "user_account_id")
+    private UserAccount userAccount;
 
 
 }

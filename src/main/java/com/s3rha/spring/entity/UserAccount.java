@@ -30,29 +30,29 @@ public class UserAccount extends Account {
     @JsonIgnore
     private Integer scoreOfIntegrity;
     public UserAccount() {
-        setAccountType("USER");
+        setIsStoreAccount(false);
     }
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account_id")
-    private List<UserPrice> userPriceList;
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "user_account_id")
+//    private List<UserPrice> userPriceList;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "user_account_id")
     private List<ShoppingCart> shoppingCartList;
-
-    public void addUserPrice(UserPrice userPrice) {
-        if (userPriceList == null) {
-            userPriceList = new ArrayList<>();
-        }
-        userPriceList.add(userPrice);
-    }
-
-    public void removeUserPrice(UserPrice userPrice) {
-        if (userPriceList != null) {
-            userPriceList.remove(userPrice);
-        }
-    }
+//
+//    public void addUserPrice(UserPrice userPrice) {
+//        if (userPriceList == null) {
+//            userPriceList = new ArrayList<>();
+//        }
+//        userPriceList.add(userPrice);
+//    }
+//
+//    public void removeUserPrice(UserPrice userPrice) {
+//        if (userPriceList != null) {
+//            userPriceList.remove(userPrice);
+//        }
+//    }
 
     public void addShoppingCart(ShoppingCart shoppingCart) {
         if (shoppingCartList == null) {

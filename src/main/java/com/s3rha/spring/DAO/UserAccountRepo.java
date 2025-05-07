@@ -17,7 +17,7 @@ public interface UserAccountRepo extends JpaRepository <UserAccount,Long>{
     Optional<UserAccount> findByUserName( String userName) ;
     Optional<UserAccount> findByShoppingCartListContaining(ShoppingCart shoppingCart);
 
-    Optional<UserAccount> findByUserPriceListContaining(UserPrice userPrice);
+//    Optional<UserAccount> findByUserPriceListContaining(UserPrice userPrice);
 
 //    @Override
 //    @RestResource(exported = false)

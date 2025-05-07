@@ -48,11 +48,6 @@ public class AuthController {
     @PostMapping ("/refresh-token")
     public ResponseEntity<?> getAccessToken(HttpServletRequest httpServletRequest){
 
-
-
-
-
-
         return ResponseEntity.ok(authService.getAccessTokenUsingRefreshToken(httpServletRequest));
         //TODO add refresh token in the httponly
     }

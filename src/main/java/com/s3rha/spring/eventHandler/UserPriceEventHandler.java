@@ -38,11 +38,12 @@ public class UserPriceEventHandler {
 
         log.warn("HandleBeforeSave  for {} started ",StorePrice.class.getSimpleName());
 //        checker.assertOwnership(storePrice.getStoreAccount().getUserName());
-        checker.assertOwnership(
-                userAccountRepo.findByUserPriceListContaining(userPrice)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                        .getUserName()
-        );
+        checker.assertOwnership( userPrice.getUserAccount().getUserName());
+//                userAccountRepo.findByUserPriceListContaining(userPrice)
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+//                        .getUserName()
+
+
 
     }
 
@@ -56,8 +57,8 @@ public class UserPriceEventHandler {
         // Find or create user
         UserAccount userAccount = userAccountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        userAccount.addUserPrice(userPrice);
+        userPrice.setUserAccount(userAccount);
+//        userAccount.addUserPrice(userPrice);
     }
 
 }

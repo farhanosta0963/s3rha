@@ -47,7 +47,7 @@ public  class   Account {
     private String status;
     private String phoneNumber;
     private String image;
-    private String accountType = "ACCOUNT";
+    private Boolean isStoreAccount ;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
 //    @OneToOne(cascade = CascadeType.ALL)

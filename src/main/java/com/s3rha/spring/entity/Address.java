@@ -16,11 +16,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Address_id ;
     private String address;
-    private LocalDateTime datetimeOfInsert;
-    @PrePersist // Automatically set before saving
-    protected void onCreate() {
-        this.datetimeOfInsert = LocalDateTime.now();
-    }
+    private LocalDateTime datetimeOfInsert = LocalDateTime.now() ;
+
 
 
 

@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS password_reset_token;
 -- 1. Account (referenced by Search_history and Report)
 CREATE TABLE Account (
     account_id bigint AUTO_INCREMENT PRIMARY KEY,
- user_name VARCHAR(255) unique,
+	user_name VARCHAR(255) unique,
     email VARCHAR(255),
     password VARCHAR(255),
     status VARCHAR(50),
@@ -44,7 +44,7 @@ CREATE TABLE Account (
     image VARCHAR(255),
     roles varchar(100) ,
     oauth_id decimal(38,0) ,
-    account_type varchar(10) ,
+    is_store_account boolean ,
 datetime_of_insert DATETIME
 
 
@@ -170,6 +170,7 @@ CREATE TABLE price (
     unit_of_measure VARCHAR(50),
     store_account_id bigint,
     Product_id bigint,
+    is_store_price boolean ,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
     ON UPDATE no action ON DELETE no action,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)

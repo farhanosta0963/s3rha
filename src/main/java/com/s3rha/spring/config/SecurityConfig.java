@@ -189,7 +189,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterAfter(new ProductOwnershipFilter(productRepo),
+//              .addFilterAfter(new ProductOwnershipFilter(productRepo),
 //                        BasicAuthenticationFilter.class)
 
                 .httpBasic(withDefaults())

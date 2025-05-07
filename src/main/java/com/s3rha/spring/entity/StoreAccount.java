@@ -23,7 +23,7 @@ import java.util.List;
 public class StoreAccount extends Account {
 
     public StoreAccount() {
-        setAccountType("STORE");
+        setIsStoreAccount(true);
     }
     private String name;
     private Boolean verifiedFlag;

@@ -24,9 +24,14 @@ public class Price {
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     private String currency;
     private String unitOfMeasure;
+    protected Boolean isStorePrice ;
 
 
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "store_account_id")
+    private StoreAccount storeAccount;
 
 
 

@@ -37,8 +37,6 @@ public class JwtTokenGenerator {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("Account not found for: " + authentication.getName())
                 );        log.warn(account.toString());
-        System.out.println(String.valueOf(account.getAccountType()));
-        System.out.println(String.valueOf(account.getUserName()));
         String roles = getRolesOfUser(authentication);
 
         String permissions = getPermissionsFromRoles(roles);
@@ -49,7 +47,7 @@ public class JwtTokenGenerator {
                 .expiresAt(Instant.now().plus(999999 , ChronoUnit.MINUTES))
                 .subject(authentication.getName())
                 .claim("scope", permissions)
-                .claim("accountType",String.valueOf(account.getAccountType()))
+                .claim("isStoreAccount",String.valueOf(account.getIsStoreAccount()))
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
