@@ -47,7 +47,7 @@ public  class   Account {
     private String status;
     private String phoneNumber;
     private String image;
-    private Boolean isStoreAccount ;
+    private Boolean isStoreAccount  ;//TODO better name StoreAccountFlag and use the auto generated IsStoreACCOUntFlag
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
 //    @OneToOne(cascade = CascadeType.ALL)

@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,6 +49,8 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
 
 
             // 1. Extract refresh token from HttpOnly cookie (not headers!)
+
+            log.warn(Arrays.toString(request.getCookies())); ;
             String refreshToken = Arrays.stream(request.getCookies())
                     .filter(c -> c.getName().equals("refresh_token"))
                     .findFirst()
@@ -81,11 +84,13 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
 
             if (!userName.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
                 //Check if refreshToken isPresent in database and is valid
-                var isRefreshTokenValidInDatabase = refreshTokenRepo.findByRefreshToken(jwtRefreshToken.getTokenValue())
+                var isRefreshTokenValidInDatabase =
+                        refreshTokenRepo.findByRefreshToken(jwtRefreshToken.getTokenValue())
                         .map(refreshTokenEntity -> !refreshTokenEntity.isRevoked())
                         .orElse(false);
 
                 UserDetails userDetails = jwtTokenUtils.userDetails(userName);
+                //TODO i think it is better to decode the JWT that to  reach the database
                 if (jwtTokenUtils.isTokenValid(jwtRefreshToken, userDetails) && isRefreshTokenValidInDatabase) {
                     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
@@ -103,8 +108,10 @@ public class JwtRefreshTokenFilter extends OncePerRequestFilter {
             log.warn("[JwtRefreshTokenFilter:doFilterInternal] Completed");
             filterChain.doFilter(request, response);
         }catch (JwtValidationException jwtValidationException){
-            log.error("[JwtRefreshTokenFilter:doFilterInternal] Exception due to :{}",jwtValidationException.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,jwtValidationException.getMessage());
+            log.error("[JwtRefreshTokenFilter:doFilterInternal] Exception due to :{}",
+                    jwtValidationException.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
+                    jwtValidationException.getMessage());
         }
     }
 }

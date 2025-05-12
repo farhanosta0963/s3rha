@@ -47,7 +47,8 @@ public class JwtTokenGenerator {
                 .expiresAt(Instant.now().plus(999999 , ChronoUnit.MINUTES))
                 .subject(authentication.getName())
                 .claim("scope", permissions)
-                .claim("isStoreAccount",String.valueOf(account.getIsStoreAccount()))
+                .claim("isStoreAccount",
+                        String.valueOf(account.getIsStoreAccount()))
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -59,7 +60,7 @@ public class JwtTokenGenerator {
         log.warn("[JwtTokenGenerator:generateRefreshToken] Token Creation Started for:{}", authentication.getName());
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("atquil")
+                .issuer("s3rha")
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plus(15 , ChronoUnit.DAYS))
                 .subject(authentication.getName())
@@ -81,7 +82,7 @@ public class JwtTokenGenerator {
             permissions.addAll(List.of("READ", "WRITE", "DELETE"));
         }
         if (roles.contains("ROLE_MANAGER")) {
-            permissions.add("READ");
+            permissions.add("READ");//TODO add more permissions
         }
         if (roles.contains("ROLE_USER")) {
             permissions.add("READ");

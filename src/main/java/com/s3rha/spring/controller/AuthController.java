@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/auth")
 @Slf4j
 public class AuthController {
 

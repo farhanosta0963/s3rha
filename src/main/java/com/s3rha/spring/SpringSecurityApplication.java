@@ -32,7 +32,7 @@ public class SpringSecurityApplication {
 //        ShoppingCart s = entityManager.find(ShoppingCart.class,4) ;
 //            entityManager.remove(s);
     }
-   @Transactional
+
     @Bean
     CommandLineRunner checkEnv(Environment env, EntityManager entityManager,
                                ShoppingCartRepo shoppingCartRepo,

@@ -36,6 +36,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.rmi.server.LogStream.log;
 
 
 @Service
@@ -63,7 +64,7 @@ private  final JwtEncoder jwtEncoder ;
         {
             var userInfoEntity = accountRepo.findByUserName(authentication.getName())
                     .orElseThrow(()->{
-                        log.error("[AuthService:userSignInAuth] User :{} not found",authentication.getName());
+                        AuthService.log.error("[AuthService:userSignInAuth] User :{} not found",authentication.getName());
                         return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
 
 
@@ -73,7 +74,7 @@ private  final JwtEncoder jwtEncoder ;
             saveUserRefreshToken(userInfoEntity,refreshToken);
             //Creating the cookie
             createRefreshTokenCookie(response,refreshToken);
-            log.warn("[AuthService:userSignInAuth] Access token for user:{}, has been generated",userInfoEntity.getUserName());
+            AuthService.log.warn("[AuthService:userSignInAuth] Access token for user:{}, has been generated",userInfoEntity.getUserName());
             return  AuthResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(15 * 60)
@@ -83,7 +84,7 @@ private  final JwtEncoder jwtEncoder ;
 
 
         }catch (Exception e){
-            log.error("[AuthService:userSignInAuth]Exception while authenticating the user due to :"+e.getMessage());
+            AuthService.log.error("[AuthService:userSignInAuth]Exception while authenticating the user due to :"+e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Please Try Again");
         }
     }
@@ -104,7 +105,7 @@ private  final JwtEncoder jwtEncoder ;
                 .httpOnly(true)
                 .secure(true) // Enable in production
                 .maxAge(15 * 24 * 60 * 60) // 15 days
-                .path("/api/refresh-token")
+                .path("/auth/refresh-token")
                 .build();
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
     }
@@ -141,6 +142,9 @@ private  final JwtEncoder jwtEncoder ;
 //        final String refreshToken = authorizationHeader.substring(7);
 
         //Find refreshToken from database and should not be revoked : Same thing can be done through filter.
+//        Principal principal = request.getUserPrincipal();
+
+//        log(httpServletRequest.getUserPrincipal().getName()) ;
         RefreshToken refreshTokenEntity = refreshTokenRepo.findByRefreshToken(refreshToken)
                 .filter(tokens-> !tokens.isRevoked())
                 .orElseThrow(()->
@@ -186,7 +190,7 @@ private  final JwtEncoder jwtEncoder ;
     public AuthResponseDto registerUser(UserAccountRegistrationDto userRegistrationDto,
                                         HttpServletResponse httpServletResponse) {
         try{
-            log.warn("[AuthService:registerUser]User Registration Started with :::{}",userRegistrationDto);
+            AuthService.log.warn("[AuthService:registerUser]User Registration Started with :::{}",userRegistrationDto);
 
             Optional<Account> user = accountRepo.findByUserName(userRegistrationDto.userName());
             if(user.isPresent()){
@@ -220,7 +224,7 @@ private  final JwtEncoder jwtEncoder ;
 
             createRefreshTokenCookie(httpServletResponse,refreshToken);
 
-            log.warn("[AuthService:registerUser] User:{} Successfully registered"+savedUserDetails.getUserName());
+            AuthService.log.warn("[AuthService:registerUser] User:{} Successfully registered"+savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(15 * 60)
@@ -230,7 +234,7 @@ private  final JwtEncoder jwtEncoder ;
 
 
         }catch (Exception e){
-            log.error("[AuthService:registerUser]Exception while registering the user due to :"+e.getMessage());
+            AuthService.log.error("[AuthService:registerUser]Exception while registering the user due to :"+e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
     }
@@ -363,21 +367,21 @@ private  final JwtEncoder jwtEncoder ;
 
         if (account  != null) {  // Proper null check
 
-            log.warn("in request password reset 0");
+            AuthService.log.warn("in request password reset 0");
 
 
             String resetToken = generatePasswordResetToken();
             LocalDateTime expiryDate = LocalDateTime.now().plusHours(4);
-            log.warn("in request password reset 1");
+            AuthService.log.warn("in request password reset 1");
             PasswordResetToken resetTokenEntity = PasswordResetToken.builder()
                     .account(account)
                     .token(resetToken)
                     .expiryDate(expiryDate)
                     .build();
-            log.warn("in request password reset 2");
+            AuthService.log.warn("in request password reset 2");
 
             passwordResetTokenRepo.save(resetTokenEntity);
-            log.warn("in request password reset 3");
+            AuthService.log.warn("in request password reset 3");
 
             sendPasswordResetEmail(account.getEmail(), resetToken);
         }
@@ -412,7 +416,7 @@ private  final JwtEncoder jwtEncoder ;
                                          HttpServletResponse httpServletResponse) throws Exception {
 
 
-            log.warn("[AuthService:registerUser]Store Registration Started with :::{}",storeAccountRegistrationDto);
+            AuthService.log.warn("[AuthService:registerUser]Store Registration Started with :::{}",storeAccountRegistrationDto);
 
 
             Optional<Account> user = accountRepo.findByUserName(storeAccountRegistrationDto.userName());
@@ -453,7 +457,7 @@ private  final JwtEncoder jwtEncoder ;
             createRefreshTokenCookie(httpServletResponse,refreshToken);
 
 
-            log.warn("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
+            AuthService.log.warn("[AuthService:registerStore] Store:{} Successfully registered",savedUserDetails.getUserName());
             return   AuthResponseDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(15 * 60)
@@ -467,7 +471,7 @@ private  final JwtEncoder jwtEncoder ;
     @Transactional
     public StoreAccount registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
         try{
-            log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
+            AuthService.log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
 
 
             StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
@@ -480,7 +484,7 @@ private  final JwtEncoder jwtEncoder ;
 
 
         }catch (Exception e){
-            log.error("[AuthService:registerStoreByUser]Exception while registering the store byyy user due to :"+e.getMessage());
+            AuthService.log.error("[AuthService:registerStoreByUser]Exception while registering the store byyy user due to :"+e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
 
@@ -495,14 +499,14 @@ private  final JwtEncoder jwtEncoder ;
             verificationCodeEntity.setAccount(userInfoEntity);
 //          userInfoEntity.setVerificationCode(verificationCodeEntity);
             VerificationCode V =  verificationCodeRepo.save(verificationCodeEntity);
-            log.warn("just created this verification code "+ V.getVerificationCode());
+            AuthService.log.warn("just created this verification code "+ V.getVerificationCode());
 
     }
     public void registerorloginOauthUser(OAuth2User principal, HttpServletResponse httpServletResponse) {
 
 
         try{
-            log.warn("[AuthService:registerorloginOauthUser] Started with :::{}",principal.getName());
+            AuthService.log.warn("[AuthService:registerorloginOauthUser] Started with :::{}",principal.getName());
 
             StringBuilder exist = new StringBuilder("NO"); // this for return with response to know if this oauth account
             //existed before or not and sign up a new one : >
@@ -520,7 +524,7 @@ private  final JwtEncoder jwtEncoder ;
             createRefreshTokenCookie(httpServletResponse,refreshToken);
 
 
-            log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());
+            AuthService.log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());
             AuthResponseOauthDto authResponse = AuthResponseOauthDto.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiry(15 * 60)
@@ -535,7 +539,7 @@ private  final JwtEncoder jwtEncoder ;
 
 
         }catch (Exception e){
-            log.error("[AuthService:registerorloginOauthUser]Exception while registering the OauthUser  due to :"+e.getMessage());
+            AuthService.log.error("[AuthService:registerorloginOauthUser]Exception while registering the OauthUser  due to :"+e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         }
     }
@@ -556,11 +560,11 @@ private  final JwtEncoder jwtEncoder ;
         if ("google".equals(registrationId)) {
             providerId =  new BigInteger(((String) attributes.get("sub")));
             Optional<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
-            log.warn("this is the user list with OauthId "+ providerId);
-            log.warn(user.toString());
+            AuthService.log.warn("this is the user list with OauthId "+ providerId);
+            AuthService.log.warn(user.toString());
 
             if(user.isPresent()) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
-                log.warn("this user"+user.get().getUserName()+ " already exists just returning it without creating new account ");
+                AuthService.log.warn("this user"+user.get().getUserName()+ " already exists just returning it without creating new account ");
                 exist.setLength(0);       // Clear existing content
                 exist.append("YES");   // Set new value
                 return user.get() ;
@@ -581,7 +585,7 @@ private  final JwtEncoder jwtEncoder ;
             providerId =  new BigInteger(((String) attributes.get("id")));
             Optional<Account> user = accountRepo.findByOauthId(providerId);// TODO it is better to make findBy return optional not List
             if(user.isPresent()) { // TODO maybe also better to just create a plain Account not user account and continue the registration later
-                log.warn("this user"+user.get().getUserName()+ " already exists just returning it without creating new account ");
+                AuthService.log.warn("this user"+user.get().getUserName()+ " already exists just returning it without creating new account ");
                 exist.setLength(0);       // Clear existing content
                 exist.append("YES");   // Set new value
                 return user.get() ;
