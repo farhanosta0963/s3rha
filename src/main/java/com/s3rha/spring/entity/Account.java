@@ -79,6 +79,8 @@ public  class   Account {
     private List<SearchHistory> searchHistoryList;
 
 
+
+
     @PreUpdate
     private void encryptPassword() {
         if (password != null && !password.startsWith("$2a$")) { // Check if already encrypted

@@ -28,8 +28,8 @@ DROP TABLE IF EXISTS Account;
 DROP TABLE IF EXISTS refresh_token;
 DROP TABLE IF EXISTS verification_code;
 DROP TABLE IF EXISTS password_reset_token;
-
-
+DROP TABLE IF EXISTS down_vote_on_user_price;
+DROP TABLE IF EXISTS up_vote_on_user_price;
 
 -- Create tables
 
@@ -57,8 +57,6 @@ verification_code_expire_time datetime ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
 ON UPDATE no action ON DELETE no action
-
-
 
 ) ;
 
@@ -103,6 +101,31 @@ ON UPDATE no action ON DELETE no action
 
 );
 
+create Table up_vote_on_user_price (
+id bigint auto_increment primary key ,
+datetime_of_insert datetime DEFAULT CURRENT_TIMESTAMP,
+account_id bigint ,
+ price_id bigint ,
+FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
+ON UPDATE no action ON DELETE no action,
+FOREIGN KEY (price_id) REFERENCES Price (price_id)
+    ON UPDATE no action ON DELETE no action
+
+) ;
+
+create Table down_vote_on_user_price (
+id bigint auto_increment primary key ,
+datetime_of_insert datetime DEFAULT CURRENT_TIMESTAMP ,
+account_id bigint ,
+ price_id bigint ,
+FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
+ON UPDATE no action ON DELETE no action,
+FOREIGN KEY (price_id) REFERENCES Price (price_id)
+    ON UPDATE no action ON DELETE no action
+) ;
+
+
+
 -- 4. Product (referenced by User_prices, Rating, Prod_of_cart, and Prod_of_offer)
 CREATE TABLE Product (
     Product_id bigint AUTO_INCREMENT PRIMARY KEY,
@@ -140,7 +163,6 @@ ON UPDATE no action ON DELETE no action
 CREATE TABLE Store_price (
     price_id bigint  PRIMARY KEY,
     quantity INT,
-
 
  FOREIGN KEY (price_id) REFERENCES Price (price_id)
     ON UPDATE no action ON DELETE no action
