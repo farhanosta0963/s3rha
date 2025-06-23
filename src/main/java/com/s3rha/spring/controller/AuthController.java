@@ -2,7 +2,7 @@ package com.s3rha.spring.controller;
 
 import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.dto.*;
-import jakarta.servlet.http.Cookie;
+import com.s3rha.spring.entity.Product;
 
 import com.s3rha.spring.service.AuthService;
 import jakarta.mail.MessagingException;
@@ -12,14 +12,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
 
 
 @RestController
@@ -27,7 +24,6 @@ import java.util.Arrays;
 @RequestMapping("/auth")
 @Slf4j
 public class AuthController {
-
     private final AuthService authService;
     private final EntityManager entityManager;
     private final ProductRepo productRepo ;
@@ -43,6 +39,7 @@ public class AuthController {
 
         return ResponseEntity.ok(authService.getJwtTokensAfterAuthentication(authentication,response));
     }
+
 
 //    @PreAuthorize("hasAuthority('SCOPE_REFRESH_TOKEN')")
     @PostMapping ("/refresh-token")

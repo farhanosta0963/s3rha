@@ -27,6 +27,16 @@ public class UserAccount extends Account {
     private String lname;
     @JsonIgnore
     private Integer scoreOfActivity;
+/*
+     TODO add some
+     logging logic To control
+     the adding and subtracting
+     from this score so that at
+     every method that change this
+     score it would go and check the logging table if that user
+     added so much activity in that date we will lock the score out and don't
+     give him  anymore reward for that day
+ */
     @JsonIgnore
     private Integer scoreOfIntegrity;
     public UserAccount() {

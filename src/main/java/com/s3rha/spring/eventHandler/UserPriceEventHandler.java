@@ -18,7 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
-
+//TODO modify it for the many2many upvote downvote
 @Transactional
 @Slf4j
 @Component

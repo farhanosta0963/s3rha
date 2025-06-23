@@ -38,9 +38,9 @@ public class Product {
     @JoinColumn(name = "product_id")
     private List<ProdOfOffer> prodOfOfferList;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_id")
-    private List<Price> priceList;
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "product_id")
+//    private List<Price> priceList;
 
     @OneToMany(cascade = CascadeType.ALL )
     @JoinColumn(name = "product_id")

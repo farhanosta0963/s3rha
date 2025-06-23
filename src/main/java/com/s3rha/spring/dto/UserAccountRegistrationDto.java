@@ -15,7 +15,7 @@ public record UserAccountRegistrationDto (
         String lname,
         String phoneNumber,
         @NotEmpty(message = "User email must not be empty") //Neither null nor 0 size
-        @Email(message = "Invalid email format")
+        @Email(message = "Invalid email format")//this annotations is used with @valid and binding result with dto only 
         String email,
         String image,
 

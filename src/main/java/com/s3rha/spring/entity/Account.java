@@ -31,6 +31,7 @@ import java.util.List;
 @Setter
 @Getter
 @Slf4j
+
 //@EntityListeners(AccountEntityListener.class)
 public  class   Account {
     private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

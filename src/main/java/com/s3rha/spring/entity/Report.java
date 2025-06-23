@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Report {
-    @Id
+    @Id//TODO add a report for store price cause it doesn't have a upvote downvote
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reportId;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
