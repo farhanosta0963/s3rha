@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
@@ -17,6 +18,7 @@ public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
     Optional<StoreAccount> findBySocialMediaContaining(SocialMedia socialMedia);
     Optional<StoreAccount> findByRatingOnProductListContaining(RatingOnProduct ratingOnProduct);
 
+    List<StoreAccount> findByName(String name ) ;
 //    @Override
 //    @RestResource(exported = false)
 //    void delete(StoreAccount entity);

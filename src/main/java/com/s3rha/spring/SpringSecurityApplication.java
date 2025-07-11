@@ -3,6 +3,8 @@ package com.s3rha.spring;
 import com.s3rha.spring.DAO.*;
 import com.s3rha.spring.config.RSAKeyRecord;
 
+import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
+import com.s3rha.spring.entity.Product;
 import com.s3rha.spring.entity.ShoppingCart;
 import com.s3rha.spring.entity.UserAccount;
 import com.s3rha.spring.entity.VerificationCode;
@@ -39,29 +41,15 @@ public class SpringSecurityApplication {
                                ProdOfCartRepo prodOfCartRepo,
                                UserAccountRepo userAccountRepo,
                                VerificationCodeRepo verificationCodeRepo,
-                               BCryptPasswordEncoder bCryptPasswordEncoder) {
+                               BCryptPasswordEncoder bCryptPasswordEncoder,
+                               ProductRepo productRepo) {
         return args -> {
             System.out.println("SMTP User: " + env.getProperty("SMTP_USERNAME"));
             System.out.println(bCryptPasswordEncoder.encode("123"));
-//            ShoppingCart s =new ShoppingCart();
-//            s.setDescription("hello ") ;
-////            shoppingCartRepo.saveAndFlush(s) ;
-//            UserAccount d =   userAccountRepo.findById(1L).get();
-//            d.addShoppingCart(s) ;
-//            userAccountRepo.save(d);
-//            VerificationCode v = new VerificationCode() ;
-//            v.setVerificationCode("cccccc");
-//
-//            UserAccount d =   userAccountRepo.findById(1L).get();
-//            d.setVerificationCode(verificationCodeRepo.saveAndFlush(v)); ;
-//            userAccountRepo.save(d);
+            //some produ
+            Product pp = new Product() ;
 
-
-
-//        ShoppingCart x =     shoppingCartRepo.
-//                findByProdOfCartListContaining(prodOfCartRepo.findById(5L).get()).get();
-//            System.out.println(x.getName());
-        };
+            };
     }
 
 }
