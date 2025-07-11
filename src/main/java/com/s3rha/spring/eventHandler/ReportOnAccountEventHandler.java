@@ -36,6 +36,8 @@ public class ReportOnAccountEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(Report report) {
 
         log.warn("HandleBeforeSave  for {} started ",ReportOnAccount.class.getSimpleName());

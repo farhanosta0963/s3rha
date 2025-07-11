@@ -31,6 +31,8 @@ public class ShoppingCartEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(ShoppingCart cart) {
 
         log.warn("HandleBeforeSave  for {} started ",ShoppingCart.class.getSimpleName());

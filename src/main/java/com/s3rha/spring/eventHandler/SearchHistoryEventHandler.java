@@ -31,6 +31,8 @@ public class SearchHistoryEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(SearchHistory searchHistory) {
 
         log.warn("HandleBeforeSave  for {} started ",SearchHistory.class.getSimpleName());

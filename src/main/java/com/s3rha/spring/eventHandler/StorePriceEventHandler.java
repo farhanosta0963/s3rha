@@ -34,6 +34,8 @@ public class StorePriceEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(StorePrice storePrice) {
 
         log.warn("HandleBeforeSave  for {} started ",StorePrice.class.getSimpleName());

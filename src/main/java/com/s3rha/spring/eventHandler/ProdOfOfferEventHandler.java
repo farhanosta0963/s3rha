@@ -33,6 +33,8 @@ public class ProdOfOfferEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(ProdOfOffer prodOfOffer) {
 
         log.warn("HandleBeforeSave  for {} started ",ProdOfOffer.class.getSimpleName());

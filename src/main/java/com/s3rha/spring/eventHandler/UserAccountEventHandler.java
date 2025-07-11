@@ -23,6 +23,8 @@ public class UserAccountEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(UserAccount userAccount) {
 
         log.warn("HandleBeforeSave  for {} started ",UserAccount.class.getSimpleName());

@@ -23,6 +23,8 @@ public class ProductEventHandler {
     @HandleBeforeLinkDelete
     @HandleBeforeLinkSave
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void handleProductUpdate(Product product) {
         log.warn("HandleBeforeSave for {} started ",Product.class.getSimpleName());
 //        checker.assertOwnership(product.getAccount().getUserName());

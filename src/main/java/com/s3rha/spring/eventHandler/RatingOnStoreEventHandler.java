@@ -37,6 +37,8 @@ public class RatingOnStoreEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(Rating rating) {
 
         log.warn("HandleBeforeSave  for {} started ",RatingOnStore.class.getSimpleName());

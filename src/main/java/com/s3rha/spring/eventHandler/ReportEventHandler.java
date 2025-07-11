@@ -35,6 +35,8 @@ public class ReportEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(Report report) {
 
         log.warn("HandleBeforeSave  for {} started ",Report.class.getSimpleName());

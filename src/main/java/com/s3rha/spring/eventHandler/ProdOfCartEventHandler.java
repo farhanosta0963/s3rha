@@ -28,6 +28,8 @@ public class ProdOfCartEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(ProdOfCart prodOfCart) {
 
         log.warn("HandleBeforeSave  for {} started ",ProdOfCart.class.getSimpleName());

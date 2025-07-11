@@ -35,6 +35,8 @@ public class SpecialOfferEventHandler {
     @HandleBeforeLinkSave
     @HandleBeforeLinkDelete
     @HandleBeforeSave
+    @HandleBeforeDelete
+
     public void beforeSave(SpecialOffer specialOffer) {
 
         log.warn("HandleBeforeSave  for {} started ",SpecialOffer.class.getSimpleName());
