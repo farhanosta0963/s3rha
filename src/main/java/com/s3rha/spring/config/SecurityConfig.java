@@ -197,44 +197,44 @@ CorsConfigurationSource corsConfigurationSource() { // TODO do this for all bean
     source.registerCorsConfiguration("/**", configuration); // Apply this CORS config to all paths
     return source;
 }
-//
-//    @Order(2)
-//    @Bean
-//    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
-//        return httpSecurity
-//                .securityMatcher(new AntPathRequestMatcher("/api/**"))
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
-////                .cors().disable()
-//                .csrf(csrf -> csrf.disable()) // Only disable CSRF if you know what you're doing for API; handle properly in production!
-//                .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().permitAll())
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//
-//                .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
-////              .addFilterAfter(new ProductOwnershipFilter(productRepo),
-////                        BasicAuthenticationFilter.class)
-//
-//                .httpBasic(withDefaults())
-//                .exceptionHandling(ex -> {
-//                    ex.authenticationEntryPoint((request, response, authException) -> {
-//                        log.warn("Authentication failed: {} - Path: {}",
-//                                authException.getMessage(),
-//                                request.getRequestURI());
-//
-//                        // Delegate to the standard BearerToken handler
-//                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
-//                    });
-//
-//                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
-//                        log.warn("Access denied for {}: {} - Path: {}",
-//                                SecurityContextHolder.getContext().getAuthentication().getName(),
-//                                accessDeniedException.getMessage(),
-//                                request.getRequestURI());
-//
-//                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
-//                    });
-//                })
-//                .build();
-//    }
+
+    @Order(2)
+    @Bean
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        return httpSecurity
+                .securityMatcher(new AntPathRequestMatcher("/api/**"))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
+//                .cors().disable()
+                .csrf(csrf -> csrf.disable()) // Only disable CSRF if you know what you're doing for API; handle properly in production!
+                .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().permitAll())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
+//              .addFilterAfter(new ProductOwnershipFilter(productRepo),
+//                        BasicAuthenticationFilter.class)
+
+                .httpBasic(withDefaults())
+                .exceptionHandling(ex -> {
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        log.warn("Authentication failed: {} - Path: {}",
+                                authException.getMessage(),
+                                request.getRequestURI());
+
+                        // Delegate to the standard BearerToken handler
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.warn("Access denied for {}: {} - Path: {}",
+                                SecurityContextHolder.getContext().getAuthentication().getName(),
+                                accessDeniedException.getMessage(),
+                                request.getRequestURI());
+
+                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
+                    });
+                })
+                .build();
+    }
 
 
 
