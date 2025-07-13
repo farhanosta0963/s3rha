@@ -40,9 +40,7 @@ public  class   Account {
     private Long accountId;
     private BigInteger oauthId;
     private String roles = "ROLE_USER";
-    @Email
     private String email;
-    @NotEmpty
     private String userName;
     private String password;
     private String status;

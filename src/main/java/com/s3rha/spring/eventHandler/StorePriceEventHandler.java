@@ -50,7 +50,7 @@ public class StorePriceEventHandler {
 
 
 
-    @HandleBeforeCreate
+    @HandleBeforeCreate //TODO i need to make sure that am linking from the right direction :L
     public void beforeCreate(StorePrice storePrice) {
         log.warn("HandleBeforeCreate for {} started ",StorePrice.class.getSimpleName());
 //             Get current authenticated user
