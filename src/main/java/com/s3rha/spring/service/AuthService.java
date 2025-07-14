@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -220,7 +221,10 @@ private  final JwtEncoder jwtEncoder ;
                     savedUserDetails
                     ,generateVerificationCode()
                     ,LocalDateTime.now().plusMinutes(15));
+            log.warn("before sending ");
+
             sendVerificationEmail(savedUserDetails);
+            log.warn("after  sending ");
 
             createRefreshTokenCookie(httpServletResponse,refreshToken);
 
@@ -306,7 +310,6 @@ private  final JwtEncoder jwtEncoder ;
             throw new RuntimeException("User not found");
         }
     }
-
     private void sendVerificationEmail(Account user) throws MessagingException {
         String subject = "Account Verification";
 
@@ -451,7 +454,9 @@ private  final JwtEncoder jwtEncoder ;
             saveUserVerificationCode(savedUserDetails
                     ,generateVerificationCode()
                     ,LocalDateTime.now().plusMinutes(15));
+            log.warn("before sending ");
             sendVerificationEmail(savedUserDetails);
+            log.warn("after  sending ");
 
 
             createRefreshTokenCookie(httpServletResponse,refreshToken);

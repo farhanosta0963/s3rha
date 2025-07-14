@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.aspectj.SpringConfiguredConfiguration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @EnableConfigurationProperties(RSAKeyRecord.class)
 @SpringBootApplication
 @EnableJpaAuditing  // <-- Add this annotation
+@EnableAsync
 public class SpringSecurityApplication {
 
     public static void main(String[] args) {
