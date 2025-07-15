@@ -10,7 +10,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import java.util.List;
 
 public interface StorePriceRepo extends JpaRepository <StorePrice,Long>{
-    List<StorePrice> findByStoreAccount(StoreAccount storeAccount);
+//    List<StorePrice> findByStoreAccount(StoreAccount storeAccount);
 
     @Override
     @RestResource(exported = false)

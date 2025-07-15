@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface SpecialOfferRepo extends JpaRepository<SpecialOffer,Long> {
-    Optional<SpecialOffer> findByProdOfOfferListContaining(ProdOfOffer prodOfOffer);
+//    Optional<SpecialOffer> findByProdOfOfferListContaining(ProdOfOffer prodOfOffer);
 
 }

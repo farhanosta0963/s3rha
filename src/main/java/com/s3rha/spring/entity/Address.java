@@ -19,6 +19,10 @@ public class Address {
     private LocalDateTime datetimeOfInsert = LocalDateTime.now() ;
 
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "store_account_id")
+    private StoreAccount storeAccount;
 
 
     // Getters and setters

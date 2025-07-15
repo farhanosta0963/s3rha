@@ -93,10 +93,12 @@ private  final JwtEncoder jwtEncoder ;
     private void saveUserRefreshToken(Account userInfoEntity, String refreshToken) {
         var refreshTokenEntity = RefreshToken.builder()
                 .refreshToken(refreshToken)
+                .account(userInfoEntity)
                 .revoked(false)
                 .build();
-        userInfoEntity.addRefreshToken(refreshTokenEntity);
-        accountRepo.save(userInfoEntity) ;
+        refreshTokenRepo.save(refreshTokenEntity);
+//        userInfoEntity.addRefreshToken(refreshTokenEntity);
+//        accountRepo.save(userInfoEntity) ;
 
     }
 
@@ -151,9 +153,10 @@ private  final JwtEncoder jwtEncoder ;
                 .orElseThrow(()->
                         new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Refresh token revoked"));
 
-        Account userInfoEntity = accountRepo.findByRefreshTokenListContaining(refreshTokenEntity)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Account doesn't exist"));
+        Account userInfoEntity = refreshTokenEntity.getAccount() ;
+//                accountRepo.findByRefreshTokenListContaining(refreshTokenEntity)
+//                .orElseThrow(() ->
+//                        new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Account doesn't exist"));
 
 //        Account userInfoEntity = refreshTokenEntity.getAccount();
 

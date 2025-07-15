@@ -34,13 +34,13 @@ public class ProdOfCartEventHandler {
 
         log.warn("HandleBeforeSave  for {} started ",ProdOfCart.class.getSimpleName());
 //        checker.assertOwnership(prodOfCart.getShoppingCart().getUserAccount().getUserName());
-        ShoppingCart shoppingCart =
-                shoppingCartRepo.findByProdOfCartListContaining(prodOfCart)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        UserAccount userAccount =
-                userAccountRepo.findByShoppingCartListContaining(shoppingCart)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        checker.assertOwnership(userAccount.getUserName());
+//        ShoppingCart shoppingCart =
+//                shoppingCartRepo.findByProdOfCartListContaining(prodOfCart)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//        UserAccount userAccount =
+//                userAccountRepo.findByShoppingCartListContaining(shoppingCart)
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        checker.assertOwnership(prodOfCart.getShoppingCart().getUserAccount().getUserName());
 
     }
 }

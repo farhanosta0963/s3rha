@@ -23,10 +23,10 @@ public class Rating {
     private String feedback;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
-//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-//            CascadeType.DETACH, CascadeType.REFRESH})
-//    @JoinColumn(name = "account_id")
-//    private Account Account;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "account_id")
+    private Account Account;
 
     // Getters and setters
 }

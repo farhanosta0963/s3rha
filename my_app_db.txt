@@ -44,7 +44,7 @@ CREATE TABLE Account (
     image VARCHAR(255),
     roles varchar(100) ,
     oauth_id decimal(38,0) ,
-    is_store_account boolean ,
+    store_account_flag boolean ,
 datetime_of_insert DATETIME
 
 

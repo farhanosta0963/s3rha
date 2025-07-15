@@ -26,9 +26,10 @@ public class RefreshToken {
 
     private boolean revoked;
 
-
-//    @ManyToOne
-//    @JoinColumn(name = "account_id")
-//    private Account account;
+//
+       @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "account_id")
+    private Account account;
 
 }

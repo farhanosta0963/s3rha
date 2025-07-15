@@ -42,10 +42,11 @@ public class SpecialOfferEventHandler {
         log.warn("HandleBeforeSave  for {} started ",SpecialOffer.class.getSimpleName());
 //        checker.assertOwnership(specialOffer.getStoreAccount().getUserName());
 
-        checker.assertOwnership(storeAccountRepo.findBySpecialOfferListContaining(specialOffer)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getUserName()
-        );
+        checker.assertOwnership(specialOffer.getStoreAccount().getUserName()) ;
+//                storeAccountRepo.findBySpecialOfferListContaining(specialOffer)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+//                .getUserName()
+//        );
     }
 
 
@@ -58,7 +59,8 @@ public class SpecialOfferEventHandler {
         StoreAccount storeAccount = storeAccountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
-        storeAccount.addSpecialOffer(specialOffer);
+//        storeAccount.addSpecialOffer(specialOffer);
+        specialOffer.setStoreAccount(storeAccount);
     }
 
 }

@@ -29,28 +29,28 @@ public class SpecialOffer {
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
     private BigDecimal price;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "offer_id")
-    private List<ProdOfOffer> prodOfOfferList;
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "offer_id")
+//    private List<ProdOfOffer> prodOfOfferList;
+//
+//    public void addProdOfOffer(ProdOfOffer prodOfOffer) {
+//        if (prodOfOfferList == null) {
+//            prodOfOfferList = new ArrayList<>();
+//        }
+//        prodOfOfferList.add(prodOfOffer);
+//    }
+//
+//    public void removeProdOfOffer(ProdOfOffer prodOfOffer) {
+//        if (prodOfOfferList != null) {
+//            prodOfOfferList.remove(prodOfOffer);
+//        }
+//    }
 
-    public void addProdOfOffer(ProdOfOffer prodOfOffer) {
-        if (prodOfOfferList == null) {
-            prodOfOfferList = new ArrayList<>();
-        }
-        prodOfOfferList.add(prodOfOffer);
-    }
 
-    public void removeProdOfOffer(ProdOfOffer prodOfOffer) {
-        if (prodOfOfferList != null) {
-            prodOfOfferList.remove(prodOfOffer);
-        }
-    }
-
-
-//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-//            CascadeType.DETACH, CascadeType.REFRESH})
-//    @JoinColumn(name = "account_id")
-//    private StoreAccount storeAccount;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "account_id")
+    private StoreAccount storeAccount;
 
 //    @OneToMany(fetch = FetchType.EAGER,
 //            mappedBy = "offer",

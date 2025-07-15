@@ -13,6 +13,6 @@ public class StoreByUserInfoMapper {
         storeAccountByUser.setImage(storeAccountByUserRegistrationDto.image());
         storeAccountByUser.setPhoneNumber(storeAccountByUserRegistrationDto.phoneNumber());
         storeAccountByUser.setName(storeAccountByUserRegistrationDto.name());
-        return storeAccountByUser ;
+        return storeAccountByUser ; 
     }
 }

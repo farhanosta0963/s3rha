@@ -25,7 +25,6 @@ public class UserAccount extends Account {
 
     private String fname;
     private String lname;
-    @JsonIgnore
     private Integer scoreOfActivity;
 /*
      TODO add some
@@ -37,19 +36,18 @@ public class UserAccount extends Account {
      added so much activity in that date we will lock the score out and don't
      give him  anymore reward for that day
  */
-    @JsonIgnore
     private Integer scoreOfIntegrity;
     public UserAccount() {
-        setIsStoreAccount(false);
+        setStoreAccountFlag(false);
     }
 
 //    @OneToMany(cascade = CascadeType.ALL)
 //    @JoinColumn(name = "user_account_id")
 //    private List<UserPrice> userPriceList;
-
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_account_id")
-    private List<ShoppingCart> shoppingCartList;
+//
+//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+//    @JoinColumn(name = "user_account_id")
+//    private List<ShoppingCart> shoppingCartList;
 //
 //    public void addUserPrice(UserPrice userPrice) {
 //        if (userPriceList == null) {
@@ -63,19 +61,19 @@ public class UserAccount extends Account {
 //            userPriceList.remove(userPrice);
 //        }
 //    }
-
-    public void addShoppingCart(ShoppingCart shoppingCart) {
-        if (shoppingCartList == null) {
-            shoppingCartList = new ArrayList<>();
-        }
-        shoppingCartList.add(shoppingCart);
-    }
-
-    public void removeShoppingCart(ShoppingCart shoppingCart) {
-        if (shoppingCartList != null) {
-            shoppingCartList.remove(shoppingCart);
-        }
-    }
+//
+//    public void addShoppingCart(ShoppingCart shoppingCart) {
+//        if (shoppingCartList == null) {
+//            shoppingCartList = new ArrayList<>();
+//        }
+//        shoppingCartList.add(shoppingCart);
+//    }
+//
+//    public void removeShoppingCart(ShoppingCart shoppingCart) {
+//        if (shoppingCartList != null) {
+//            shoppingCartList.remove(shoppingCart);
+//        }
+//    }
 
 
 }

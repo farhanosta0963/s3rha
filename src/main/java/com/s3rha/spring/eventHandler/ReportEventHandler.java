@@ -42,11 +42,12 @@ public class ReportEventHandler {
         log.warn("HandleBeforeSave  for {} started ",Report.class.getSimpleName());
 //        checker.assertOwnership(report.getAccount().getUserName());
 
-        checker.assertOwnership(accountRepo
-                .findByReportListContaining(report)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getUserName()
-        );
+        checker.assertOwnership(report.getAccount().getUserName());
+//                accountRepo
+//                .findByReportListContaining(report)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+//                .getUserName()
+//        );
     }
 
 
@@ -59,7 +60,8 @@ public class ReportEventHandler {
         Account account = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
-        account.addReport(report);
+//        account.addReport(report);
+        report.setAccount(account);
     }
 
 }

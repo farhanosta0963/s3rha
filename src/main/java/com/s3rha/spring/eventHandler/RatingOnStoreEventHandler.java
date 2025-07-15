@@ -44,8 +44,9 @@ public class RatingOnStoreEventHandler {
         log.warn("HandleBeforeSave  for {} started ",RatingOnStore.class.getSimpleName());
 //        checker.assertOwnership(rating.getAccount().getUserName());
 
-        checker.assertOwnership(accountRepo.findByRatingListContaining(rating)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUserName());
+        checker.assertOwnership(rating.getAccount().getUserName());
+//                accountRepo.findByRatingListContaining(rating)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUserName());
     }
 
 
@@ -59,7 +60,8 @@ public class RatingOnStoreEventHandler {
         Account account = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
-        account.addRating(rating);
+//        account.addRating(rating);
+        rating.setAccount(account);
     }
 
 }

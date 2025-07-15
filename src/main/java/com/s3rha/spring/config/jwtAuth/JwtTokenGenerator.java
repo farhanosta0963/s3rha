@@ -44,11 +44,11 @@ public class JwtTokenGenerator {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("s3rha")
                 .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plus(10, ChronoUnit.SECONDS))
+                .expiresAt(Instant.now().plus(100000, ChronoUnit.SECONDS))
                 .subject(authentication.getName())
                 .claim("scope", permissions)
-                .claim("isStoreAccount",
-                        String.valueOf(account.getIsStoreAccount()))
+                .claim("storeAccountFlag",
+                        String.valueOf(account.getStoreAccountFlag()))
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

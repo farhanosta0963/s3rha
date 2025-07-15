@@ -28,8 +28,9 @@ public class ProductEventHandler {
     public void handleProductUpdate(Product product) {
         log.warn("HandleBeforeSave for {} started ",Product.class.getSimpleName());
 //        checker.assertOwnership(product.getAccount().getUserName());
-        checker.assertOwnership(accountRepo.findByProductListContaining(product)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUserName());
+        checker.assertOwnership(product.getAccount().getUserName())  ;
+//                accountRepo.findByProductListContaining(product)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUserName());
 
     }
 
@@ -44,7 +45,8 @@ public class ProductEventHandler {
         Account user = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        user.addProduct(product);
+//        user.addProduct(product);
+        product.setAccount(user);
     }
 
 }

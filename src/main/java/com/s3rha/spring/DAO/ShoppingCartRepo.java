@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ShoppingCartRepo extends JpaRepository <ShoppingCart,Long>{
-    Optional<ShoppingCart> findByProdOfCartListContaining(ProdOfCart prodOfCart);
+//    Optional<ShoppingCart> findByProdOfCartListContaining(ProdOfCart prodOfCart);
 
 
 

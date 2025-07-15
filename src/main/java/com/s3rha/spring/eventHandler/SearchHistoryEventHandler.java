@@ -38,10 +38,11 @@ public class SearchHistoryEventHandler {
         log.warn("HandleBeforeSave  for {} started ",SearchHistory.class.getSimpleName());
 //        checker.assertOwnership(searchHistory.getAccount().getUserName());
 
-        checker.assertOwnership(accountRepo.findBySearchHistoryListContaining(searchHistory)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getUserName()
-        );
+        checker.assertOwnership(searchHistory.getAccount().getUserName());
+//        accountRepo.findBySearchHistoryListContaining(searchHistory)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+//                .getUserName()
+//        );
     }
 
 
@@ -54,7 +55,8 @@ public class SearchHistoryEventHandler {
         // Find or create user
         Account account = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        account.addSearchHistory(searchHistory);
+//        account.addSearchHistory(searchHistory);
+        searchHistory.setAccount(account);
     }
 
 }

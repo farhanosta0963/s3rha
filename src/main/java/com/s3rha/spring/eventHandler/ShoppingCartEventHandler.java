@@ -38,10 +38,11 @@ public class ShoppingCartEventHandler {
         log.warn("HandleBeforeSave  for {} started ",ShoppingCart.class.getSimpleName());
 //        checker.assertOwnership(cart.getUserAccount().getUserName());
 
-        checker.assertOwnership(userRepository.findByShoppingCartListContaining(cart)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getUserName()
-        );
+        checker.assertOwnership(cart.getUserAccount().getUserName() ) ;
+//                userRepository.findByShoppingCartListContaining(cart)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
+//                .getUserName()
+//        );
     }
 
 
@@ -52,11 +53,12 @@ public class ShoppingCartEventHandler {
 
 //             Get current authenticated user
             String username = checker.getCurrentUser();
-            // Find or create user
+//            // Find or create user
             UserAccount user = userRepository.findByUserName(username)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            // Associate product with user
-            user.addShoppingCart(shoppingCart);
+//            // Associate product with user
+//            user.addShoppingCart(shoppingCart);
+            shoppingCart.setUserAccount(user);
         }
 //
 //    @HandleBeforeDelete

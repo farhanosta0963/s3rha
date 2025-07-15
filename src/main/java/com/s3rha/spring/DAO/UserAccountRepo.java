@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface UserAccountRepo extends JpaRepository <UserAccount,Long>{
     List<UserAccount> findByFname(String fname );
     Optional<UserAccount> findByUserName( String userName) ;
-    Optional<UserAccount> findByShoppingCartListContaining(ShoppingCart shoppingCart);
+//    Optional<UserAccount> findByShoppingCartListContaining(ShoppingCart shoppingCart);
 
 //    Optional<UserAccount> findByUserPriceListContaining(UserPrice userPrice);
 

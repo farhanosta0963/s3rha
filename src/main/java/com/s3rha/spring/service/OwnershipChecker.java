@@ -25,7 +25,7 @@ public class OwnershipChecker {
         if (isAdmin()) return;
 
         String current = getCurrentUser();
-        if (!current.equals(entityOwnerUsername)) {
+        if (current== null  ||  !current.equals(entityOwnerUsername)) {
             log.warn("User {} attempted to modify this owned by {}");
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't own this resource");
         }

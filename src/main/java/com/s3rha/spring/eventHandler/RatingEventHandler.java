@@ -38,8 +38,10 @@ public class RatingEventHandler {
         log.warn("HandleBeforeSave  for {} started ",Rating.class.getSimpleName());
 //        checker.assertOwnership(rating.getAccount().getUserName());
 
-        checker.assertOwnership(accountRepo.findByRatingListContaining(rating)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUserName());
+        checker.assertOwnership(rating.getAccount().getUserName()
+//                accountRepo.findByRatingListContaining(rating)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getUserName()
+                            );
     }
 
 
@@ -53,7 +55,8 @@ public class RatingEventHandler {
         Account account = accountRepo.findByUserName(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         // Associate product with user
-       account.addRating(rating);
+//       account.addRating(rating);
+        rating.setAccount(account);
     }
 
 }

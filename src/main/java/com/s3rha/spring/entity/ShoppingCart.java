@@ -30,29 +30,29 @@ public class ShoppingCart {
     private Boolean publicPrivateFlag;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "shopping_cart_id")
-    private List<ProdOfCart> prodOfCartList;
+//    @OneToMany(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "shopping_cart_id")
+//    private List<ProdOfCart> prodOfCartList;
+//
+//    public void addProdOfCart(ProdOfCart prodOfCart) {
+//        if (prodOfCartList == null) {
+//            prodOfCartList = new ArrayList<>();
+//        }
+//        prodOfCartList.add(prodOfCart);
+//    }
+//
+//    public void removeProdOfCart(ProdOfCart prodOfCart) {
+//        if (prodOfCartList != null) {
+//            prodOfCartList.remove(prodOfCart);
+//        }
+//    }
+//
 
-    public void addProdOfCart(ProdOfCart prodOfCart) {
-        if (prodOfCartList == null) {
-            prodOfCartList = new ArrayList<>();
-        }
-        prodOfCartList.add(prodOfCart);
-    }
-
-    public void removeProdOfCart(ProdOfCart prodOfCart) {
-        if (prodOfCartList != null) {
-            prodOfCartList.remove(prodOfCart);
-        }
-    }
-
-
-//    @ManyToOne(
-//            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-//                    CascadeType.DETACH, CascadeType.REFRESH})
-//    @JoinColumn(name = "user_account_id")
-//    private UserAccount userAccount;
+    @ManyToOne(
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+                    CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "user_account_id")
+    private UserAccount userAccount;
 
 
 }

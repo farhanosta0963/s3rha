@@ -38,14 +38,14 @@ public class ProdOfOfferEventHandler {
     public void beforeSave(ProdOfOffer prodOfOffer) {
 
         log.warn("HandleBeforeSave  for {} started ",ProdOfOffer.class.getSimpleName());
-//        checker.assertOwnership(prodOfCart.getShoppingCart().getUserAccount().getUserName());
-        SpecialOffer specialOffer =
-                specialOfferRepo.findByProdOfOfferListContaining(prodOfOffer)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        StoreAccount storeAccount =
-                storeAccountRepo.findBySpecialOfferListContaining(specialOffer)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        checker.assertOwnership(storeAccount.getUserName());
+        checker.assertOwnership(prodOfOffer.getOffer().getStoreAccount().getUserName());
+//        SpecialOffer specialOffer =
+//                specialOfferRepo.findByProdOfOfferListContaining(prodOfOffer)
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+////        StoreAccount storeAccount =
+////                storeAccountRepo.findBySpecialOfferListContaining(specialOffer)
+////                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//        checker.assertOwnership(prodOfOffer.getOffer().getStoreAccount().getUserName());
 
     }
 }

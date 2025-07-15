@@ -22,6 +22,10 @@ public class SocialMedia {
     private String accountType;
 
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinColumn(name = "store_account_id")
+    private StoreAccount storeAccount;
 
 
 
