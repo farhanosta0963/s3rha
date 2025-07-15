@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -32,6 +33,7 @@ import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequ
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -201,15 +203,25 @@ CorsConfigurationSource corsConfigurationSource() { // TODO do this for all bean
     @Order(2)
     @Bean
     public SecurityFilterChain apiSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        AuthenticationEntryPoint entryPoint = new BearerTokenAuthenticationEntryPoint();
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/api/**"))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
 //                .cors().disable()
                 .csrf(csrf -> csrf.disable()) // Only disable CSRF if you know what you're doing for API; handle properly in production!
-                .authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/ccc")).permitAll().anyRequest().permitAll())
+                .authorizeHttpRequests(auth -> auth
+                        // Permit all GET requests under /api/**
+                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+
+
+                        // Require authentication for any other requests under /api/**
+                        .anyRequest().authenticated()
+                )
+
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAccessTokenFilter(rsaKeyRecord, jwtTokenUtils,entryPoint), UsernamePasswordAuthenticationFilter.class)
 //              .addFilterAfter(new ProductOwnershipFilter(productRepo),
 //                        BasicAuthenticationFilter.class)
 
@@ -248,13 +260,14 @@ CorsConfigurationSource corsConfigurationSource() { // TODO do this for all bean
     @Order(3)
     @Bean
     public SecurityFilterChain refreshTokenSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        AuthenticationEntryPoint entryPoint = new BearerTokenAuthenticationEntryPoint();
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/auth/refresh-token/**"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtRefreshTokenFilter(rsaKeyRecord,jwtTokenUtils,refreshTokenRepo), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRefreshTokenFilter(rsaKeyRecord,jwtTokenUtils,refreshTokenRepo,entryPoint), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> {
                     ex.authenticationEntryPoint((request, response, authException) -> {
                         log.warn("Authentication failed: {} - Path: {}",
@@ -288,13 +301,14 @@ CorsConfigurationSource corsConfigurationSource() { // TODO do this for all bean
     @Order(4)
     @Bean
     public SecurityFilterChain logoutSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        AuthenticationEntryPoint entryPoint = new BearerTokenAuthenticationEntryPoint();
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/auth/logout/**"))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(new JwtRefreshTokenFilter(rsaKeyRecord,jwtTokenUtils,refreshTokenRepo), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRefreshTokenFilter(rsaKeyRecord,jwtTokenUtils,refreshTokenRepo,entryPoint), UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .addLogoutHandler(logoutHandlerService)

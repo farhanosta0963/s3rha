@@ -44,7 +44,7 @@ public class JwtTokenGenerator {
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("s3rha")
                 .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plus(999999 , ChronoUnit.MINUTES))
+                .expiresAt(Instant.now().plus(10, ChronoUnit.SECONDS))
                 .subject(authentication.getName())
                 .claim("scope", permissions)
                 .claim("isStoreAccount",

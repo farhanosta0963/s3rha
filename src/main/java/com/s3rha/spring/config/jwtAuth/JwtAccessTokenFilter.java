@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,13 +30,13 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAccessTokenFilter extends OncePerRequestFilter {
-
     private final RSAKeyRecord rsaKeyRecord;
     private final JwtTokenUtils jwtTokenUtils;
+    private final AuthenticationEntryPoint authenticationEntryPoint;
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain) throws ServletException, IOException, JwtValidationException {
 
         try{
 //            if (request.getRequestURI().equals("/api/ccc")) {
@@ -65,8 +67,11 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
 
             if(!userName.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null){
 
+
                 UserDetails userDetails = jwtTokenUtils.userDetails(userName);
-                if(jwtTokenUtils.isTokenValid(jwtToken,userDetails)){
+                boolean validFlag = jwtTokenUtils.isTokenValid(jwtToken,userDetails) ;
+
+                if(validFlag){
                     SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
 
                     UsernamePasswordAuthenticationToken createdToken = new UsernamePasswordAuthenticationToken(
@@ -83,8 +88,11 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request,response);
         }catch (JwtValidationException jwtValidationException){
-            log.error("[JwtAccessTokenFilter:doFilterInternal] Exception due to :{}",jwtValidationException.getMessage());
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,jwtValidationException.getMessage());
+            log.error("[JwtAccessTokenFilter:doFilterInternal] Exception due to :{}", jwtValidationException.getMessage());
+            authenticationEntryPoint.commence(request, response,
+                    new BadCredentialsException(jwtValidationException.getMessage(), jwtValidationException));
+            return;
+            // Important: stop the filter chainl
         }
     }
 }
