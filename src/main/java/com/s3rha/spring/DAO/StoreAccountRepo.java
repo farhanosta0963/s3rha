@@ -1,13 +1,18 @@
 package com.s3rha.spring.DAO;
 
 import com.s3rha.spring.entity.*;
+import com.s3rha.spring.projections.AccountPublicProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import java.util.List;
 import java.util.Optional;
+@RepositoryRestResource(
 
+        excerptProjection = AccountPublicProjection.class
+)
 public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
     Optional<StoreAccount> findByUserName(@Param("userName" )String userName) ;
 //    Optional<StoreAccount> findBySpecialOfferListContaining(SpecialOffer specialOffer);

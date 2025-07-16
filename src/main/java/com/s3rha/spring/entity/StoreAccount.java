@@ -1,5 +1,6 @@
 package com.s3rha.spring.entity;
 
+import com.s3rha.spring.projections.AccountPublicProjection;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ public class StoreAccount extends Account {
         setStoreAccountFlag(true);
     }
     private String name;
+
+    private String ownerProofDoc ;
 
     private Boolean verifiedFlag;
 

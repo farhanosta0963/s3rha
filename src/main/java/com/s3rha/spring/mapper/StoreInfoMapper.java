@@ -20,6 +20,7 @@ public class StoreInfoMapper {
         storeAccount.setPhoneNumber(storeAccountRegistrationDto.phoneNumber());
         storeAccount.setPassword(passwordEncoder.encode(storeAccountRegistrationDto.password()));
         storeAccount.setName(storeAccountRegistrationDto.name());
+        storeAccount.setOwnerProofDoc(storeAccountRegistrationDto.ownerProofDoc());
         return storeAccount ;
     }
 }

@@ -13,6 +13,7 @@ public record StoreAccountRegistrationDto(
         @Email(message = "Invalid email format")
         String email,
         String image,
+        String ownerProofDoc ,
 
         @NotBlank (message = "User password must not be empty")
         String password

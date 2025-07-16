@@ -56,8 +56,8 @@ verification_code text ,
 verification_code_expire_time datetime ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+    ON DELETE CASCADE
 ) ;
 
 -- 2. Store_account (referenced by User_prices, Rating, Social_media, Address and linked to Store_prices)
@@ -65,9 +65,10 @@ CREATE TABLE Store_account (
     account_id bigint  PRIMARY KEY,
     name VARCHAR(255),
     verified_flag BOOLEAN,
+    owner_proof_doc TEXT ,
     FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+    ON DELETE CASCADE
 
 );
 create table password_reset_token(
@@ -76,8 +77,8 @@ token varchar(10000),
 expiry_date datetime ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 create table refresh_token(
 id bigint auto_increment primary key ,
@@ -85,8 +86,8 @@ refresh_token varchar(10000),
 revoked boolean ,
 account_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 -- 3. User_account (referenced by Shopping_cart, User_prices, Rating)
 CREATE TABLE User_account (
@@ -96,8 +97,8 @@ CREATE TABLE User_account (
     score_of_activity INT,
     score_of_integrity INT,
  FOREIGN KEY (account_id) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+    ON DELETE CASCADE
 
 );
 
@@ -107,10 +108,11 @@ datetime_of_insert datetime DEFAULT CURRENT_TIMESTAMP,
 account_id bigint ,
  price_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action,
+ON UPDATE CASCADE
+    ON DELETE CASCADE,
 FOREIGN KEY (price_id) REFERENCES Price (price_id)
-    ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+    ON DELETE CASCADE
 ) ;
 
 create Table down_vote_on_user_price (
@@ -119,10 +121,11 @@ datetime_of_insert datetime DEFAULT CURRENT_TIMESTAMP ,
 account_id bigint ,
  price_id bigint ,
 FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action,
+ON UPDATE CASCADE
+    ON DELETE CASCADE,
 FOREIGN KEY (price_id) REFERENCES Price (price_id)
-    ON UPDATE no action ON DELETE no action
-) ;
+ON UPDATE CASCADE
+    ON DELETE CASCADE) ;
 
 
 
@@ -139,8 +142,8 @@ CREATE TABLE Product (
     description TEXT,
 datetime_of_insert DATETIME,
 FOREIGN KEY (account_id) REFERENCES Account ( account_id)
-ON UPDATE no action ON DELETE no action
-
+  ON UPDATE SET NULL
+      ON DELETE SET NULL
 
 );
 
@@ -154,8 +157,8 @@ CREATE TABLE Shopping_cart (
     public_private_flag BOOLEAN,
     user_account_id bigint,
     FOREIGN KEY (user_account_id) REFERENCES User_account(account_id)
-ON UPDATE no action ON DELETE no action
-
+	ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 
@@ -165,7 +168,8 @@ CREATE TABLE Store_price (
     quantity INT,
 
  FOREIGN KEY (price_id) REFERENCES Price (price_id)
-    ON UPDATE no action ON DELETE no action
+    	ON UPDATE CASCADE
+        ON DELETE CASCADE
 );
 
 
@@ -181,7 +185,8 @@ CREATE TABLE special_offer (
     price DECIMAL(10, 2),
     account_id bigint ,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-	ON UPDATE no action ON DELETE no action
+		ON UPDATE CASCADE
+        ON DELETE CASCADE
 
 );
 CREATE TABLE price (
@@ -194,9 +199,11 @@ CREATE TABLE price (
     Product_id bigint,
     is_store_price boolean ,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-    ON UPDATE no action ON DELETE no action,
+    	ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-    ON UPDATE no action ON DELETE no action
+ 	ON UPDATE CASCADE
+     ON DELETE CASCADE
 
 );
 
@@ -207,10 +214,11 @@ CREATE TABLE User_price (
     down_vote_count INT,
     user_account_id bigint,
     FOREIGN KEY (user_account_id) REFERENCES User_account(account_id)
-    ON UPDATE no action ON DELETE no action,
+	ON UPDATE CASCADE
+    ON DELETE CASCADE,
     FOREIGN KEY (price_id) REFERENCES Price (price_id)
-    ON UPDATE no action ON DELETE no action
-
+	ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 -- 9. Rating (references User_account, Product and Store_account)
@@ -221,28 +229,33 @@ CREATE TABLE Rating (
     datetime_of_insert DATETIME,
     account_id bigint,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-	ON UPDATE no action ON DELETE no action
-
+	ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 CREATE TABLE Rating_on_product(
 rate_id bigint PRIMARY KEY,
 Product_id bigint,
 store_account_id bigint ,
 FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE no action ON DELETE no action,
+ ON UPDATE SET NULL
+      ON DELETE SET NULL,
 FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-ON UPDATE no action ON DELETE no action,
+ON UPDATE CASCADE
+ON DELETE CASCADE,
 FOREIGN KEY (rate_id) REFERENCES Rating(rate_id)
-	ON UPDATE no action ON DELETE no action
+	ON UPDATE CASCADE
+    ON DELETE CASCADE
 
 );
 CREATE TABLE Rating_on_store(
 rate_id bigint PRIMARY KEY ,
 store_account_id bigint ,
 FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE no action ON DELETE no action,
+ON UPDATE CASCADE
+ON DELETE CASCADE,
 FOREIGN KEY (rate_id) REFERENCES Rating(rate_id)
-ON UPDATE no action ON DELETE no action
+ON UPDATE CASCADE
+ON DELETE CASCADE
 
 );
 
@@ -252,9 +265,11 @@ CREATE TABLE Prod_of_cart (id bigint AUTO_INCREMENT PRIMARY KEY,
     Shopping_Cart_id bigint,
     quantity INT,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-    ON UPDATE no action ON DELETE no action,
+    ON UPDATE SET NULL
+      ON DELETE SET NULL,
     FOREIGN KEY (Shopping_Cart_id) REFERENCES Shopping_cart(Shopping_Cart_id)
-ON UPDATE no action ON DELETE no action
+ON UPDATE CASCADE
+ON DELETE CASCADE
 
 );
 
@@ -264,9 +279,11 @@ CREATE TABLE Prod_of_offer (id bigint AUTO_INCREMENT PRIMARY KEY,
     offer_id bigint,
     quantity INT,
     FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-    ON UPDATE no action ON DELETE no action,
+   ON UPDATE SET NULL
+  ON DELETE SET NULL,
     FOREIGN KEY (offer_id) REFERENCES special_offer(offer_id)
-ON UPDATE no action ON DELETE no action
+ON UPDATE CASCADE
+ON DELETE CASCADE
 
 );
 
@@ -277,7 +294,8 @@ CREATE TABLE Search_history (
     datetime_of_insert DATETIME,
     account_id bigint,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-    ON UPDATE no action ON DELETE no action
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
 );
 
 -- 13. Report (references Account)
@@ -286,29 +304,32 @@ CREATE TABLE Report (
     datetime_of_insert DATETIME,
     description TEXT,
     account_id bigint,
+    screen_shot TEXT ,
     FOREIGN KEY (account_id) REFERENCES Account(account_id)
-ON UPDATE no action ON DELETE no action
+ON UPDATE CASCADE
+ON DELETE CASCADE
 
 );
 CREATE TABLE Report_on_account(
  report_id bigint  PRIMARY KEY ,
  reported_account_id bigint ,
 FOREIGN KEY ( reported_account_id ) REFERENCES Account( account_id)
-ON UPDATE no action ON DELETE no action,
+ON UPDATE CASCADE
+ON DELETE CASCADE,
 FOREIGN KEY ( report_id) REFERENCES Report( report_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+ON DELETE CASCADE
 );
 CREATE TABLE Report_on_product(
  report_id bigint PRIMARY KEY,
  Product_id bigint ,
 FOREIGN KEY (Product_id) REFERENCES Product(Product_id)
-ON UPDATE no action ON DELETE no action,
+ON UPDATE CASCADE
+ON DELETE CASCADE,
 FOREIGN KEY ( report_id) REFERENCES Report( report_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+ON DELETE CASCADE
 );
--- 14. Social_media (references Store_account)
 CREATE TABLE Social_media (    social_media_id bigint AUTO_INCREMENT PRIMARY KEY,
 
     social_media_account VARCHAR(255),
@@ -316,11 +337,10 @@ CREATE TABLE Social_media (    social_media_id bigint AUTO_INCREMENT PRIMARY KEY
     account_type VARCHAR(50),
 datetime_of_insert DATETIME,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+ON DELETE CASCADE
 );
 
--- 15. Address (references Store_account)
 CREATE TABLE Address (
     address_id bigint AUTO_INCREMENT PRIMARY KEY,
 
@@ -333,8 +353,8 @@ CREATE TABLE Address (
     store_account_id bigint,
 datetime_of_insert DATETIME,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
-ON UPDATE no action ON DELETE no action
-
+ON UPDATE CASCADE
+ON DELETE CASCADE
 );
 SET FOREIGN_KEY_CHECKS = 1;
 -- Populate Account table (users and stores)

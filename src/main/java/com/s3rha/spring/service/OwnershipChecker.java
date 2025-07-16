@@ -11,10 +11,12 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class OwnershipChecker {
 
-    public boolean isAdmin() {
+    public boolean isAdminOrModerator() {
         return SecurityContextHolder.getContext().getAuthentication()
                 .getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("SCOPE_WRITE"));
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN")
+                        || a.getAuthority().equals("SCOPE_WRITE")
+                            || a.getAuthority().equals("ROLE_MODERATOR"));
     }
 
     public String getCurrentUser() {
@@ -22,12 +24,23 @@ public class OwnershipChecker {
     }
 
     public void assertOwnership(String entityOwnerUsername) {
-        if (isAdmin()) return;
+        if (isAdminOrModerator()) return;
 
         String current = getCurrentUser();
         if (current== null  ||  !current.equals(entityOwnerUsername)) {
-            log.warn("User {} attempted to modify this owned by {}");
+            log.warn("User {} attempted to modify this owned by {}",current,entityOwnerUsername);
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't own this resource");
         }
     }
+
+    public void assertAdminOrModerator() {
+        log.warn("user {} is being checked if he is admin or moderator ",getCurrentUser());
+        if(!isAdminOrModerator()) {
+            log.warn("user {} is NOT  admin or moderator ",getCurrentUser());
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are neither an admin nor a moderator ");
+        }
+    }
+
+
+
 }

@@ -81,8 +81,8 @@ public class JwtTokenGenerator {
         if (roles.contains("ROLE_ADMIN")) {
             permissions.addAll(List.of("READ", "WRITE", "DELETE"));
         }
-        if (roles.contains("ROLE_MANAGER")) {
-            permissions.add("READ");//TODO add more permissions
+        if (roles.contains("ROLE_MODERATOR")) {
+            permissions.addAll(List.of("READ", "WRITE", "DELETE"));
         }
         if (roles.contains("ROLE_USER")) {
             permissions.add("READ");
