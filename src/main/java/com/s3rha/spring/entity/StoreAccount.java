@@ -1,6 +1,5 @@
 package com.s3rha.spring.entity;
 
-import com.s3rha.spring.projections.AccountPublicProjection;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Builder;

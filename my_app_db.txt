@@ -440,3 +440,5 @@ INSERT INTO Report (datetime_of_insert, description, account_id) VALUES
 -- Populate Report_on_product
 INSERT INTO Report_on_product (report_id, Product_id) VALUES
 (2, 3);
+
+update account set roles = "ROLE_MODERATOR" where account_id = 4
