@@ -21,6 +21,7 @@ public class ProductModerationService {
     private final PriceRepo priceRepo;
     private final ProdOfCartRepo prodOfCartRepo ;
     private final ProdOfOfferRepo prodOfOfferRepo ;
+    
     @Transactional
     public void mergeProducts(Long keepId, List<Long> mergeIds) {
         Product keepProduct = productRepo.findById(keepId)

@@ -37,10 +37,9 @@ public  class   Account {
     private String userName;
     private String password;
     private String status;
-
     private String phoneNumber;
     private String image;
-    private Boolean StoreAccountFlag;//TODO better name StoreAccountFlag and use the auto generated IsStoreACCOUntFlag
+    private Boolean StoreAccountFlag;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now();
 
 

@@ -226,7 +226,7 @@ CorsConfigurationSource corsConfigurationSource() { // TODO do this for all bean
 //                        BasicAuthenticationFilter.class)
 
                 .httpBasic(withDefaults())
-                .exceptionHandling(ex -> {
+                .exceptionHandling(ex -> {//TODO do this exception hanndling for the rest of the chains :L
                     ex.authenticationEntryPoint((request, response, authException) -> {
                         log.warn("Authentication failed: {} - Path: {}",
                                 authException.getMessage(),
