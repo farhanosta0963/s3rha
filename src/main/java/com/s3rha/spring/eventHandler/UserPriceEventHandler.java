@@ -31,8 +31,8 @@ public class UserPriceEventHandler {
     private final OwnershipChecker checker;
 
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+//    @HandleBeforeLinkSave
+//    @HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

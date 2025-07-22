@@ -26,9 +26,7 @@ public class UserPrice extends Price{
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id")
-    private List<Product> productList;
+
 
     @ManyToMany(fetch = FetchType.LAZY,//TODO test for delete  issues here
             cascade =  {CascadeType.PERSIST, CascadeType.MERGE,
@@ -49,5 +47,27 @@ public class UserPrice extends Price{
             inverseJoinColumns = @JoinColumn(name = "account_id")
     )
     private List<Account> downVotingAccountList;
+
+
+    public void addUpVotedAccount(Account account) {
+        if (!upVotedAccountList.contains(account)) {
+            upVotedAccountList.add(account);
+        }
+    }
+
+    public void removeUpVotedAccount(Account account) {
+        upVotedAccountList.remove(account);
+    }
+
+    public void addDownVotingAccount(Account account) {
+        if (!downVotingAccountList.contains(account)) {
+            downVotingAccountList.add(account);
+        }
+    }
+
+    public void removeDownVotingAccount(Account account) {
+        downVotingAccountList.remove(account);
+    }
+
 
 }
