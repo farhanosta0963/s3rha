@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -146,6 +147,7 @@ public class SecurityConfig {
         public SecurityFilterChain signInSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/auth/sign-in"))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth. anyRequest().permitAll())
                 //                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
@@ -186,19 +188,40 @@ public class SecurityConfig {
 ////                .build();
 ////    }
 //
-@Bean // This bean defines your CORS rules for Spring Security
-CorsConfigurationSource corsConfigurationSource() { // TODO do this for all beans !!
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Your frontend URL
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    configuration.setAllowedHeaders(List.of("*")); // Allow all headers
-    configuration.setAllowCredentials(true); // Allow credentials (cookies, auth headers)
-    configuration.setMaxAge(3600L); // Max age for preflight cache
 
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration); // Apply this CORS config to all paths
-    return source;
-}
+
+
+
+
+
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+//
+//@Bean // This bean defines your CORS rules for Spring Security
+//CorsConfigurationSource corsConfigurationSource() { // TODO do this for all beans !!
+//    CorsConfiguration configuration = new CorsConfiguration();
+//    configuration.setAllowedOrigins(List.of("http://localhost:3000")); // Your frontend URL
+//    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//    configuration.setAllowedHeaders(List.of("*")); // Allow all headers
+//    configuration.setAllowCredentials(true); // Allow credentials (cookies, auth headers)
+//    configuration.setMaxAge(3600L); // Max age for preflight cache
+//
+//    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//    source.registerCorsConfiguration("/**", configuration); // Apply this CORS config to all paths
+//    return source;
+//}
 
     @Order(2)
     @Bean
