@@ -286,6 +286,8 @@ public class SecurityConfig {
         AuthenticationEntryPoint entryPoint = new BearerTokenAuthenticationEntryPoint();
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/auth/refresh-token/**"))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
@@ -327,6 +329,8 @@ public class SecurityConfig {
         AuthenticationEntryPoint entryPoint = new BearerTokenAuthenticationEntryPoint();
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/auth/logout/**"))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()))
@@ -368,6 +372,8 @@ public class SecurityConfig {
     public SecurityFilterChain registerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
                 .securityMatcher(new AntPathRequestMatcher("/auth/sign-up/**"))
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
+
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth.anyRequest().permitAll())
