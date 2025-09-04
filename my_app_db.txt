@@ -30,6 +30,9 @@ DROP TABLE IF EXISTS verification_code;
 DROP TABLE IF EXISTS password_reset_token;
 DROP TABLE IF EXISTS down_vote_on_user_price;
 DROP TABLE IF EXISTS up_vote_on_user_price;
+DROP TABLE IF EXISTS store_reference_by_user ;
+DROP TABLE IF EXISTS recommendation_log ;
+
 
 -- Create tables
 
@@ -65,12 +68,29 @@ CREATE TABLE Store_account (
     account_id bigint  PRIMARY KEY,
     name VARCHAR(255),
     verified_flag BOOLEAN,
+    reference_made_by_user_flag BOOLEAN,
     owner_proof_doc TEXT ,
     FOREIGN KEY ( account_id ) REFERENCES Account ( account_id)
-ON UPDATE CASCADE
+	ON UPDATE CASCADE
     ON DELETE CASCADE
-
 );
+
+CREATE TABLE store_reference_by_user (
+	reference_id bigint AUTO_INCREMENT primary key ,
+    referencing_account_id bigint ,
+    referenced_store_id bigint,
+    name VARCHAR(255),
+    verified_flag BOOLEAN,
+    reference_made_by_user_flag BOOLEAN,
+    owner_proof_doc TEXT ,
+	FOREIGN KEY ( referenced_store_id ) REFERENCES Store_account (account_id)
+	ON UPDATE CASCADE
+    ON DELETE CASCADE ,
+    FOREIGN KEY ( referencing_account_id ) REFERENCES Account (account_id)
+	ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
 create table password_reset_token(
 id bigint auto_increment primary key ,
 token varchar(10000),
@@ -161,6 +181,14 @@ CREATE TABLE Shopping_cart (
     ON DELETE CASCADE
 );
 
+CREATE TABLE recommendation_log (
+  `id` bigint(20) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `product_id` varchar(255) NOT NULL,
+  `score` decimal(5,2) DEFAULT NULL,
+  `method` varchar(50) DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- 6. Store_price (references Store_account and Product)
 CREATE TABLE Store_price (
@@ -359,9 +387,9 @@ ON DELETE CASCADE
 SET FOREIGN_KEY_CHECKS = 1;
 -- Populate Account table (users and stores)
 INSERT INTO Account (user_name, email, password, status, phone_number, image, datetime_of_insert) VALUES
-('john_doe', 'john@example.com', 'userpass1', 'active', '555-1234', 'john.jpg', NOW()),
-('jane_smith', 'jane@example.com', 'userpass2', 'active', '555-5678', 'jane.jpg', NOW()),
-('tech_store', 'tech@store.com', 'storepass1', 'verified', '555-8765', 'techstore.jpg', NOW()),
+('john_doe', 'john@example.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'active', '555-1234', 'john.jpg', NOW()),
+('jane_smith', 'jane@example.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'active', '555-5678', 'jane.jpg', NOW()),
+('tech_store', 'tech@store.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'verified', '555-8765', 'techstore.jpg', NOW()),
 ('farhan', 'fashion@shop.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'pending', '555-4321', 'fashion.jpg', NOW());
 
 -- Populate User_account
@@ -442,3 +470,5 @@ INSERT INTO Report_on_product (report_id, Product_id) VALUES
 (2, 3);
 
 update account set roles = "ROLE_MODERATOR" where account_id = 4
+---------------------------
+SET FOREIGN_KEY_CHECKS = 1;

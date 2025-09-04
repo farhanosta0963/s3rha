@@ -28,8 +28,8 @@ public class ShoppingCartEventHandler {
     private final OwnershipChecker checker;
 
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

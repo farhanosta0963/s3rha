@@ -34,8 +34,8 @@ public class RatingOnStoreEventHandler {
 
 
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

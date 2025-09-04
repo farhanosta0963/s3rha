@@ -2,7 +2,6 @@ package com.s3rha.spring.controller;
 
 import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.dto.*;
-import com.s3rha.spring.entity.Product;
 
 import com.s3rha.spring.service.AuthService;
 import jakarta.mail.MessagingException;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,20 +91,7 @@ public class AuthController {
 //        return ResponseEntity.created(location).body(savedUser);
         return ResponseEntity.ok(authService.registerStore(storeAccountRegistrationDto,httpServletResponse));
     }
-    @PostMapping("/sign-up-storeByUser")
-    public ResponseEntity<?> registerStore(@Valid @RequestBody StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto,
-                                          BindingResult bindingResult, HttpServletResponse httpServletResponse){
 
-        log.warn("[AuthController:registerUser]Signup Process Started for store account byyyyyyyyy User:{}",storeAccountByUserRegistrationDto.name());
-//        if (bindingResult.hasErrors()) {
-//            List<String> errorMessage = bindingResult.getAllErrors().stream()
-//                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
-//                    .toList();
-//            log.error("[AuthController:registerUser]Errors in store byyyyy User:{}",errorMessage);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-//        }
-        return ResponseEntity.ok(authService.registerStoreByUser(storeAccountByUserRegistrationDto,httpServletResponse));
-    }
     // email verify
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser( @Valid @RequestBody VerifyUserDto verifyUserDto) {

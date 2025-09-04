@@ -32,8 +32,8 @@ public class ReportOnProductEventHandler {
     private final AccountRepo accountRepo ;
     private final OwnershipChecker checker;
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

@@ -30,8 +30,8 @@ public class ProdOfOfferEventHandler {
     private final OwnershipChecker checker;
 
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

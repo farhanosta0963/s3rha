@@ -28,8 +28,8 @@ public class SearchHistoryEventHandler {
     private final OwnershipChecker checker;
 
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

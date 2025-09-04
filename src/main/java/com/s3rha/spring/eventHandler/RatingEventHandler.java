@@ -29,8 +29,8 @@ public class RatingEventHandler {
     private final OwnershipChecker checker;
 
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
     public void beforeSave(Rating rating) {

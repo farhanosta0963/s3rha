@@ -20,8 +20,8 @@ public class ProductEventHandler {
     private final OwnershipChecker checker;
     private final AccountRepo accountRepo;
 
-    @HandleBeforeLinkDelete
-    @HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
     @HandleBeforeSave
     @HandleBeforeDelete
 

@@ -25,8 +25,8 @@ public class StoreAccountEventHandler {
 
     //  TODO disable in security the ability to modify on parent account or parent report and so on ....
 
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     @HandleBeforeDelete
 

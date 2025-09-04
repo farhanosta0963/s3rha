@@ -59,6 +59,8 @@ private  final JwtEncoder jwtEncoder ;
     private final VerificationCodeRepo verificationCodeRepo ;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final Random random ;
+    private final OwnershipChecker ownershipChecker;
+    private final StoreReferenceByUserRepo storeReferenceByUserRepo;
     @Transactional
     public AuthResponseDto  getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
@@ -477,18 +479,29 @@ private  final JwtEncoder jwtEncoder ;
 
     }
     @Transactional
-    public StoreAccount registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
+    public Long registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
         try{
             AuthService.log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
 
 
             StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+            userDetailsEntity.setReferenceMadeByUserFlag(true);
+//            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
+            String nameOfTheUser = ownershipChecker.getCurrentUser();
+            Account accountOfTheUser =   accountRepo.findByUserName(nameOfTheUser)
+                    .orElseThrow(()->{
+                AuthService.log.error("[AuthService:RegisterStoreByUser ] User :{} not found",nameOfTheUser);
+                return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
+//            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
 
-            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
+            StoreReferenceByUser storeReferenceByUser = new StoreReferenceByUser();
+            storeReferenceByUser.setReferencedStoreAccount(userDetailsEntity);
+            storeReferenceByUser.setReferencingAccount(accountOfTheUser);
 
-            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
+            Long z = storeReferenceByUserRepo.save(storeReferenceByUser).getReferencedStoreAccount().getAccountId() ;
 
-            return userDetailsEntity  ;
+
+            return  z ;
 
 
         }catch (Exception e){

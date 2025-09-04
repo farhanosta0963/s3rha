@@ -1,17 +1,8 @@
 package com.s3rha.spring.entity;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.NoArgsConstructor;
-import net.minidev.json.annotate.JsonIgnore;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 //2. Store Account Entity
 ////        java
@@ -23,14 +14,16 @@ import java.util.List;
 
 public class StoreAccount extends Account {
 
+
+    private String name;
+    private String ownerProofDoc ;
+    private Boolean referenceMadeByUserFlag;
+    private Boolean verifiedFlag;
+
     public StoreAccount() {
         setStoreAccountFlag(true);
     }
-    private String name;
 
-    private String ownerProofDoc ;
-
-    private Boolean verifiedFlag;
 
 //    @OneToMany(mappedBy = "storeAccount",
 //            fetch = FetchType.EAGER,

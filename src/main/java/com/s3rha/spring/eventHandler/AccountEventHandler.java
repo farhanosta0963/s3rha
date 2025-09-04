@@ -25,8 +25,8 @@ public class AccountEventHandler {
 
     //  TODO disable in security the ability to modify on parent account or parent report and so on ....
     @HandleBeforeDelete
-    @HandleBeforeLinkSave
-    @HandleBeforeLinkDelete
+    //@HandleBeforeLinkSave
+    //@HandleBeforeLinkDelete
     @HandleBeforeSave
     public void beforeSave(Account account) {
 
