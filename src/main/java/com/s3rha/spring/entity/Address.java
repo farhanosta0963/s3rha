@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,6 +17,8 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Address_id ;
     private String address;
+    private BigDecimal latitude ;
+    private BigDecimal longitude ;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now() ;
 
 
