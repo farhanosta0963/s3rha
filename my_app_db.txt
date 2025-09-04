@@ -345,13 +345,13 @@ CREATE TABLE Address (
     address_id bigint AUTO_INCREMENT PRIMARY KEY,
 
      -- 		formatted_address TEXT,
-     --         latitude DECIMAL(10, 8),
-     --         longitude DECIMAL(11, 8),
-     --         place_id VARCHAR(255),  // Google's unique place identifier TODO add this for the googlemaps api and delete the below adreess var
 
+     --         place_id VARCHAR(255),  // Google's unique place identifier TODO add this for the googlemaps api and delete the below adreess var
+	latitude DECIMAL(11, 8),
+	longitude DECIMAL(11, 8),
     address VARCHAR(255),
     store_account_id bigint,
-datetime_of_insert DATETIME,
+	datetime_of_insert DATETIME,
     FOREIGN KEY (store_account_id) REFERENCES Store_account(account_id)
 ON UPDATE CASCADE
 ON DELETE CASCADE
