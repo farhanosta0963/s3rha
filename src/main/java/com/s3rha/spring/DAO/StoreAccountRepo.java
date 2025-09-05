@@ -22,7 +22,7 @@ public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
 
 
 
-    List<StoreAccountProjection> findAllProjectedBy();
+//    List<StoreAccountProjection> findAllProjectedBy();
     Optional<StoreAccountProjection> findProjectedByAccountId(Long accountId);
     Page<StoreAccountProjection> findAllProjectedBy(Pageable pageable);
 
@@ -40,6 +40,7 @@ public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
 //    Optional<StoreAccount> findByRatingOnProductListContaining(RatingOnProduct ratingOnProduct);
 
     List<StoreAccount> findByName(String name ) ;
+    List<StoreAccount> findByNameContainingIgnoreCase(String name);
 //    @Override
 //    @RestResource(exported = false)
 //    void delete(StoreAccount entity);
