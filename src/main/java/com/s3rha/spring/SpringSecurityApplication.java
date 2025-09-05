@@ -25,6 +25,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.InetAddress;
+
 @EnableConfigurationProperties(RSAKeyRecord.class)
 @SpringBootApplication
 @EnableJpaAuditing  // <-- Add this annotation
@@ -50,6 +52,7 @@ public class SpringSecurityApplication {
             System.out.println(bCryptPasswordEncoder.encode("123"));
             //some produ
             Product pp = new Product() ;
+
 
             };
     }

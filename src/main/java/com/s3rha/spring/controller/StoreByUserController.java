@@ -1,6 +1,7 @@
 package com.s3rha.spring.controller;
 
 import com.s3rha.spring.dto.StoreAccountByUserRegistrationDto;
+import com.s3rha.spring.dto.StoreByUserSignUpResponse;
 import com.s3rha.spring.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -32,6 +33,10 @@ public class StoreByUserController {
 //            log.error("[AuthController:registerUser]Errors in store byyyyy User:{}",errorMessage);
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
 //        }
-        return ResponseEntity.ok("this is the store refrence ID : "+ authService.registerStoreByUser(storeAccountByUserRegistrationDto,httpServletResponse));
+        Long createdStoreID = authService.registerStoreByUser(storeAccountByUserRegistrationDto,httpServletResponse) ;
+        StoreByUserSignUpResponse storeByUserSignUpResponse = new StoreByUserSignUpResponse() ;
+        storeByUserSignUpResponse.setSelf("http://localhost:8080/api/storeAccounts/"+createdStoreID);
+
+        return ResponseEntity.ok(storeByUserSignUpResponse);
     }
 }
