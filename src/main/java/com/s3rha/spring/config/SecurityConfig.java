@@ -154,9 +154,24 @@ public class SecurityConfig {
                 .userDetailsService(userInfoManagerConfig)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //
-                .exceptionHandling(ex -> {
-                    ex.authenticationEntryPoint((request, response, authException) ->
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
+                .exceptionHandling(ex -> {//TODO do this exception hanndling for the rest of the chains :L
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        log.warn("Authentication failed: {} - Path: {}",
+                                authException.getMessage(),
+                                request.getRequestURI());
+
+                        // Delegate to the standard BearerToken handler
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.warn("Access denied for {}: {} - Path: {}",
+                                SecurityContextHolder.getContext().getAuthentication().getName(),
+                                accessDeniedException.getMessage(),
+                                request.getRequestURI());
+
+                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
+                    });
                 })
 //                .exceptionHandling(ex -> {
 //                    ex.authenticationEntryPoint((request, response, authException) -> {
@@ -378,6 +393,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.anyRequest().permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> {//TODO do this exception hanndling for the rest of the chains :L
+                    ex.authenticationEntryPoint((request, response, authException) -> {
+                        log.warn("Authentication failed: {} - Path: {}",
+                                authException.getMessage(),
+                                request.getRequestURI());
+
+                        // Delegate to the standard BearerToken handler
+                        new BearerTokenAuthenticationEntryPoint().commence(request, response, authException);
+                    });
+
+                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        log.warn("Access denied for {}: {} - Path: {}",
+                                SecurityContextHolder.getContext().getAuthentication().getName(),
+                                accessDeniedException.getMessage(),
+                                request.getRequestURI());
+
+                        new BearerTokenAccessDeniedHandler().handle(request, response, accessDeniedException);
+                    });
+                })
                 .build();
     }
 

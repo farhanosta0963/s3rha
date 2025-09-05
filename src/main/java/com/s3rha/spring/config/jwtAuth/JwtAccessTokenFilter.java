@@ -15,10 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtValidationException;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -87,10 +84,11 @@ public class JwtAccessTokenFilter extends OncePerRequestFilter {
             log.warn("[JwtAccessTokenFilter:doFilterInternal] Completed");
 
             filterChain.doFilter(request,response);
-        }catch (JwtValidationException jwtValidationException){
+        }catch (JwtException | IllegalArgumentException   jwtValidationException){
             log.error("[JwtAccessTokenFilter:doFilterInternal] Exception due to :{}", jwtValidationException.getMessage());
             authenticationEntryPoint.commence(request, response,
                     new BadCredentialsException(jwtValidationException.getMessage(), jwtValidationException));
+
             return;
             // Important: stop the filter chainl
         }
