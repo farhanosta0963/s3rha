@@ -26,7 +26,8 @@ public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
     Optional<StoreAccountProjection> findProjectedByAccountId(Long accountId);
     Page<StoreAccountProjection> findAllProjectedBy(Pageable pageable);
 
-
+    List<StoreAccount> findByName(String name ) ;
+    List<StoreAccount> findByNameContainingIgnoreCase(String name);
 
 
 
@@ -39,8 +40,7 @@ public interface StoreAccountRepo extends JpaRepository <StoreAccount,Long>{
 //    Optional<StoreAccount> findBySocialMediaContaining(SocialMedia socialMedia);
 //    Optional<StoreAccount> findByRatingOnProductListContaining(RatingOnProduct ratingOnProduct);
 
-    List<StoreAccount> findByName(String name ) ;
-    List<StoreAccount> findByNameContainingIgnoreCase(String name);
+
 //    @Override
 //    @RestResource(exported = false)
 //    void delete(StoreAccount entity);
