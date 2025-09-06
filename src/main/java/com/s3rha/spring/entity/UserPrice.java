@@ -17,8 +17,8 @@ public class UserPrice extends Price{
        setIsStorePrice(false);
     }
 
-   private  Integer upVoteCount ;
-   private  Integer downVoteCount ;
+   private  Integer upVoteCount = 0  ;
+   private  Integer downVoteCount = 0  ;
 
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,

@@ -8,9 +8,7 @@ import com.s3rha.spring.dto.*;
 import com.s3rha.spring.entity.*;
 
 
-import com.s3rha.spring.mapper.StoreByUserInfoMapper;
-import com.s3rha.spring.mapper.StoreInfoMapper;
-import com.s3rha.spring.mapper.UserInfoMapper;
+import com.s3rha.spring.mapper.*;
 import com.s3rha.spring.DAO.RefreshTokenRepo;
 
 import jakarta.mail.MessagingException;
@@ -22,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,7 +34,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 
-
+import static java.lang.Long.parseLong;
 
 
 @Service
@@ -61,6 +58,11 @@ private  final JwtEncoder jwtEncoder ;
     private final Random random ;
     private final OwnershipChecker ownershipChecker;
     private final StoreReferenceByUserRepo storeReferenceByUserRepo;
+    private final AddressInfoMapper addressInfoMapper;
+    private final UserPriceInfoMapper userPriceInfoMapper;
+    private final UserPriceRepo userPriceRepo;
+    private final AddressRepo addressRepo;
+    private final ProductRepo productRepo;
     @Transactional
     public AuthResponseDto  getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
@@ -479,12 +481,15 @@ private  final JwtEncoder jwtEncoder ;
 
     }
     @Transactional
-    public Long registerStoreByUser(@Valid StoreAccountByUserRegistrationDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
+    public RegisterStoreByUserWithPriceDto registerStoreByUserWithPrice(@Valid StoreAccountByUserWithAddressAndPriceDto storeAccountByUserRegistrationDto, HttpServletResponse httpServletResponse) {
         try{
             AuthService.log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
 
 
             StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+            Address address = addressInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+            UserPrice userPrice = userPriceInfoMapper.convertToEntity(storeAccountByUserRegistrationDto) ;
+
             userDetailsEntity.setReferenceMadeByUserFlag(true);
 //            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
             String nameOfTheUser = ownershipChecker.getCurrentUser();
@@ -494,14 +499,40 @@ private  final JwtEncoder jwtEncoder ;
                 return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
 //            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
 
+            StoreAccount storeAccountAfterSave = storeInfoRepo.save(userDetailsEntity );
+            userPrice.setUserAccount(
+                    userAccountRepo.findByUserName(nameOfTheUser).orElseThrow(()->{
+                AuthService.log.error("[AuthService:RegisterStoreByUser ] User :{} not found",nameOfTheUser);
+                return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");}));
+            userPrice.setStoreAccount(storeAccountAfterSave);
+            String prodcuturlll = storeAccountByUserRegistrationDto.productURL() ;
+
+
+            String idStr = prodcuturlll.replaceAll(".*/(\\d+)/?$", "$1");
+            Product product = productRepo.findById(Long.parseLong(idStr)).orElseThrow(()->{
+                AuthService.log.error("[AuthService:RegisterStoreByUser ] Product :{} not found",idStr);
+                return new ResponseStatusException(HttpStatus.NOT_FOUND,"Product NOT FOUND ");});
+
+        ;   userPrice.setProduct(product);
+            UserPrice userPriceAfterSave =  userPriceRepo.save(userPrice) ;
+
+            address.setStoreAccount(storeAccountAfterSave);
+            Address addressAfterSave =  addressRepo.save(address);
+
+
             StoreReferenceByUser storeReferenceByUser = new StoreReferenceByUser();
-            storeReferenceByUser.setReferencedStoreAccount(userDetailsEntity);
+            storeReferenceByUser.setReferencedStoreAccount(storeAccountAfterSave);
             storeReferenceByUser.setReferencingAccount(accountOfTheUser);
 
             Long z = storeReferenceByUserRepo.save(storeReferenceByUser).getReferencedStoreAccount().getAccountId() ;
 
+            RegisterStoreByUserWithPriceDto registerStoreByUserWithPriceDto = new RegisterStoreByUserWithPriceDto( );
+            registerStoreByUserWithPriceDto.setStoreLink("http://localhost:8080/api/storeAccounts/"+storeAccountAfterSave.getAccountId());
+            registerStoreByUserWithPriceDto.setAddressLink("http://localhost:8080/api/addresses/"+addressAfterSave.getAddress_id());
+            registerStoreByUserWithPriceDto.setPriceLink("http://localhost:8080/api/userPrices/"+userPriceAfterSave.getPriceId());
 
-            return  z ;
+
+            return  registerStoreByUserWithPriceDto ;
 
 
         }catch (Exception e){
@@ -646,7 +677,7 @@ private  final JwtEncoder jwtEncoder ;
         // Facebook has 'id' field (numeric string)
         else if (attributes.containsKey("id") && attributes.get("id") instanceof String) {
             try {
-                Long.parseLong((String) attributes.get("id"));
+                parseLong((String) attributes.get("id"));
                 return "facebook";
             } catch (NumberFormatException e) {
                 // Not a Facebook ID
