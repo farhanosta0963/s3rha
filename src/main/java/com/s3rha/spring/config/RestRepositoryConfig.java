@@ -43,6 +43,5 @@ public class RestRepositoryConfig implements RepositoryRestConfigurer {
 //                .withItemExposure((metadata, httpMethods) ->
 //                        httpMethods.disable(HttpMethod.GET)); // disables GET /accounts/{id}
 
-
     }
 }
