@@ -20,10 +20,10 @@ public class RatingOnProduct extends Rating {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
-    @JoinColumn(name = "store_account_id")
-    private StoreAccount storeAccount;
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+//            CascadeType.DETACH, CascadeType.REFRESH})
+//    @JoinColumn(name = "store_account_id")
+//    private StoreAccount storeAccount;
 
     // Getters and setters
 }

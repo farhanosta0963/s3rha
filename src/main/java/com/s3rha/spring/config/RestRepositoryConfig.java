@@ -1,15 +1,11 @@
 package com.s3rha.spring.config;
-import com.s3rha.spring.entity.Product;
-import com.s3rha.spring.entity.StoreAccount;
-import com.s3rha.spring.entity.UserAccount;
+import com.s3rha.spring.entity.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.ExposureConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-
-import com.s3rha.spring.entity.Account;
 
 @Configuration
 public class RestRepositoryConfig implements RepositoryRestConfigurer {

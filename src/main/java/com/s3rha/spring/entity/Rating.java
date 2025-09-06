@@ -28,5 +28,6 @@ public class Rating {
     @JoinColumn(name = "account_id")
     private Account Account;
 
+
     // Getters and setters
 }

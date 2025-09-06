@@ -27,7 +27,6 @@ public class Product {
     private String category;
     private String barCode;
     private String description;
-    private String generalType;
     private LocalDateTime datetimeOfInsert = LocalDateTime.now() ;
 
 //    @OneToMany(cascade = CascadeType.ALL)
