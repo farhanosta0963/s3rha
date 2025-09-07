@@ -505,6 +505,7 @@ private  final JwtEncoder jwtEncoder ;
                 AuthService.log.error("[AuthService:RegisterStoreByUser ] User :{} not found",nameOfTheUser);
                 return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");}));
             userPrice.setStoreAccount(storeAccountAfterSave);
+
             String prodcuturlll = storeAccountByUserRegistrationDto.productURL() ;
 
 
