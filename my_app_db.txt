@@ -1118,5 +1118,15 @@ INSERT INTO report_on_product (report_id, Product_id) VALUES
 
 update account set roles = "ROLE_MODERATOR" where account_id = 106;
 
+INSERT INTO rating (stars_rate, feedback, datetime_of_insert, account_id) VALUES
+(4, 'Friendly staff and good prices!', NOW(), 11),
+(5, 'A lot of items and easy to find everything!', NOW(), 12),
+(3, 'Average experience, could be better.', NOW(), 13);
+
+INSERT INTO rating_on_store (rate_id, store_account_id) VALUES
+(1002, 5),
+(1003, 5),
+(1004, 5),
+(1005, 3);
 
 SET FOREIGN_KEY_CHECKS = 1;
