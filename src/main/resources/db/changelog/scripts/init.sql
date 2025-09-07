@@ -361,6 +361,7 @@ CREATE TABLE address (
     longitude DECIMAL(11, 8),
     address VARCHAR(255),
     store_account_id bigint,
+
     datetime_of_insert DATETIME,
     FOREIGN KEY (store_account_id) REFERENCES store_account (account_id)
         ON UPDATE CASCADE
