@@ -38,6 +38,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -438,6 +439,7 @@ public class SecurityConfig {
     public OAuth2UserService<OidcUserRequest, OidcUser> oidcUserService() {
         return new CustomOidcUserService(); // Your custom implementation
     }
+
 
 //    public AuthResponseDto registerorloginOauthUser(OAuth2User principal, HttpServletResponse httpServletResponse) {
 //
