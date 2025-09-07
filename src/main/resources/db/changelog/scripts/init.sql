@@ -352,6 +352,7 @@ CREATE TABLE social_media (
     FOREIGN KEY (store_account_id) REFERENCES store_account (account_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
+
 );
 
 CREATE TABLE address (
