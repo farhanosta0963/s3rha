@@ -1040,22 +1040,24 @@ INSERT INTO account (user_name, email, password, status, phone_number, image, da
 INSERT INTO user_account (account_id, fname, lname, score_of_activity, score_of_integrity) VALUES
 -- (1, 'John', 'Doe', 85, 90),
 -- (2, 'Jane', 'Smith', 92, 88),
-(1, 'Alice', 'Brown', 70, 75),
-(2, 'Bob', 'Green', 80, 82),
-(3, 'Charlie', 'White', 65, 70),
-(4, 'Fashion Plus','White', 65,66) ;
+(104, 'Alice', 'Brown', 70, 75),
+(105, 'Bob', 'Green', 80, 82),
+(106, 'Charlie', 'White', 65, 70),
+(107, 'Fashion Plus','White', 65,66) ;
 
 
 -- Populate Store_account
 INSERT INTO store_account (account_id, name, verified_flag) VALUES
 -- (3, 'Tech Haven', 1),
 -- (4, 'Fashion Plus', 0),
-(10, 'user1', 0),
-(11, 'user2', 0),
-(12, 'Tech Haven', 1),
+(10, 'user10', 0),
+(11, 'user11', 0),
+(12, 'Tech Haven 12 ', 1),
 (5, 'user5', 0),
 (8, 'user8', 0),
 (9, 'user9', 0);
+
+update account set store_account_flag = 1 where account_id in (10,11,12,5,8,9);
 
 update account set roles = 'ROLE_USER' where account_id >=0 ;
 

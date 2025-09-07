@@ -495,14 +495,14 @@ private  final JwtEncoder jwtEncoder ;
             String nameOfTheUser = ownershipChecker.getCurrentUser();
             Account accountOfTheUser =   accountRepo.findByUserName(nameOfTheUser)
                     .orElseThrow(()->{
-                AuthService.log.error("[AuthService:RegisterStoreByUser ] User :{} not found",nameOfTheUser);
+                AuthService.log.error("[AuthService:RegisterStoreByUser ] Account :{} not found",nameOfTheUser);
                 return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
 //            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
 
             StoreAccount storeAccountAfterSave = storeInfoRepo.save(userDetailsEntity );
             userPrice.setUserAccount(
-                    userAccountRepo.findByUserName(nameOfTheUser).orElseThrow(()->{
-                AuthService.log.error("[AuthService:RegisterStoreByUser ] User :{} not found",nameOfTheUser);
+                    userAccountRepo.findById(accountOfTheUser.getAccountId()).orElseThrow(()->{
+                AuthService.log.error("[AuthService:RegisterStoreByUser ] UserAccount :{} not found",nameOfTheUser);
                 return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");}));
             userPrice.setStoreAccount(storeAccountAfterSave);
 
