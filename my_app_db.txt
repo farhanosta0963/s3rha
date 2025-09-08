@@ -371,6 +371,7 @@ CREATE TABLE address (
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+CREATE INDEX idx_price_product_id ON price(product_id);
 
 INSERT INTO `account` (`account_id`, `user_name`, `email`, `password`, `status`, `phone_number`, `image`, `roles`, `oauth_id`, `store_account_flag`, `datetime_of_insert`) VALUES
 (1, 'user_c', 'user_c@example.com', 'pass_c', 'active', '555-1111', 'user_c.jpg', 'ROLE_USER', NULL, 0, '2025-06-10 16:52:54'),

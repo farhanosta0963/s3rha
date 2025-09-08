@@ -32,12 +32,14 @@ import org.springframework.security.oauth2.client.web.AuthorizationRequestReposi
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -416,7 +418,85 @@ public class SecurityConfig {
                 .build();
     }
 
-//    @Order(6)
+
+    @Order(6)
+    @Bean
+        public SecurityFilterChain signInWithOauth2SecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
+        return httpSecurity
+                .securityMatcher(new OrRequestMatcher(
+                        new AntPathRequestMatcher("/oauth2/**"),
+                        new AntPathRequestMatcher("/login/oauth2/code/**")
+                ))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                //.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET).permitAll().anyRequest().authenticated())
+
+//                    .oauth2Login(oauth -> oauth
+//                            .authorizationEndpoint(auth -> auth
+//                                    .baseUri("/oauth2/authorization") // Starting endpoint
+//                                    .authorizationRequestRepository(authRequestRepository())
+//                            )
+//                            .redirectionEndpoint(redir -> redir
+//                                    .baseUri("/login/oauth2/code/google")
+//                            )  .build();
+//                               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .oauth2Login(oauth -> oauth
+                .authorizationEndpoint(auth -> auth
+                        .baseUri("/oauth2/authorization")
+//                        .authorizationRequestRepository(authRequestRepository())
+                )
+                .redirectionEndpoint(redir -> redir
+                        .baseUri("/login/oauth2/code/google")
+             ).successHandler((request, response, authentication) -> {
+                                    OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+                                    authService.registerorloginOauthUser(oauthUser, response);
+                                })
+                )
+                .build() ;
+//                .tokenEndpoint(token -> {
+//                                // Don't specify client - Spring will provide default
+//                            })
+//                .userInfoEndpoint(user -> user
+//                        .oidcUserService(oidcUserService())
+//                )
+
+
+
+//                .oauth2Login(Customizer.withDefaults())
+//               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .exceptionHandling(ex -> {
+//                    ex.authenticationEntryPoint((request, response, authException) ->
+//                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage()));
+//                })
+//                .exceptionHandling(ex -> {
+//                    ex.authenticationEntryPoint((request, response, authException) -> {
+//                        log.error("Authentication error: {}", authException.getMessage());
+//                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+//                    });
+//                    ex.accessDeniedHandler((request, response, accessDeniedException) -> {
+//                        log.error("Access denied: {}", accessDeniedException.getMessage());
+//                        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+//                    });
+//                })
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //    @Order(6)
 //    @Bean
 //    public SecurityFilterChain h2ConsoleSecurityFilterChainConfig(HttpSecurity httpSecurity) throws Exception{
 //        return httpSecurity

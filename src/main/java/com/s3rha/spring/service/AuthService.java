@@ -178,7 +178,6 @@ private  final JwtEncoder jwtEncoder ;
                 .build();
     }
 
-    @Transactional
     private static Authentication createAuthenticationObject(Account userInfoEntity) {
         // Extract user details from UserDetailsEntity
         String username = userInfoEntity.getUserName();
@@ -555,6 +554,7 @@ private  final JwtEncoder jwtEncoder ;
             AuthService.log.warn("just created this verification code "+ V.getVerificationCode());
 
     }
+    @Transactional
     public void registerorloginOauthUser(OAuth2User principal, HttpServletResponse httpServletResponse) {
 
 
@@ -576,20 +576,19 @@ private  final JwtEncoder jwtEncoder ;
 
             createRefreshTokenCookie(httpServletResponse,refreshToken);
 
-
+            httpServletResponse.sendRedirect("http://localhost:3000");
             AuthService.log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());
-            AuthResponseOauthDto authResponse = AuthResponseOauthDto.builder()
-                    .accessToken(accessToken)
-                    .accessTokenExpiry(15 * 60)
-                    .userName(user.getUserName())
-                    .tokenType(TokenType.Bearer)
-                    .existAlready(exist.toString())
-                    .build();
-
-            httpServletResponse.setContentType("application/json");
-            httpServletResponse.setStatus(HttpStatus.OK.value());
-            new ObjectMapper().writeValue(httpServletResponse.getWriter(), authResponse);
-
+//            AuthResponseOauthDto authResponse = AuthResponseOauthDto.builder()
+//                    .accessToken(accessToken)
+//                    .accessTokenExpiry(15 * 60)
+//                    .userName(user.getUserName())
+//                    .tokenType(TokenType.Bearer)
+//                    .existAlready(exist.toString())
+//                    .build();
+//
+//            httpServletResponse.setContentType("application/json");
+//            httpServletResponse.setStatus(HttpStatus.OK.value());
+//            new ObjectMapper().writeValue(httpServletResponse.getWriter(), authResponse);
 
         }catch (Exception e){
             AuthService.log.error("[AuthService:registerorloginOauthUser]Exception while registering the OauthUser  due to :"+e.getMessage());
