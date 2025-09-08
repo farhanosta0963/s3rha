@@ -549,6 +549,7 @@ private  final JwtEncoder jwtEncoder ;
                 .build();
 //            VerificationCode v = verificationCodeRepo.save(verificationCodeEntity) ;
             verificationCodeEntity.setAccount(userInfoEntity);
+
 //          userInfoEntity.setVerificationCode(verificationCodeEntity);
             VerificationCode V =  verificationCodeRepo.save(verificationCodeEntity);
             AuthService.log.warn("just created this verification code "+ V.getVerificationCode());
@@ -577,6 +578,7 @@ private  final JwtEncoder jwtEncoder ;
             createRefreshTokenCookie(httpServletResponse,refreshToken);
 
             httpServletResponse.sendRedirect("http://localhost:3000");
+
             AuthService.log.warn("[AuthService:registerorloginOauthUser] OauthUser registered :{} Successfully ",user.getUserName());
 //            AuthResponseOauthDto authResponse = AuthResponseOauthDto.builder()
 //                    .accessToken(accessToken)
