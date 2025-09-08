@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class UserPrice extends Price{
     }
 
    private  Integer upVoteCount = 0  ;
+
    private  Integer downVoteCount = 0  ;
 
 

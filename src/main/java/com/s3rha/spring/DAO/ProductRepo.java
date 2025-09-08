@@ -18,6 +18,8 @@ public interface ProductRepo extends JpaRepository<Product,Long> {
     List<Product> findByAccount(Account account);
     List<Product> findByProductIdIn(List<Long> ids);
 
+    List<Product> findByCategory(String category);
+
 //    List<Product> findByIdIn(@Param("ids") List<Long> ids);
     //    // This will return projection directly
 //    List<ProductProjection> findAllProjectedBy();
