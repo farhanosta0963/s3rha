@@ -52,7 +52,7 @@ public class SpringSecurityApplication {
                                DataSource dataSource) {
         return args -> {
             System.out.println("SMTP User: " + env.getProperty("SMTP_USERNAME"));
-            System.out.println("here is a user you can use for autherntication" +
+            System.out.println("here is a user you can use for autherntication " +
                     "user:farhan,password:123far123");
 //            String scriptPath = "init.sql";
 //
@@ -63,7 +63,41 @@ public class SpringSecurityApplication {
 //                System.err.println("Failed to run SQL script: " + scriptPath);
 //                e.printStackTrace();
 //            }
+                
+        try (var connection = dataSource.getConnection();
+        var stmt = connection.createStatement()) {
 
+       // 1️⃣ Ensure init_flag table exists
+       stmt.execute("""
+           CREATE TABLE IF NOT EXISTS init_flag (
+               initialized BOOLEAN PRIMARY KEY
+           )
+       """);
+
+       // 2️⃣ Check if initialization already ran
+       var rs = stmt.executeQuery("SELECT initialized FROM init_flag LIMIT 1");
+       boolean alreadyRun = rs.next() && rs.getBoolean("initialized");
+
+       if (!alreadyRun) {
+           System.out.println("Running SQL initialization script for the first time...");
+
+           // 3️⃣ Run your SQL script
+           ScriptUtils.executeSqlScript(connection, new ClassPathResource("init.sql"));
+
+           // 4️⃣ Mark it as run
+           stmt.execute("INSERT INTO init_flag (initialized) VALUES (TRUE)");
+
+
+           System.out.println("Done initializing ....");
+
+
+       } else {
+           System.out.println("Initialization already done. Skipping script.");
+       }
+   } catch (Exception e) {
+       System.err.println("Failed to run SQL script");
+       e.printStackTrace();
+   }
 
 
             };

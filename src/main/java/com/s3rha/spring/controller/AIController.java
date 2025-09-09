@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -23,7 +20,7 @@ import java.util.stream.Collectors;
 public class AIController {
     private final RestTemplate restTemplate;
     private final ProductRepo productRepo;
-    @PostMapping("/recommend/{id}")
+    @GetMapping("/recommend/{id}")
     public ResponseEntity<?> recommendedProducts(@PathVariable Long id ){
 
             String url = "http://127.0.0.1:5000/recommend/" + id;
@@ -58,7 +55,7 @@ public class AIController {
     }
 
 
-    @PostMapping("/similar/{id}")
+    @GetMapping("/similar/{id}")
     public ResponseEntity<?> similarProducts(@PathVariable Long id ){
 
         String url = "http://127.0.0.1:5000/similar/" + id;
@@ -92,7 +89,7 @@ public class AIController {
 
     }
 
-    @PostMapping("/popular")
+    @GetMapping("/popular")
     public ResponseEntity<?> popularProducts(){
 
         String url = "http://127.0.0.1:5000/popular";

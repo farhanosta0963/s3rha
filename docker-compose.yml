@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8
+    container_name: my-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123far123
+      MYSQL_DATABASE: my_app_db
+      MYSQL_USER: exchangingprices
+      MYSQL_PASSWORD: exchangingprices
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 2s
+      timeout : 3s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d  # SQL scripts to auto-run
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-springboot-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/my_app_db
+      SPRING_DATASOURCE_USERNAME: exchangingprices
+      SPRING_DATASOURCE_PASSWORD: exchangingprices
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

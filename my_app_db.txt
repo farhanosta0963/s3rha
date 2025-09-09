@@ -36,6 +36,10 @@ DROP TABLE IF EXISTS recommendation_log;
 
 -- Create tables (all lowercase table names)
 
+CREATE TABLE IF NOT EXISTS init_flag (
+    initialized BOOLEAN PRIMARY KEY
+);
+
 -- 1. account (referenced by search_history and report)
 CREATE TABLE account (
     account_id bigint AUTO_INCREMENT PRIMARY KEY,
