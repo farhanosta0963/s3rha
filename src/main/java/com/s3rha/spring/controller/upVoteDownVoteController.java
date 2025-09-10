@@ -41,7 +41,25 @@ public class upVoteDownVoteController {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
 
         userPrice.addUpVotedAccount(account);
-        return ResponseEntity.noContent().build();
+        int count = userPrice.getUpVotedAccountList() != null ? userPrice.getUpVotedAccountList().size() : 0;
+        return ResponseEntity.ok(count);
+    }
+    @Transactional
+
+    @PostMapping("/userPrices/{id}/unlike")
+    public ResponseEntity<?> unlikePrice(@PathVariable Long id ){
+
+
+        UserPrice userPrice = userPriceRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        Account account = accountRepo.findByUserName(userName)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
+
+        userPrice.removeUpVotedAccount(account);
+        int count = userPrice.getUpVotedAccountList() != null ? userPrice.getUpVotedAccountList().size() : 0;
+        return ResponseEntity.ok(count);
     }
     @Transactional
 
@@ -55,7 +73,23 @@ public class upVoteDownVoteController {
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
 
         userPrice.addDownVotingAccount(account);
-        return ResponseEntity.noContent().build();
+        int count = userPrice.getDownVotingAccountList() != null ? userPrice.getDownVotingAccountList().size() : 0;
+        return ResponseEntity.ok(count);
+    }
+    @Transactional
+
+    @PostMapping("/userPrices/{id}/undislike")
+    public ResponseEntity<?> undislikePrice(@PathVariable Long id){
+        UserPrice userPrice = userPriceRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        Account account = accountRepo.findByUserName(userName)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
+
+        userPrice.removeDownVotingAccount(account);
+        int count = userPrice.getDownVotingAccountList() != null ? userPrice.getDownVotingAccountList().size() : 0;
+        return ResponseEntity.ok(count);
     }
     @Transactional
     @GetMapping("/userPrices/{id}/like/count")

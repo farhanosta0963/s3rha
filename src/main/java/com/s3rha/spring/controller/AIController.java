@@ -4,6 +4,7 @@ import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.controller.components.Recommendation;
 import com.s3rha.spring.dto.PopularResponse;
 import com.s3rha.spring.dto.RecommendationResponse;
+import com.s3rha.spring.dto.SimilarResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
@@ -60,17 +61,20 @@ public class AIController {
 
         String url = "http://127.0.0.1:5000/similar/" + id;
 
-        RecommendationResponse response =
-                restTemplate.getForObject(url, RecommendationResponse.class);
-
+        SimilarResponse response =
+                restTemplate.getForObject(url, SimilarResponse.class);
+        System.out.println(response.getProduct_id());
         if (response == null || !"success".equalsIgnoreCase(response.getStatus())) {
             throw new RuntimeException("Flask service returned failure or null");
         }
 
-        List<Long> productIds = response.getRecommendations().stream()
+        List<Long> productIds = response.getSimilar_products().stream()
                 .map(Recommendation::getProduct_id)
                 .collect(Collectors.toList());
 
+        for (Long z : productIds){
+            System.out.println(z);
+        }
 
 
         // Build the internal SD REST URL with comma-separated IDs

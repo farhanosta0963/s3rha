@@ -1056,12 +1056,12 @@ INSERT INTO user_account (account_id, fname, lname, score_of_activity, score_of_
 INSERT INTO store_account (account_id, name, verified_flag) VALUES
 -- (3, 'Tech Haven', 1),
 -- (4, 'Fashion Plus', 0),
-(10, 'user10', 0),
-(11, 'user11', 0),
+(10, 'Store 1', 0),
+(11, 'Store 2 ', 0),
 (12, 'Tech Haven 12 ', 1),
-(5, 'user5', 0),
-(8, 'user8', 0),
-(9, 'user9', 0);
+(5, 'Store 3 ', 0),
+(8, 'Store 4', 0),
+(9, 'Store 5', 0);
 
 update account set store_account_flag = 1 where account_id in (10,11,12,5,8,9);
 
@@ -1351,10 +1351,10 @@ INSERT INTO rating_on_product (rate_id, product_id) VALUES
 
 -- last eddit
 INSERT INTO `price` (`price`, `datetime_of_insert`, `currency`, `unit_of_measure`, `store_account_id`, `product_id`, `is_store_price`) VALUES
-(999.99, '2025-09-07 10:00:00', 'USD', 'unit', 5, 1, FALSE),
-(950.00, '2025-09-07 10:05:00', 'USD', 'unit', 5, 1, FALSE),
-(799.99, '2025-09-07 10:10:00', 'USD', 'unit', 8, 2, FALSE),
-(780.00, '2025-09-07 10:15:00', 'USD', 'unit', 8, 2, FALSE),
+(999.99, '2025-09-07 10:00:00', 'USD', 'unit', 5, 11, FALSE),
+(950.00, '2025-09-07 10:05:00', 'USD', 'unit', 5, 11, FALSE),
+(799.99, '2025-09-07 10:10:00', 'USD', 'unit', 8, 11, FALSE),
+(780.00, '2025-09-07 10:15:00', 'USD', 'unit', 8, 11, FALSE),
 (39.99, '2025-09-07 10:20:00', 'USD', 'unit', 9, 3, FALSE),
 (35.00, '2025-09-07 10:25:00', 'USD', 'unit', 9, 3, FALSE),
 (120.00, '2025-09-07 10:30:00', 'USD', 'unit', 10, 4, FALSE),
