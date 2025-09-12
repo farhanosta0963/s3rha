@@ -389,7 +389,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain registerSecurityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
-                .securityMatcher(new AntPathRequestMatcher("/auth/sign-up/**"))
+                .securityMatcher(new AntPathRequestMatcher("/auth/**"))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // <-- This line enables CORS for Spring Security
 
                 .csrf(AbstractHttpConfigurer::disable)

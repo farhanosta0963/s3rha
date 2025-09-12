@@ -1452,4 +1452,13 @@ INSERT INTO `store_price` (`price_id`, `quantity`) VALUES
 (53, 1),
 (54, 5);
 
+INSERT INTO address (latitude, longitude, address, store_account_id, datetime_of_insert) VALUES
+(34.7351, 36.7198, 'Al-Malab Street, Building 15, Homs', 5, NOW()),
+(34.7289, 36.7255, 'Al-Nakheel Street, Building 7, Floor 2, Homs', 8, NOW()),
+(34.7322, 36.7180, 'Al-Sabeel Avenue, House 22, Homs', 9, NOW()),
+(34.7345, 36.7211, 'Al-Waer District, Commercial Center, Homs', 10, NOW()),
+(34.7299, 36.7230, 'Bab al-Dreib, Main Market, Homs', 11, NOW()),
+(34.7315, 36.7205, 'Al-Hamidiya Street, House 45, Homs', 12, NOW());
+
+
 SET FOREIGN_KEY_CHECKS = 1;

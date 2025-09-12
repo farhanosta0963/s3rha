@@ -326,15 +326,24 @@ private  final JwtEncoder jwtEncoder ;
         String htmlMessage = "<html>"
                 + "<body style=\"font-family: Arial, sans-serif;\">"
                 + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our website S3rha !</h2>"
-                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
+                + "<h2 style=\"color: #333;\">Welcome to S3ERHA!</h2>"
+                + "<p style=\"font-size: 16px; color: #555;\">We’re excited to have you join our community. "
+                + "At <strong>S3ERHA</strong>, you’ll find the best deals, price comparisons, and a smooth  experience tailored just for you.</p>"
+                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; "
+                + "box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 15px;\">"
+                + "<h3 style=\"color: #333;\">What’s Next?</h3>"
+                + "<ul style=\"font-size: 15px; color: #555;\">"
+                + "<li>Explore products and compare prices instantly</li>"
+                + "<li>Save your favorite items to your account</li>"
+                + "<li>Enjoy exclusive offers and updates</li>"
+                + "</ul>"
                 + "</div>"
+                + "<p style=\"font-size: 14px; color: #777; margin-top: 20px;\">Thank you for being part of S3ERHA. "
+                + "We’re here to make your shopping easier and smarter!</p>"
                 + "</div>"
                 + "</body>"
                 + "</html>";
+
         emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
 
 

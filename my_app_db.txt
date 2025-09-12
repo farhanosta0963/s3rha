@@ -1071,9 +1071,9 @@ update account set roles = 'ROLE_USER' where account_id >=0 ;
 
 -- Populate Price
 INSERT INTO price (price, datetime_of_insert, currency, unit_of_measure, store_account_id, Product_id) VALUES
-(1499.99, NOW(), 'USD', 'Each', 3, 1),
-(49.99, NOW(), 'USD', 'Each', 3, 2),
-(89.99, NOW(), 'USD', 'Each', 4, 3);
+(1499.99, NOW(), 'USD', 'Each', 8, 1),
+(49.99, NOW(), 'USD', 'Each', 8, 2),
+(89.99, NOW(), 'USD', 'Each', 9, 3);
 
 -- Populate Store_price
 INSERT INTO store_price (price_id, quantity) VALUES
@@ -1091,10 +1091,6 @@ INSERT INTO prod_of_cart (Product_id, Shopping_Cart_id, quantity) VALUES
 (1, 1, 2),
 (3, 2, 1);
 
--- Populate User_price
-INSERT INTO user_price (price_id, up_vote_count, down_vote_count, user_account_id) VALUES
-(1, 15, 2, 104),
-(3, 8, 1, 105);
 
 
 
@@ -1350,6 +1346,7 @@ INSERT INTO rating_on_product (rate_id, product_id) VALUES
 
 
 -- last eddit
+
 INSERT INTO `price` (`price`, `datetime_of_insert`, `currency`, `unit_of_measure`, `store_account_id`, `product_id`, `is_store_price`) VALUES
 (999.99, '2025-09-07 10:00:00', 'USD', 'unit', 5, 11, FALSE),
 (950.00, '2025-09-07 10:05:00', 'USD', 'unit', 5, 11, FALSE),
@@ -1432,11 +1429,7 @@ INSERT INTO `user_price` (`price_id`, `up_vote_count`, `down_vote_count`, `user_
 (40, 21, 3, 73),
 (41, 6, 29, 86),
 (42, 49, 16, 70),
-(43, 13, 24, 79),
-(44, 30, 7, 83),
-(45, 17, 39, 66),
-(46, 34, 1, 81),
-(47, 24, 26, 74);
+(43, 13, 24, 79);
 
 
 
@@ -1447,9 +1440,18 @@ INSERT INTO `price` (`price`, `datetime_of_insert`, `currency`, `unit_of_measure
 (780.00, '2025-09-07 10:15:00', 'USD', 'unit', 8, 11, TRUE);
 
 INSERT INTO `store_price` (`price_id`, `quantity`) VALUES
-(51, 2),
-(52, 3),
-(53, 1),
-(54, 5);
+(44, 2),
+(45, 3),
+(46, 1),
+(47, 5);
+
+INSERT INTO address (latitude, longitude, address, store_account_id, datetime_of_insert) VALUES
+(34.7351, 36.7198, 'Al-Malab Street, Building 15, Homs', 5, NOW()),
+(34.7289, 36.7255, 'Al-Nakheel Street, Building 7, Floor 2, Homs', 8, NOW()),
+(34.7322, 36.7180, 'Al-Sabeel Avenue, House 22, Homs', 9, NOW()),
+(34.7345, 36.7211, 'Al-Waer District, Commercial Center, Homs', 10, NOW()),
+(34.7299, 36.7230, 'Bab al-Dreib, Main Market, Homs', 11, NOW()),
+(34.7315, 36.7205, 'Al-Hamidiya Street, House 45, Homs', 12, NOW());
+
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -9,6 +9,7 @@ import com.s3rha.spring.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 //@RepositoryRestResource(
 //
@@ -17,6 +18,9 @@ import java.util.List;
 public interface ProductRepo extends JpaRepository<Product,Long> {
     List<Product> findByAccount(Account account);
     List<Product> findByProductIdIn(List<Long> ids);
+
+    Optional<Product> findByBarCode(String  barCode);
+
 
     List<Product> findByCategory(String category);
 
