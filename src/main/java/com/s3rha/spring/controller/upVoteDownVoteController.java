@@ -25,18 +25,19 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @RequestMapping("/api")
 @Slf4j
 public class upVoteDownVoteController {
-    private final UserPriceRepo userPriceRepo ;
+    private final UserPriceRepo userPriceRepo;
     private final AccountRepo accountRepo;
+
     @Transactional
 
     @PostMapping("/userPrices/{id}/like")
-    public ResponseEntity<?> likePrice(@PathVariable Long id ){
+    public ResponseEntity<?> likePrice(@PathVariable Long id) {
 
 
         UserPrice userPrice = userPriceRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
 
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepo.findByUserName(userName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
 
@@ -44,16 +45,17 @@ public class upVoteDownVoteController {
         int count = userPrice.getUpVotedAccountList() != null ? userPrice.getUpVotedAccountList().size() : 0;
         return ResponseEntity.ok(count);
     }
+
     @Transactional
 
     @PostMapping("/userPrices/{id}/unlike")
-    public ResponseEntity<?> unlikePrice(@PathVariable Long id ){
+    public ResponseEntity<?> unlikePrice(@PathVariable Long id) {
 
 
         UserPrice userPrice = userPriceRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
 
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepo.findByUserName(userName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
 
@@ -61,14 +63,15 @@ public class upVoteDownVoteController {
         int count = userPrice.getUpVotedAccountList() != null ? userPrice.getUpVotedAccountList().size() : 0;
         return ResponseEntity.ok(count);
     }
+
     @Transactional
 
     @PostMapping("/userPrices/{id}/dislike")
-    public ResponseEntity<?> dislikePrice(@PathVariable Long id){
+    public ResponseEntity<?> dislikePrice(@PathVariable Long id) {
         UserPrice userPrice = userPriceRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
 
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepo.findByUserName(userName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
 
@@ -76,14 +79,15 @@ public class upVoteDownVoteController {
         int count = userPrice.getDownVotingAccountList() != null ? userPrice.getDownVotingAccountList().size() : 0;
         return ResponseEntity.ok(count);
     }
+
     @Transactional
 
     @PostMapping("/userPrices/{id}/undislike")
-    public ResponseEntity<?> undislikePrice(@PathVariable Long id){
+    public ResponseEntity<?> undislikePrice(@PathVariable Long id) {
         UserPrice userPrice = userPriceRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
 
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepo.findByUserName(userName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
 
@@ -91,6 +95,7 @@ public class upVoteDownVoteController {
         int count = userPrice.getDownVotingAccountList() != null ? userPrice.getDownVotingAccountList().size() : 0;
         return ResponseEntity.ok(count);
     }
+
     @Transactional
     @GetMapping("/userPrices/{id}/like/count")
     public ResponseEntity<Integer> getLikeCount(@PathVariable Long id) {
@@ -100,6 +105,7 @@ public class upVoteDownVoteController {
         int count = userPrice.getUpVotedAccountList() != null ? userPrice.getUpVotedAccountList().size() : 0;
         return ResponseEntity.ok(count);
     }
+
     @Transactional
 
     @GetMapping("/userPrices/{id}/dislike/count")
@@ -111,4 +117,34 @@ public class upVoteDownVoteController {
         return ResponseEntity.ok(count);
     }
 
+    @Transactional
+
+    @PostMapping("/userPrices/{id}/likeCheck")
+    public ResponseEntity<?> didLike(@PathVariable Long id) {
+        UserPrice userPrice = userPriceRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Account account = accountRepo.findByUserName(userName)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
+
+
+        return ResponseEntity.ok(userPrice.hasUpvoted(account));
+
+    }
+    @Transactional
+
+    @PostMapping("/userPrices/{id}/disLikeCheck")
+    public ResponseEntity<?> didDisLike(@PathVariable Long id){
+        UserPrice userPrice = userPriceRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "UserPrice with id " + id + " not found"));
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        Account account = accountRepo.findByUserName(userName)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
+
+        return ResponseEntity.ok(userPrice.hasDownvoted(account));
+
+
+    }
 }

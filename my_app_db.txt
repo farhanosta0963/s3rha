@@ -1094,15 +1094,8 @@ INSERT INTO prod_of_cart (Product_id, Shopping_Cart_id, quantity) VALUES
 
 
 
--- Populate Social_media
-INSERT INTO social_media (social_media_account, store_account_id, account_type, datetime_of_insert) VALUES
-('@techhaven', 3, 'Instagram', NOW()),
-('@fashionplus', 4, 'Facebook', NOW());
 
--- Populate Address
-INSERT INTO address (address, store_account_id, datetime_of_insert) VALUES
-('123 Tech Street', 3, NOW()),
-('456 Fashion Ave', 4, NOW());
+
 
 -- Populate Search_history
 INSERT INTO search_history (search_data, datetime_of_insert, account_id) VALUES

@@ -1,19 +1,27 @@
 package com.s3rha.spring.controller;
 
+import com.s3rha.spring.DAO.AccountRepo;
 import com.s3rha.spring.DAO.ProductRepo;
 import com.s3rha.spring.controller.components.Recommendation;
 import com.s3rha.spring.dto.PopularResponse;
 import com.s3rha.spring.dto.RecommendationResponse;
 import com.s3rha.spring.dto.SimilarResponse;
+import com.s3rha.spring.entity.Account;
+import com.s3rha.spring.service.OwnershipChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -21,9 +29,13 @@ import java.util.stream.Collectors;
 public class AIController {
     private final RestTemplate restTemplate;
     private final ProductRepo productRepo;
-    @GetMapping("/recommend/{id}")
-    public ResponseEntity<?> recommendedProducts(@PathVariable Long id ){
-
+    private final AccountRepo accountRepo ;
+    @PostMapping("/recommend")
+    public ResponseEntity<?> recommendedProducts(){
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+        Account account = accountRepo.findByUserName(userName)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
+        Long id = account.getAccountId() ;
             String url = "http://127.0.0.1:5000/recommend/" + id;
 
             RecommendationResponse response =

@@ -71,5 +71,20 @@ public class UserPrice extends Price{
         downVotingAccountList.remove(account);
     }
 
+    public boolean hasUpvoted(Account account) {
+        if (upVotedAccountList == null || account == null) return false;
+        return upVotedAccountList.parallelStream()
+                .anyMatch(a -> a.getAccountId().equals(account.getAccountId()));
+    }
+
+    /**
+     * Check if a given account has downvoted this price
+     */
+    public boolean hasDownvoted(Account account) {
+        if (downVotingAccountList == null || account == null) return false;
+        return downVotingAccountList.parallelStream()
+                .anyMatch(a -> a.getAccountId().equals(account.getAccountId()));
+    }
+
 
 }
