@@ -18,7 +18,7 @@ public interface ShoppingCartRepo extends JpaRepository <ShoppingCart,Long>{
 
 
 
-//    List<ShoppingCart> findByUserAccount(@Param("userAccount") UserAccount userAccount);
+    List<ShoppingCart> findByUserAccount(@Param("userAccount") UserAccount userAccount);
 
 //    @Transactional
 //    @Override
