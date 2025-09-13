@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -30,41 +32,93 @@ public class AIController {
     private final RestTemplate restTemplate;
     private final ProductRepo productRepo;
     private final AccountRepo accountRepo ;
+//    @PostMapping("/recommend")
+//    public ResponseEntity<?> recommendedProducts(){
+//        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+//        Account account = accountRepo.findByUserName(userName)
+//                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
+//        Long id = account.getAccountId() ;
+//            String url = "http://127.0.0.1:5000/recommend/" + id;
+//
+//            RecommendationResponse response =
+//                    restTemplate.getForObject(url, RecommendationResponse.class);
+//
+//            if (response == null || !"success".equalsIgnoreCase(response.getStatus())) {
+//                throw new RuntimeException("Flask service returned failure or null");
+//            }
+//
+//        List<Long> productIds = response.getRecommendations().stream()
+//                .map(Recommendation::getProduct_id)
+//                .collect(Collectors.toList());
+//
+//
+//
+//        // Build the internal SD REST URL with comma-separated IDs
+//        String idsParam = productIds.stream()
+//                .map(String::valueOf)
+//                .collect(Collectors.joining(","));
+//
+//        String sdRestUrl = "http://localhost:8080/api/products/search/findByProductIdIn?ids=" + idsParam;
+//
+//        // Call Spring Data REST internally
+//        ResponseEntity<String> sdRestResponse = restTemplate.getForEntity(sdRestUrl, String.class);
+//
+//        // Return SD REST response as-is to the client
+//        return ResponseEntity.status(sdRestResponse.getStatusCode())
+//                .body(sdRestResponse.getBody());
+//
+//    }
+
     @PostMapping("/recommend")
-    public ResponseEntity<?> recommendedProducts(){
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName() ;
+    public ResponseEntity<?> recommendedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         Account account = accountRepo.findByUserName(userName)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User with UserName " + userName + " not found"));
-        Long id = account.getAccountId() ;
-            String url = "http://127.0.0.1:5000/recommend/" + id;
+        Long id = account.getAccountId();
 
-            RecommendationResponse response =
-                    restTemplate.getForObject(url, RecommendationResponse.class);
+        String url = "http://127.0.0.1:5000/recommend/" + id;
+        RecommendationResponse response =
+                restTemplate.getForObject(url, RecommendationResponse.class);
 
-            if (response == null || !"success".equalsIgnoreCase(response.getStatus())) {
-                throw new RuntimeException("Flask service returned failure or null");
-            }
+        if (response == null || !"success".equalsIgnoreCase(response.getStatus())) {
+            throw new RuntimeException("Flask service returned failure or null");
+        }
 
         List<Long> productIds = response.getRecommendations().stream()
                 .map(Recommendation::getProduct_id)
                 .collect(Collectors.toList());
 
+        if (productIds.isEmpty()) {
+            // Return empty page structure
+            Map<String, Object> emptyPage = Map.of(
+                    "_embedded", Map.of("products", Collections.emptyList()),
+                    "page", Map.of(
+                            "size", size,
+                            "totalElements", 0,
+                            "totalPages", 0,
+                            "number", page
+                    )
+            );
+            return ResponseEntity.ok(emptyPage);
+        }
 
-
-        // Build the internal SD REST URL with comma-separated IDs
+        // Call Spring Data REST with pagination
         String idsParam = productIds.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
 
-        String sdRestUrl = "http://localhost:8080/api/products/search/findByProductIdIn?ids=" + idsParam;
+        String sdRestUrl = String.format(
+                "http://localhost:8080/api/products/search/findByProductIdIn?ids=%s&page=%d&size=%d",
+                idsParam, page, size
+        );
 
-        // Call Spring Data REST internally
         ResponseEntity<String> sdRestResponse = restTemplate.getForEntity(sdRestUrl, String.class);
 
-        // Return SD REST response as-is to the client
         return ResponseEntity.status(sdRestResponse.getStatusCode())
                 .body(sdRestResponse.getBody());
-
     }
 
 

@@ -6,6 +6,8 @@ package com.s3rha.spring.DAO;
 
 import com.s3rha.spring.entity.Account;
 import com.s3rha.spring.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,12 +19,14 @@ import java.util.Optional;
 //)
 public interface ProductRepo extends JpaRepository<Product,Long> {
     List<Product> findByAccount(Account account);
-    List<Product> findByProductIdIn(List<Long> ids);
-
+//    List<Product> findByProductIdIn(List<Long> ids);
+    Page<Product> findByProductIdIn(List<Long> ids, Pageable pageable);
     Optional<Product> findByBarCode(String  barCode);
 
 
     List<Product> findByCategory(String category);
+
+    List<Product> findByCategoryIgnoreCase(String category);
 
 //    List<Product> findByIdIn(@Param("ids") List<Long> ids);
     //    // This will return projection directly

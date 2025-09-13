@@ -20,6 +20,8 @@ public record StoreAccountByUserWithAddressAndPriceDto (
             String unitOfMeasure,
             String currency,
 
-            String productURL
+            String productURL,
+
+            String store
 
             ){}

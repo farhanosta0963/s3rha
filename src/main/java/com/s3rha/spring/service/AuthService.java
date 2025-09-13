@@ -33,6 +33,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Long.parseLong;
 
@@ -44,6 +46,7 @@ import static java.lang.Long.parseLong;
 public class AuthService {
 private  final JwtEncoder jwtEncoder ;
     private final AccountRepo accountRepo;
+    private final StorePriceRepo storePriceRepo;
     private final UserAccountRepo userAccountRepo;
     private final StoreAccountRepo storeInfoRepo;
     private final JwtTokenGenerator jwtTokenGenerator;
@@ -63,6 +66,7 @@ private  final JwtEncoder jwtEncoder ;
     private final UserPriceRepo userPriceRepo;
     private final AddressRepo addressRepo;
     private final ProductRepo productRepo;
+    private final StorePriceInfoMapper storePriceInfoMapper;
     @Transactional
     public AuthResponseDto  getJwtTokensAfterAuthentication(Authentication authentication, HttpServletResponse response) {
         try
@@ -493,55 +497,165 @@ private  final JwtEncoder jwtEncoder ;
         try{
             AuthService.log.warn("[AuthService:registerUser]Store  byyyy User Registration Started with :::{}",storeAccountByUserRegistrationDto);
 
-
-            StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
-            Address address = addressInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
-            UserPrice userPrice = userPriceInfoMapper.convertToEntity(storeAccountByUserRegistrationDto) ;
-
-            userDetailsEntity.setReferenceMadeByUserFlag(true);
-//            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
             String nameOfTheUser = ownershipChecker.getCurrentUser();
             Account accountOfTheUser =   accountRepo.findByUserName(nameOfTheUser)
                     .orElseThrow(()->{
-                AuthService.log.error("[AuthService:RegisterStoreByUser ] Account :{} not found",nameOfTheUser);
-                return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
+                        AuthService.log.error("[AuthService:RegisterStoreByUser ] Account :{} not found",nameOfTheUser);
+                        return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
+            boolean isStoreAccount = storeInfoRepo.existsById(accountOfTheUser.getAccountId());
+            boolean isUserAccount = accountRepo.existsById(accountOfTheUser.getAccountId());
+
+            if (isStoreAccount) {
+                Address address = addressInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+
 //            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
-
-            StoreAccount storeAccountAfterSave = storeInfoRepo.save(userDetailsEntity );
-            userPrice.setUserAccount(
-                    userAccountRepo.findById(accountOfTheUser.getAccountId()).orElseThrow(()->{
-                AuthService.log.error("[AuthService:RegisterStoreByUser ] UserAccount :{} not found",nameOfTheUser);
-                return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");}));
-            userPrice.setStoreAccount(storeAccountAfterSave);
-
-            String prodcuturlll = storeAccountByUserRegistrationDto.productURL() ;
+                StorePrice storePrice = storePriceInfoMapper.convertToEntity(storeAccountByUserRegistrationDto) ;
+//            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
 
 
-            String idStr = prodcuturlll.replaceAll(".*/(\\d+)/?$", "$1");
-            Product product = productRepo.findById(Long.parseLong(idStr)).orElseThrow(()->{
-                AuthService.log.error("[AuthService:RegisterStoreByUser ] Product :{} not found",idStr);
-                return new ResponseStatusException(HttpStatus.NOT_FOUND,"Product NOT FOUND ");});
+                StoreAccount storeAccountAfterSave =  storeInfoRepo.findById(accountOfTheUser.getAccountId())
+                        .orElseThrow(()->{
+                            AuthService.log.error("[AuthService:RegisterStoreByUser ] Account :{} not found",nameOfTheUser);
+                            return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");});
+                storePrice.setStoreAccount(storeAccountAfterSave);
 
-        ;   userPrice.setProduct(product);
-            UserPrice userPriceAfterSave =  userPriceRepo.save(userPrice) ;
-
-            address.setStoreAccount(storeAccountAfterSave);
-            Address addressAfterSave =  addressRepo.save(address);
+                String prodcuturlll = storeAccountByUserRegistrationDto.productURL() ;
 
 
-            StoreReferenceByUser storeReferenceByUser = new StoreReferenceByUser();
-            storeReferenceByUser.setReferencedStoreAccount(storeAccountAfterSave);
-            storeReferenceByUser.setReferencingAccount(accountOfTheUser);
-
-            Long z = storeReferenceByUserRepo.save(storeReferenceByUser).getReferencedStoreAccount().getAccountId() ;
-
-            RegisterStoreByUserWithPriceDto registerStoreByUserWithPriceDto = new RegisterStoreByUserWithPriceDto( );
-            registerStoreByUserWithPriceDto.setStoreLink("http://localhost:8080/api/storeAccounts/"+storeAccountAfterSave.getAccountId());
-            registerStoreByUserWithPriceDto.setAddressLink("http://localhost:8080/api/addresses/"+addressAfterSave.getAddress_id());
-            registerStoreByUserWithPriceDto.setPriceLink("http://localhost:8080/api/userPrices/"+userPriceAfterSave.getPriceId());
+                String idStr = prodcuturlll.replaceAll(".*/(\\d+)/?$", "$1");
+                Product product = productRepo.findById(Long.parseLong(idStr)).orElseThrow(()->{
+                    AuthService.log.error("[AuthService:RegisterStoreByUser ] Product :{} not found",idStr);
+                    return new ResponseStatusException(HttpStatus.NOT_FOUND,"Product NOT FOUND ");});
 
 
-            return  registerStoreByUserWithPriceDto ;
+                storePrice.setProduct(product);
+                StorePrice storePriceAfterSave =  storePriceRepo.save(storePrice) ;
+
+
+
+
+
+
+
+
+
+                RegisterStoreByUserWithPriceDto registerStoreByUserWithPriceDto = new RegisterStoreByUserWithPriceDto( );
+                registerStoreByUserWithPriceDto.setStoreLink("http://localhost:8080/api/storeAccounts/"+storeAccountAfterSave.getAccountId());
+                registerStoreByUserWithPriceDto.setPriceLink("http://localhost:8080/api/storePrices/"+storePriceAfterSave.getPriceId());
+
+
+                return  registerStoreByUserWithPriceDto ;
+
+            } else if (isUserAccount) {
+                StoreAccount storeAccount1234 = null ;
+                    Address address1 = null;
+                if (storeAccountByUserRegistrationDto.store() != null) {
+                    String addressurl = storeAccountByUserRegistrationDto.store();
+                    Pattern pattern = Pattern.compile("addresses/(\\d+)");
+                    Matcher matcher = pattern.matcher(addressurl);
+
+                    if (matcher.find()) {
+                        String idstr = matcher.group(1);
+                        Long idd = Long.parseLong(idstr);
+                        address1 = addressRepo.findById(idd)  .orElseThrow(()->{
+                            AuthService.log.error("[AuthService:RegisterStoreByUser ] Address :{} not found",idd);
+                            return new ResponseStatusException(HttpStatus.NOT_FOUND,"Address NOT FOUND ");});
+                        storeAccount1234=address1.getStoreAccount();
+                        if(storeAccount1234 == null ){
+                            throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"Address NOT FOUND ");
+                        }
+                    }
+
+
+//            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
+                    UserPrice userPrice = userPriceInfoMapper.convertToEntity(storeAccountByUserRegistrationDto) ;
+//            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
+
+
+                    userPrice.setUserAccount(
+                            userAccountRepo.findById(accountOfTheUser.getAccountId()).orElseThrow(()->{
+                                AuthService.log.error("[AuthService:RegisterStoreByUser ] UserAccount :{} not found",nameOfTheUser);
+                                return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");}));
+
+                        userPrice.setStoreAccount(storeAccount1234);
+
+
+
+                    String prodcuturlll = storeAccountByUserRegistrationDto.productURL() ;
+
+
+                    String idStr = prodcuturlll.replaceAll(".*/(\\d+)/?$", "$1");
+                    Product product = productRepo.findById(Long.parseLong(idStr)).orElseThrow(()->{
+                        AuthService.log.error("[AuthService:RegisterStoreByUser ] Product :{} not found",idStr);
+                        return new ResponseStatusException(HttpStatus.NOT_FOUND,"Product NOT FOUND ");});
+
+                    ;   userPrice.setProduct(product);
+                    UserPrice userPriceAfterSave =  userPriceRepo.save(userPrice) ;
+
+
+
+
+
+
+
+                    RegisterStoreByUserWithPriceDto registerStoreByUserWithPriceDto = new RegisterStoreByUserWithPriceDto( );
+                    registerStoreByUserWithPriceDto.setStoreLink("http://localhost:8080/api/storeAccounts/"+storeAccount1234.getAccountId());
+                    registerStoreByUserWithPriceDto.setPriceLink("http://localhost:8080/api/userPrices/"+userPriceAfterSave.getPriceId());
+
+
+                    return  registerStoreByUserWithPriceDto ;
+                }else {
+                    StoreAccount userDetailsEntity = storeByUserInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+                    Address address = addressInfoMapper.convertToEntity(storeAccountByUserRegistrationDto);
+
+//            userDetailsEntity.setAccountId(savedUserDetails.getAccountId());
+                    UserPrice userPrice = userPriceInfoMapper.convertToEntity(storeAccountByUserRegistrationDto) ;
+                    userDetailsEntity.setReferenceMadeByUserFlag(true);
+//            StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
+
+
+                    StoreAccount storeAccountAfterSave = storeInfoRepo.save(userDetailsEntity );
+                    userPrice.setUserAccount(
+                            userAccountRepo.findById(accountOfTheUser.getAccountId()).orElseThrow(()->{
+                                AuthService.log.error("[AuthService:RegisterStoreByUser ] UserAccount :{} not found",nameOfTheUser);
+                                return new ResponseStatusException(HttpStatus.NOT_FOUND,"USER NOT FOUND ");}));
+                    userPrice.setStoreAccount(storeAccountAfterSave);
+
+                    String prodcuturlll = storeAccountByUserRegistrationDto.productURL() ;
+
+
+                    String idStr = prodcuturlll.replaceAll(".*/(\\d+)/?$", "$1");
+                    Product product = productRepo.findById(Long.parseLong(idStr)).orElseThrow(()->{
+                        AuthService.log.error("[AuthService:RegisterStoreByUser ] Product :{} not found",idStr);
+                        return new ResponseStatusException(HttpStatus.NOT_FOUND,"Product NOT FOUND ");});
+
+                    ;   userPrice.setProduct(product);
+                    UserPrice userPriceAfterSave =  userPriceRepo.save(userPrice) ;
+
+                    address.setStoreAccount(storeAccountAfterSave);
+                    Address addressAfterSave =  addressRepo.save(address);
+
+
+                    StoreReferenceByUser storeReferenceByUser = new StoreReferenceByUser();
+                    storeReferenceByUser.setReferencedStoreAccount(storeAccountAfterSave);
+                    storeReferenceByUser.setReferencingAccount(accountOfTheUser);
+
+                    Long z = storeReferenceByUserRepo.save(storeReferenceByUser).getReferencedStoreAccount().getAccountId() ;
+
+                    RegisterStoreByUserWithPriceDto registerStoreByUserWithPriceDto = new RegisterStoreByUserWithPriceDto( );
+                    registerStoreByUserWithPriceDto.setStoreLink("http://localhost:8080/api/storeAccounts/"+storeAccountAfterSave.getAccountId());
+                    registerStoreByUserWithPriceDto.setAddressLink("http://localhost:8080/api/addresses/"+addressAfterSave.getAddress_id());
+                    registerStoreByUserWithPriceDto.setPriceLink("http://localhost:8080/api/userPrices/"+userPriceAfterSave.getPriceId());
+
+
+                    return  registerStoreByUserWithPriceDto ;
+                }
+
+
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"the Account is neither store nor user");
+            }
+
 
 
         }catch (Exception e){
