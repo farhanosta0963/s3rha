@@ -1050,7 +1050,7 @@ INSERT INTO `rating_on_product` (`rate_id`, `product_id`) VALUES
 INSERT INTO account (user_name, email, password, status, phone_number, image, datetime_of_insert) VALUES
 ('john_doe', 'john@example.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'active', '555-1234', 'john.jpg', NOW()),
 ('jane_smith', 'jane@example.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'active', '555-5678', 'jane.jpg', NOW()),
-('moderator123', 'tech@store.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'verified', '555-8765', 'techstore.jpg', NOW()),
+('moderator123', 'moderator@hotmail.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'verified', '555-8765', 'techstore.jpg', NOW()),
 ('farhan', 'fashion@shop.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'pending', '555-4321', 'fashion.jpg', NOW()) ;
 
 
@@ -1458,6 +1458,8 @@ INSERT INTO address (latitude, longitude, address, store_account_id, datetime_of
 (34.7345, 36.7211, 'Al-Waer District, Commercial Center, Homs', 10, NOW()),
 (34.7299, 36.7230, 'Bab al-Dreib, Main Market, Homs', 11, NOW()),
 (34.7315, 36.7205, 'Al-Hamidiya Street, House 45, Homs', 12, NOW());
+
+
 
 
 SET FOREIGN_KEY_CHECKS = 1;
