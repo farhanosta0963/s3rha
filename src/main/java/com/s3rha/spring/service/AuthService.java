@@ -217,7 +217,7 @@ private  final JwtEncoder jwtEncoder ;
             Authentication authentication = createAuthenticationObject(userDetailsEntity);
 
 
-            userDetailsEntity.setStatus(AccountStatus.PENDING.name());
+            userDetailsEntity.setStatus(AccountStatus.ACTIVATED.name());
 
             Account savedUserDetails = accountRepo.save(userDetailsEntity);
             // Generate a JWT token
@@ -457,7 +457,7 @@ private  final JwtEncoder jwtEncoder ;
             Authentication authentication = createAuthenticationObject( userDetailsEntity);
 
 
-        userDetailsEntity.setStatus(AccountStatus.PENDING.name());
+        userDetailsEntity.setStatus(AccountStatus.ACTIVATED.name());
 
 
         StoreAccount savedUserDetails = storeInfoRepo.save(userDetailsEntity);
