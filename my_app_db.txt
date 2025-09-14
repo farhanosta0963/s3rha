@@ -1050,7 +1050,7 @@ INSERT INTO `rating_on_product` (`rate_id`, `product_id`) VALUES
 INSERT INTO account (user_name, email, password, status, phone_number, image, datetime_of_insert) VALUES
 ('john_doe', 'john@example.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'active', '555-1234', 'john.jpg', NOW()),
 ('jane_smith', 'jane@example.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'active', '555-5678', 'jane.jpg', NOW()),
-('tech_store', 'tech@store.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'verified', '555-8765', 'techstore.jpg', NOW()),
+('moderator123', 'tech@store.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'verified', '555-8765', 'techstore.jpg', NOW()),
 ('farhan', 'fashion@shop.com', '$2a$10$X5jMYN.NvO80KojjJPHinuPlqyTO.my2zI1Qs3cSGFXc5N4tsOEJu', 'pending', '555-4321', 'fashion.jpg', NOW()) ;
 
 
